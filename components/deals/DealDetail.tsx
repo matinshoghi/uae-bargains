@@ -29,12 +29,9 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false }: DealDe
       {/* Category + Time */}
       <div className="text-muted-foreground flex items-center gap-2 text-sm">
         {deal.categories && (
-          <Link
-            href={`/category/${deal.categories.slug}`}
-            className="hover:text-foreground font-medium"
-          >
+          <span className="font-medium">
             {deal.categories.label}
-          </Link>
+          </span>
         )}
         <span>&middot;</span>
         <time dateTime={deal.created_at}>

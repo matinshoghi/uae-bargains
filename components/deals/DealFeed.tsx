@@ -28,7 +28,7 @@ export function DealFeed({
   const visibleDeals = hasMore ? initialDeals.slice(0, DEALS_PER_PAGE) : initialDeals;
 
   return (
-    <div className="space-y-3">
+    <div className="divide-y">
       {visibleDeals.map((deal) => (
         <DealCard
           key={deal.id}

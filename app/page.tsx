@@ -1,20 +1,9 @@
 import { Suspense } from "react";
-import { CategoryBar } from "@/components/layout/CategoryBar";
-import { SortBar } from "@/components/layout/SortBar";
+import { FeedHeader } from "@/components/layout/FeedHeader";
+import { Sidebar } from "@/components/layout/Sidebar";
 import { DealFeed } from "@/components/deals/DealFeed";
 import { fetchDeals, getUserDealVotes } from "@/lib/queries/deals";
 import { DEALS_PER_PAGE } from "@/lib/constants";
-import { Skeleton } from "@/components/ui/skeleton";
-
-function CategoryBarFallback() {
-  return (
-    <div className="flex gap-2 px-4 py-3">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <Skeleton key={i} className="h-8 w-20 rounded-full" />
-      ))}
-    </div>
-  );
-}
 
 export default async function HomePage({
   searchParams,
@@ -29,23 +18,31 @@ export default async function HomePage({
   ]);
 
   return (
-    <>
-      <Suspense fallback={<CategoryBarFallback />}>
-        <CategoryBar />
-      </Suspense>
-
-      <Suspense>
-        <SortBar />
-      </Suspense>
-
-      <div className="mx-auto max-w-3xl px-4 py-4">
-        <DealFeed
-          initialDeals={deals}
-          sort={sort}
-          userVotes={userVotes}
-          isLoggedIn={isLoggedIn}
-        />
+    <div className="mx-auto max-w-5xl px-4 py-6">
+      {/* Mobile sidebar — shown above feed on small screens */}
+      <div className="mb-6 lg:hidden">
+        <Sidebar />
       </div>
-    </>
+
+      <div className="flex gap-8">
+        {/* Deal feed */}
+        <div className="min-w-0 flex-1">
+          <Suspense>
+            <FeedHeader />
+          </Suspense>
+          <DealFeed
+            initialDeals={deals}
+            sort={sort}
+            userVotes={userVotes}
+            isLoggedIn={isLoggedIn}
+          />
+        </div>
+
+        {/* Sidebar — desktop only */}
+        <aside className="hidden w-[300px] shrink-0 lg:block">
+          <Sidebar />
+        </aside>
+      </div>
+    </div>
   );
 }
