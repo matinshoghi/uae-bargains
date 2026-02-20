@@ -66,7 +66,8 @@ export default async function DealPage({ params }: Props) {
       .select("vote_type")
       .eq("user_id", user.id)
       .eq("deal_id", deal.id)
-      .maybeSingle();
+      .eq("is_revoked", false)
+      .maybeSingle<{ vote_type: number }>();
 
     if (vote) userVote = vote.vote_type as 1 | -1;
   }

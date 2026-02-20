@@ -227,7 +227,6 @@ export interface Database {
           },
         ];
       };
-    };
       contact_submissions: {
         Row: {
           id: string;

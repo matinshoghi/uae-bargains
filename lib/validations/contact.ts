@@ -15,7 +15,7 @@ export const contactSchema = z.object({
     .max(100, "Name must be under 100 characters"),
   email: z.string().email("Must be a valid email address"),
   category: z.enum(CONTACT_CATEGORIES, {
-    errorMap: () => ({ message: "Select a category" }),
+    error: "Select a category",
   }),
   message: z
     .string()
