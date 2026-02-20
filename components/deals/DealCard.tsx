@@ -23,14 +23,13 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
   const expired = isExpired(deal);
 
   return (
-    <Link href={`/deals/${deal.id}`} className="block">
-      <article
-        className={`flex gap-4 rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${
-          expired ? "opacity-60" : ""
-        }`}
-      >
+    <article
+      className={`relative flex gap-4 rounded-xl border bg-white p-4 shadow-sm transition-shadow hover:shadow-md ${
+        expired ? "opacity-60" : ""
+      }`}
+    >
         {/* Vote column (desktop) */}
-        <div className="hidden shrink-0 md:flex">
+        <div className="relative z-10 hidden shrink-0 md:flex">
           <VoteButton
             entityType="deal"
             entityId={deal.id}
@@ -83,7 +82,12 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
           {/* Title */}
           <h3 className="line-clamp-2 text-sm font-semibold leading-snug md:text-base">
-            {deal.title}
+            <Link
+              href={`/deals/${deal.id}`}
+              className="after:absolute after:inset-0"
+            >
+              {deal.title}
+            </Link>
           </h3>
 
           {/* Mobile image */}
@@ -129,7 +133,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
           {/* Bottom row: mobile votes + comments */}
           <div className="mt-2 flex items-center gap-3 text-xs text-muted-foreground">
             {/* Mobile vote display */}
-            <div className="md:hidden">
+            <div className="relative z-10 md:hidden">
               <VoteButton
                 entityType="deal"
                 entityId={deal.id}
@@ -150,7 +154,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
                 <span>&middot;</span>
                 <Link
                   href={`/user/${deal.profiles.username}`}
-                  className="hover:text-foreground hover:underline"
+                  className="relative z-10 hover:text-foreground hover:underline"
                 >
                   {deal.profiles.display_name ?? deal.profiles.username}
                 </Link>
@@ -158,7 +162,6 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             )}
           </div>
         </div>
-      </article>
-    </Link>
+    </article>
   );
 }

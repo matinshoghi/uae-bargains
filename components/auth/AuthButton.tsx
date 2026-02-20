@@ -23,7 +23,7 @@ type Profile = {
   avatar_url: string | null;
 };
 
-export function AuthButton() {
+export function AuthButton({ variant = "default" }: { variant?: "default" | "link" }) {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -60,6 +60,16 @@ export function AuthButton() {
   }
 
   if (!user) {
+    if (variant === "link") {
+      return (
+        <Link
+          href="/login"
+          className="text-sm font-medium text-[#1d1d1f] transition-colors duration-200 hover:text-[#6e6e73]"
+        >
+          Sign In
+        </Link>
+      );
+    }
     return (
       <Button asChild variant="default" size="sm">
         <Link href="/login">Sign In</Link>

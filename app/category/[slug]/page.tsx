@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { CategoryBar } from "@/components/layout/CategoryBar";
+import { SortBar } from "@/components/layout/SortBar";
 import { DealFeed } from "@/components/deals/DealFeed";
 import { fetchDeals, getUserDealVotes } from "@/lib/queries/deals";
 import { DEALS_PER_PAGE } from "@/lib/constants";
@@ -68,6 +69,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     <>
       <Suspense fallback={<CategoryBarFallback />}>
         <CategoryBar />
+      </Suspense>
+
+      <Suspense>
+        <SortBar />
       </Suspense>
 
       <div className="mx-auto max-w-3xl px-4 py-4">
