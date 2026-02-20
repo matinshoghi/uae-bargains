@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { createComment } from "@/lib/actions/comments";
 import { toast } from "sonner";
 
@@ -13,13 +14,18 @@ export function CommentForm({
   parentId,
   onCancel,
   autoFocus = false,
+  sticky = false,
+  isLoggedIn = true,
 }: {
   dealId: string;
   parentId?: string;
   onCancel?: () => void;
   autoFocus?: boolean;
+  sticky?: boolean;
+  isLoggedIn?: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
   const [state, action, isPending] = useActionState(
     async (_prev: FormState, formData: FormData) => {
       const result = await createComment(formData);
@@ -33,6 +39,52 @@ export function CommentForm({
     null
   );
 
+  function handleAuthGate() {
+    if (!isLoggedIn) {
+      router.push("/login");
+    }
+  }
+
+  // Sticky bottom bar mode for top-level comments
+  if (sticky && !parentId) {
+    return (
+      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 border-t border-zinc-200 bg-white md:bottom-0">
+        <form
+          ref={formRef}
+          action={action}
+          className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3"
+        >
+          <input type="hidden" name="deal_id" value={dealId} />
+          <input
+            type="text"
+            name="content"
+            placeholder="Add a comment..."
+            required
+            onFocus={handleAuthGate}
+            readOnly={!isLoggedIn}
+            className="flex-1 rounded-full border border-zinc-200 px-4 py-2 text-sm
+                       focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+          />
+          <button
+            type="submit"
+            disabled={isPending || !isLoggedIn}
+            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white
+                       transition-colors hover:bg-emerald-700 disabled:opacity-50"
+          >
+            {isPending ? "..." : "Post"}
+          </button>
+        </form>
+
+        {state?.error?.content && (
+          <p className="mx-auto max-w-3xl px-4 pb-2 text-xs text-red-500">
+            {state.error.content[0]}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Inline mode for replies
   return (
     <form ref={formRef} action={action} className="mb-4">
       <input type="hidden" name="deal_id" value={dealId} />
@@ -40,29 +92,26 @@ export function CommentForm({
 
       <textarea
         name="content"
-        placeholder={
-          parentId ? "Write a reply..." : "Share your thoughts on this deal..."
-        }
+        placeholder={parentId ? "Write a reply..." : "Share your thoughts on this deal..."}
         rows={parentId ? 2 : 3}
         autoFocus={autoFocus}
         required
-        className="w-full rounded-lg border border-zinc-200 px-3 py-2 text-sm
-                   focus:outline-none focus:ring-2 focus:ring-emerald-500/20
-                   focus:border-emerald-500 resize-none"
+        className="w-full resize-none rounded-lg border border-zinc-200 px-3 py-2 text-sm
+                   focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
       />
 
       {state?.error?.content && (
-        <p className="text-xs text-red-500 mt-1">
+        <p className="mt-1 text-xs text-red-500">
           {state.error.content[0]}
         </p>
       )}
 
-      <div className="flex gap-2 mt-2">
+      <div className="mt-2 flex gap-2">
         <button
           type="submit"
           disabled={isPending}
-          className="px-4 py-1.5 text-sm font-medium text-white bg-emerald-600
-                     rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+          className="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white
+                     transition-colors hover:bg-emerald-700 disabled:opacity-50"
         >
           {isPending ? "Posting..." : parentId ? "Reply" : "Comment"}
         </button>
@@ -70,7 +119,7 @@ export function CommentForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-1.5 text-sm text-zinc-500 hover:text-zinc-700 transition-colors"
+            className="px-4 py-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-700"
           >
             Cancel
           </button>

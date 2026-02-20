@@ -19,7 +19,7 @@ export function ReplyButton({
     return (
       <Link
         href="/login"
-        className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+        className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-700"
       >
         Reply
       </Link>
@@ -30,7 +30,7 @@ export function ReplyButton({
     <>
       <button
         onClick={() => setShowForm(!showForm)}
-        className="text-xs text-zinc-400 hover:text-zinc-600 transition-colors"
+        className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-700"
       >
         Reply
       </button>
@@ -40,6 +40,7 @@ export function ReplyButton({
           <CommentForm
             dealId={dealId}
             parentId={parentId}
+            isLoggedIn={isLoggedIn}
             onCancel={() => setShowForm(false)}
             autoFocus
           />

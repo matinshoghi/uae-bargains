@@ -76,7 +76,7 @@ export default async function DealPage({ params }: Props) {
       <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} />
 
       <div className="mt-8 border-t border-zinc-100 pt-6">
-        <CommentSection dealId={id} isLoggedIn={!!user} />
+        <CommentSection dealId={id} currentUserId={user?.id ?? null} />
       </div>
     </div>
   );

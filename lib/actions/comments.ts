@@ -38,7 +38,7 @@ export async function createComment(formData: FormData) {
       .eq("id", parent_id)
       .single();
 
-    depth = parent ? Math.min(parent.depth + 1, 2) : 0;
+    depth = parent ? Math.min(parent.depth + 1, 1) : 0;
   }
 
   const { error } = await supabase.from("comments").insert({

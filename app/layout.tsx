@@ -5,6 +5,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "@/components/ui/sonner";
 import { NavBar } from "@/components/layout/NavBar";
 import { MobileNav } from "@/components/layout/MobileNav";
+import { Footer } from "@/components/layout/Footer";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -41,6 +42,7 @@ export default function RootLayout({
         <main className="mx-auto min-h-screen max-w-5xl pb-20 md:pb-0">
           {children}
         </main>
+        <Footer />
         <MobileNav />
         <Toaster />
         <Analytics />

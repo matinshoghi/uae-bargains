@@ -228,6 +228,31 @@ export interface Database {
         ];
       };
     };
+      contact_submissions: {
+        Row: {
+          id: string;
+          name: string;
+          email: string;
+          category: string;
+          message: string;
+          status: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          email: string;
+          category: string;
+          message: string;
+          status?: string;
+          created_at?: string;
+        };
+        Update: {
+          status?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: Record<string, never>;
     Functions: Record<string, never>;
     Enums: Record<string, never>;

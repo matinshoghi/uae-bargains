@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   fetchComments,
   buildCommentTree,
@@ -9,11 +8,13 @@ import { CommentList } from "./CommentList";
 
 export async function CommentSection({
   dealId,
-  isLoggedIn,
+  currentUserId,
 }: {
   dealId: string;
-  isLoggedIn: boolean;
+  currentUserId: string | null;
 }) {
+  const isLoggedIn = !!currentUserId;
+
   const [comments, userCommentVotes] = await Promise.all([
     fetchComments(dealId),
     getUserCommentVotes(dealId),
@@ -22,31 +23,20 @@ export async function CommentSection({
   const tree = buildCommentTree(comments);
 
   return (
-    <section>
+    <section className="pb-24">
       <h2 className="text-lg font-semibold mb-4">
         {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
       </h2>
-
-      {isLoggedIn ? (
-        <CommentForm dealId={dealId} />
-      ) : (
-        <p className="text-sm text-zinc-500 mb-4">
-          <Link
-            href="/login"
-            className="text-emerald-600 hover:underline"
-          >
-            Sign in
-          </Link>{" "}
-          to comment
-        </p>
-      )}
 
       <CommentList
         comments={tree}
         userCommentVotes={userCommentVotes}
         isLoggedIn={isLoggedIn}
         dealId={dealId}
+        currentUserId={currentUserId}
       />
+
+      <CommentForm dealId={dealId} isLoggedIn={isLoggedIn} sticky />
     </section>
   );
 }
