@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createDealSchema } from "@/lib/validations/deal";
+import { extractOgImage } from "@/lib/og";
 import { redirect } from "next/navigation";
 
 export type DealFormState = {
@@ -99,6 +100,38 @@ export async function createDeal(
       .getPublicUrl(filePath);
 
     image_url = publicUrl.publicUrl;
+  }
+
+  // Auto-extract OG image if no image was uploaded and a URL is provided
+  // Downloads the image and saves to Supabase Storage for consistent serving
+  if (!image_url && url) {
+    const ogImageUrl = await extractOgImage(url);
+    if (ogImageUrl) {
+      try {
+        const imgResponse = await fetch(ogImageUrl, {
+          signal: AbortSignal.timeout(5000),
+        });
+        if (imgResponse.ok) {
+          const contentType = imgResponse.headers.get("content-type") ?? "image/jpeg";
+          const ext = contentType.includes("png") ? "png" : contentType.includes("webp") ? "webp" : "jpg";
+          const buffer = await imgResponse.arrayBuffer();
+          const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("deal-images")
+            .upload(filePath, buffer, { contentType });
+
+          if (!uploadError) {
+            const { data: publicUrl } = supabase.storage
+              .from("deal-images")
+              .getPublicUrl(filePath);
+            image_url = publicUrl.publicUrl;
+          }
+        }
+      } catch {
+        // Download/upload failed — deal proceeds without image
+      }
+    }
   }
 
   // Store expiry as end-of-day in local time (not UTC)
