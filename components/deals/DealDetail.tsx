@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VoteButton } from "@/components/shared/VoteButton";
+import { ShareButtons } from "@/components/shared/ShareButtons";
 import { formatPrice } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
 
@@ -120,17 +121,20 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false }: DealDe
         )}
       </div>
 
-      {/* Vote + Posted by */}
+      {/* Vote + Share + Posted by */}
       <div className="border-t pt-4">
         <div className="flex items-center justify-between">
-          <VoteButton
-            entityType="deal"
-            entityId={deal.id}
-            upvoteCount={deal.upvote_count}
-            downvoteCount={deal.downvote_count}
-            userVote={userVote}
-            isLoggedIn={isLoggedIn}
-          />
+          <div className="flex items-center gap-4">
+            <VoteButton
+              entityType="deal"
+              entityId={deal.id}
+              upvoteCount={deal.upvote_count}
+              downvoteCount={deal.downvote_count}
+              userVote={userVote}
+              isLoggedIn={isLoggedIn}
+            />
+            <ShareButtons url={`/deals/${deal.id}`} title={deal.title} />
+          </div>
 
           {/* Posted by */}
           {deal.profiles && (

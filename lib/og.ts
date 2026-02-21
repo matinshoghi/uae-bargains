@@ -5,13 +5,9 @@
  */
 export async function extractOgImage(url: string): Promise<string | null> {
   try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-
     const response = await fetch(url, {
-      signal: controller.signal,
+      signal: AbortSignal.timeout(8000),
       headers: {
-        // Use a browser-like UA — many sites block bot UAs
         "User-Agent":
           "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         Accept:
@@ -22,24 +18,9 @@ export async function extractOgImage(url: string): Promise<string | null> {
       redirect: "follow",
     });
 
-    clearTimeout(timeoutId);
-
     if (!response.ok) return null;
 
-    // Read enough HTML to find meta tags and product images
-    // Amazon pages need more than just <head> since landingImage is in <body>
-    const reader = response.body?.getReader();
-    if (!reader) return null;
-
-    let html = "";
-    const decoder = new TextDecoder();
-    while (html.length < 65536) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      html += decoder.decode(value, { stream: true });
-    }
-    reader.cancel();
-
+    const html = await response.text();
     return parseImage(html);
   } catch {
     return null;

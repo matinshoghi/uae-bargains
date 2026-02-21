@@ -149,12 +149,12 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
       {/* Thumbnail */}
       <div className="shrink-0 self-center">
         {deal.image_url ? (
-          <div className="relative h-20 w-20 overflow-hidden rounded-xl border md:h-[100px] md:w-[100px]">
+          <div className="relative h-20 w-20 overflow-hidden rounded-xl border bg-muted/40 md:h-[100px] md:w-[100px]">
             <Image
               src={deal.image_url}
               alt={deal.title}
               fill
-              className="object-cover"
+              className="object-contain p-1.5"
               sizes="(max-width: 768px) 80px, 100px"
               unoptimized
             />
