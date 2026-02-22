@@ -287,6 +287,32 @@ export interface Database {
         };
         Relationships: [];
       };
+      seed_accounts: {
+        Row: {
+          id: string;
+          user_id: string;
+          notes: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          notes?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          notes?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "seed_accounts_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
