@@ -103,6 +103,7 @@ export interface Database {
           status?: "active" | "expired" | "removed";
         };
         Update: {
+          user_id?: string | null;
           category_id?: string;
           title?: string;
           description?: string;
@@ -154,6 +155,7 @@ export interface Database {
           depth?: number;
         };
         Update: {
+          user_id?: string | null;
           content?: string;
           updated_at?: string;
         };
