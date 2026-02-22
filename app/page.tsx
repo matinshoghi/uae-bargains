@@ -21,35 +21,37 @@ export default async function HomePage({
   ]);
 
   return (
-    <>
-      {banners.length > 0 && <HeroBannerCarousel banners={banners} />}
-
-      <div className="mx-auto max-w-5xl px-4 py-6">
-        {/* Mobile sidebar — shown above feed on small screens */}
-        <div className="mb-6 lg:hidden">
-          <Sidebar />
+    <div className="mx-auto max-w-5xl px-4 py-6">
+      {banners.length > 0 && (
+        <div className="mb-6">
+          <HeroBannerCarousel banners={banners} />
         </div>
+      )}
 
-        <div className="flex gap-8">
-          {/* Deal feed */}
-          <div className="min-w-0 flex-1">
-            <Suspense>
-              <FeedHeader />
-            </Suspense>
-            <DealFeed
-              initialDeals={deals}
-              sort={sort}
-              userVotes={userVotes}
-              isLoggedIn={isLoggedIn}
-            />
-          </div>
-
-          {/* Sidebar — desktop only */}
-          <aside className="hidden w-[300px] shrink-0 lg:block">
-            <Sidebar />
-          </aside>
-        </div>
+      {/* Mobile sidebar — shown above feed on small screens */}
+      <div className="mb-6 lg:hidden">
+        <Sidebar />
       </div>
-    </>
+
+      <div className="flex gap-8">
+        {/* Deal feed */}
+        <div className="min-w-0 flex-1">
+          <Suspense>
+            <FeedHeader />
+          </Suspense>
+          <DealFeed
+            initialDeals={deals}
+            sort={sort}
+            userVotes={userVotes}
+            isLoggedIn={isLoggedIn}
+          />
+        </div>
+
+        {/* Sidebar — desktop only */}
+        <aside className="hidden w-[300px] shrink-0 lg:block">
+          <Sidebar />
+        </aside>
+      </div>
+    </div>
   );
 }
