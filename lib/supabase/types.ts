@@ -16,6 +16,7 @@ export interface Database {
           display_name: string | null;
           avatar_url: string | null;
           reputation: number;
+          is_admin: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -25,6 +26,7 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           reputation?: number;
+          is_admin?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -34,6 +36,7 @@ export interface Database {
           display_name?: string | null;
           avatar_url?: string | null;
           reputation?: number;
+          is_admin?: boolean;
           updated_at?: string;
         };
         Relationships: [];
@@ -250,6 +253,37 @@ export interface Database {
         };
         Update: {
           status?: string;
+        };
+        Relationships: [];
+      };
+      hero_banners: {
+        Row: {
+          id: string;
+          desktop_image_url: string;
+          mobile_image_url: string | null;
+          link_url: string | null;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          desktop_image_url: string;
+          mobile_image_url?: string | null;
+          link_url?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          desktop_image_url?: string;
+          mobile_image_url?: string | null;
+          link_url?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          updated_at?: string;
         };
         Relationships: [];
       };
