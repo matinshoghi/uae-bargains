@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/contact/ContactForm";
-import { Separator } from "@/components/ui/separator";
 
 export const metadata: Metadata = {
   title: "Contact Us",
@@ -11,7 +10,7 @@ export default function ContactPage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-[#1d1d1f]">
+        <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground">
           Contact Us
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -19,12 +18,11 @@ export default function ContactPage() {
         </p>
       </div>
 
-      <Separator className="mb-8" />
+      <hr className="mb-8 border-foreground/10" />
 
-      {/* Merchant disclaimer */}
-      <div className="mb-8 rounded-lg border border-border bg-muted/40 px-4 py-3">
+      <div className="mb-8 rounded-sm border-[1.5px] border-foreground/10 bg-muted/40 px-4 py-3">
         <p className="text-sm text-muted-foreground">
-          <strong className="text-[#1d1d1f]">Please note:</strong> UAE Bargains
+          <strong className="text-foreground">Please note:</strong> UAE Bargains
           is not affiliated with any merchants listed on this website. For issues
           with a specific purchase or merchant, please contact that merchant
           directly.

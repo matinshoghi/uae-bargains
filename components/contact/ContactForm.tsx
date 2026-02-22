@@ -45,7 +45,7 @@ export function ContactForm() {
     <form action={formAction} className="space-y-6">
       {/* Name */}
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name" className="section-label">Name</Label>
         <Input
           id="name"
           name="name"
@@ -61,7 +61,7 @@ export function ContactForm() {
 
       {/* Email */}
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="section-label">Email</Label>
         <Input
           id="email"
           name="email"
@@ -78,7 +78,7 @@ export function ContactForm() {
 
       {/* Category */}
       <div className="space-y-2">
-        <Label>Category</Label>
+        <Label className="section-label">Category</Label>
         <input type="hidden" name="category" value={category} />
         <Select value={category} onValueChange={setCategory}>
           <SelectTrigger>
@@ -99,7 +99,7 @@ export function ContactForm() {
 
       {/* Message */}
       <div className="space-y-2">
-        <Label htmlFor="message">Message</Label>
+        <Label htmlFor="message" className="section-label">Message</Label>
         <Textarea
           id="message"
           name="message"

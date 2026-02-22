@@ -25,7 +25,7 @@ export function CommentMenu({
       <DropdownMenuTrigger asChild>
         <button
           aria-label="Comment options"
-          className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-600"
+          className="rounded-sm p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           <MoreHorizontal className="h-4 w-4" />
         </button>

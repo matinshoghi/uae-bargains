@@ -51,7 +51,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
     <form action={formAction} className="space-y-6">
       {/* Avatar */}
       <div className="space-y-2">
-        <Label>Avatar</Label>
+        <Label className="section-label">Avatar</Label>
         <div className="flex items-center gap-4">
           <UserAvatar
             src={avatarPreview ?? profile.avatar_url}
@@ -85,7 +85,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
       {/* Display Name */}
       <div className="space-y-2">
-        <Label htmlFor="display_name">Display Name</Label>
+        <Label htmlFor="display_name" className="section-label">Display Name</Label>
         <Input
           id="display_name"
           name="display_name"
@@ -99,7 +99,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
       {/* Username */}
       <div className="space-y-2">
-        <Label htmlFor="username">Username</Label>
+        <Label htmlFor="username" className="section-label">Username</Label>
         <Input
           id="username"
           name="username"
@@ -114,7 +114,6 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         )}
       </div>
 
-      {/* Form-level error */}
       {state?.errors?.form && (
         <p className="text-sm text-red-500">{state.errors.form[0]}</p>
       )}

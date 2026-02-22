@@ -19,7 +19,7 @@ export function ReplyButton({
     return (
       <Link
         href="/login"
-        className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-700"
+        className="font-display text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
         Reply
       </Link>
@@ -30,7 +30,7 @@ export function ReplyButton({
     <>
       <button
         onClick={() => setShowForm(!showForm)}
-        className="text-sm font-medium text-zinc-500 transition-colors hover:text-zinc-700"
+        className="font-display text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
         Reply
       </button>

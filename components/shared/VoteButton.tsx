@@ -88,10 +88,10 @@ export function VoteButton({
         disabled={isPending}
         aria-label="Upvote"
         className={cn(
-          "rounded-md p-1.5 transition-colors",
+          "rounded-sm p-1.5 transition-colors",
           optimistic.userVote === 1
-            ? "bg-emerald-50 text-emerald-600"
-            : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
+            ? "bg-primary/20 text-primary-foreground"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
         )}
       >
         <ChevronUp className="h-5 w-5" />
@@ -99,10 +99,10 @@ export function VoteButton({
 
       <span
         className={cn(
-          "min-w-[2ch] text-center text-sm font-semibold tabular-nums",
-          netScore > 0 && "text-emerald-600",
-          netScore < 0 && "text-red-500",
-          netScore === 0 && "text-zinc-400"
+          "font-display min-w-[2ch] text-center text-sm font-bold tabular-nums",
+          netScore > 0 && "text-foreground",
+          netScore < 0 && "text-destructive",
+          netScore === 0 && "text-muted-foreground"
         )}
       >
         {netScore}
@@ -113,10 +113,10 @@ export function VoteButton({
         disabled={isPending}
         aria-label="Downvote"
         className={cn(
-          "rounded-md p-1.5 transition-colors",
+          "rounded-sm p-1.5 transition-colors",
           optimistic.userVote === -1
-            ? "bg-red-50 text-red-500"
-            : "text-zinc-400 hover:bg-zinc-50 hover:text-zinc-600"
+            ? "bg-destructive/10 text-destructive"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
         )}
       >
         <ChevronDown className="h-5 w-5" />

@@ -17,9 +17,9 @@ export function UserAvatar({
   const initial = name.charAt(0).toUpperCase();
 
   return (
-    <Avatar className={cn(sizeClasses[size], className)}>
+    <Avatar className={cn(sizeClasses[size], "rounded-sm", className)}>
       {src && <AvatarImage src={src} alt={name} />}
-      <AvatarFallback className="bg-emerald-100 text-emerald-700 text-sm font-medium">
+      <AvatarFallback className="rounded-sm bg-primary/15 text-sm font-medium text-foreground">
         {initial}
       </AvatarFallback>
     </Avatar>

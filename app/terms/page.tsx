@@ -11,7 +11,7 @@ export default function TermsPage() {
   return (
     <ProseLayout title="Terms of Use" subtitle="Last updated: February 2026">
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           1. Acceptance of Terms
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -20,7 +20,7 @@ export default function TermsPage() {
           Commenting Guidelines, and{" "}
           <Link
             href="/privacy"
-            className="underline underline-offset-4 hover:text-[#1d1d1f]"
+            className="underline underline-offset-4 hover:text-foreground"
           >
             Privacy Policy
           </Link>
@@ -30,7 +30,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           2. Account Registration
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -42,7 +42,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           3. Proper Use
         </h2>
         <p className="mt-2 text-muted-foreground">You agree not to:</p>
@@ -62,7 +62,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           4. Content Ownership
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -74,12 +74,12 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">5. Privacy</h2>
+        <h2 className="font-display text-lg font-bold text-foreground">5. Privacy</h2>
         <p className="mt-2 text-muted-foreground">
           Your use of the Service is also governed by our{" "}
           <Link
             href="/privacy"
-            className="underline underline-offset-4 hover:text-[#1d1d1f]"
+            className="underline underline-offset-4 hover:text-foreground"
           >
             Privacy Policy
           </Link>
@@ -89,7 +89,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           6. Account Termination
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -101,7 +101,7 @@ export default function TermsPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           7. Limitation of Liability &amp; Governing Law
         </h2>
         <p className="mt-2 text-muted-foreground">

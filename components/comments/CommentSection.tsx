@@ -24,7 +24,7 @@ export async function CommentSection({
 
   return (
     <section className="pb-24">
-      <h2 className="text-lg font-semibold mb-4">
+      <h2 className="font-display mb-4 text-lg font-bold uppercase tracking-tight">
         {comments.length} {comments.length === 1 ? "Comment" : "Comments"}
       </h2>
 

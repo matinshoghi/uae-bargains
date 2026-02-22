@@ -13,7 +13,6 @@ export default function AboutPage() {
       title="About UAE Bargains"
       subtitle="The community-driven deals platform for the UAE"
     >
-      {/* Intro */}
       <section>
         <p>
           UAE Bargains is not just a website — it <strong>is</strong> you, the
@@ -28,9 +27,8 @@ export default function AboutPage() {
         </p>
       </section>
 
-      {/* How it works */}
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">How It Works</h2>
+        <h2 className="font-display text-lg font-bold text-foreground">How It Works</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {[
             {
@@ -54,20 +52,19 @@ export default function AboutPage() {
               body: "Leave comments to add context, share experiences, or ask questions about a deal.",
             },
           ].map(({ step, title, body }) => (
-            <div key={step} className="rounded-lg border border-border p-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <div key={step} className="rounded-sm border-[1.5px] border-foreground/10 p-4">
+              <div className="section-label mb-2 text-muted-foreground">
                 Step {step}
               </div>
-              <h3 className="font-semibold text-[#1d1d1f]">{title}</h3>
+              <h3 className="font-display font-bold text-foreground">{title}</h3>
               <p className="mt-1 text-muted-foreground">{body}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Community guidelines */}
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           Community Guidelines
         </h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-muted-foreground">
@@ -79,9 +76,8 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      {/* Merchants */}
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           For Merchants
         </h2>
         <p className="mt-2 text-muted-foreground">

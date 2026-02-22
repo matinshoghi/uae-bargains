@@ -87,12 +87,12 @@ export function CommentItem({
   return (
     <div
       className={cn(
-        comment.depth === 0 && "rounded-xl bg-zinc-50/60 p-4",
-        comment.depth > 0 && "ml-10 border-l-2 border-zinc-200 pl-4 pt-3 mt-3"
+        comment.depth === 0 && "rounded-sm border-[1.5px] border-foreground/8 bg-card p-4",
+        comment.depth > 0 && "ml-10 mt-3 border-l-2 border-foreground/10 pl-4 pt-3"
       )}
     >
-      {/* Header: avatar + @username + timestamp */}
-      <div className="flex items-center gap-2 mb-2">
+      {/* Header */}
+      <div className="mb-2 flex items-center gap-2">
         <Avatar className={comment.depth === 0 ? "h-8 w-8" : "h-6 w-6"}>
           {!isDeleted && (
             <AvatarImage src={comment.profiles!.avatar_url ?? undefined} />
@@ -108,16 +108,16 @@ export function CommentItem({
         ) : (
           <Link
             href={`/user/${comment.profiles!.username}`}
-            className="text-sm font-medium hover:underline"
+            className="font-display text-sm font-semibold hover:underline"
           >
             @{comment.profiles!.username}
           </Link>
         )}
-        <span className="text-xs text-zinc-400">
+        <span className="text-xs text-muted-foreground">
           {shortTimeAgo(comment.created_at)}
         </span>
         {isEdited && (
-          <span className="text-xs text-zinc-400">(edited)</span>
+          <span className="text-xs text-muted-foreground">(edited)</span>
         )}
       </div>
 
@@ -131,15 +131,15 @@ export function CommentItem({
             rows={3}
             autoFocus
             maxLength={2000}
-            className="w-full resize-none rounded-lg border border-zinc-200 px-3 py-2 text-sm
-                       focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="w-full resize-none rounded-sm border-[1.5px] border-foreground/20 px-3 py-2 text-sm
+                       focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
           />
           <div className="mt-2 flex gap-2">
             <button
               onClick={handleSave}
               disabled={isSaving || !editContent.trim()}
-              className="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white
-                         transition-colors hover:bg-emerald-700 disabled:opacity-50"
+              className="font-display rounded-sm bg-primary px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-primary-foreground
+                         transition-colors hover:brightness-95 disabled:opacity-50"
             >
               {isSaving ? "Saving..." : "Save"}
             </button>
@@ -148,19 +148,19 @@ export function CommentItem({
                 setIsEditing(false);
                 setEditContent(comment.content);
               }}
-              className="px-4 py-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+              className="px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               Cancel
             </button>
           </div>
         </div>
       ) : (
-        <p className="mb-3 text-sm text-zinc-700 whitespace-pre-wrap">
+        <p className="mb-3 whitespace-pre-wrap text-sm text-foreground/80">
           {comment.content}
         </p>
       )}
 
-      {/* Actions: votes | reply | menu */}
+      {/* Actions */}
       <div className="flex items-center gap-2">
         <VoteButton
           entityType="comment"
@@ -190,7 +190,6 @@ export function CommentItem({
         </div>
       </div>
 
-      {/* Nested children (only depth-0 comments have replies) */}
       {comment.children.length > 0 && (
         <div className="mt-3">
           <CommentList
@@ -203,7 +202,6 @@ export function CommentItem({
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>

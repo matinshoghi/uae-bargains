@@ -67,7 +67,7 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
 
   return (
     <div
-      className="relative select-none overflow-hidden rounded-xl"
+      className="grain-overlay relative select-none overflow-hidden rounded-sm border-[1.5px] border-foreground/10"
       onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
       onTouchMove={(e) => onDragMove(e.touches[0].clientX)}
       onTouchEnd={onDragEnd}
@@ -97,10 +97,10 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
               key={i}
               onClick={() => goTo(i)}
               aria-label={`Go to banner ${i + 1}`}
-              className={`h-2 rounded-full transition-all duration-300 ${
+              className={`h-2 rounded-sm transition-all duration-300 ${
                 i === active
-                  ? "w-6 bg-white"
-                  : "w-2 bg-white/50 hover:bg-white/75"
+                  ? "w-6 bg-primary"
+                  : "w-2 bg-foreground/30 hover:bg-foreground/50"
               }`}
             />
           ))}
@@ -125,7 +125,7 @@ function BannerSlide({ banner }: { banner: HeroBanner }) {
           width={1024}
           height={288}
           priority
-          className="h-auto w-full rounded-xl object-cover"
+          className="h-auto w-full rounded-sm object-cover"
           sizes="(min-width: 1024px) 1024px, 100vw"
           draggable={false}
         />
@@ -137,7 +137,7 @@ function BannerSlide({ banner }: { banner: HeroBanner }) {
           width={640}
           height={280}
           priority
-          className="h-auto w-full rounded-xl object-cover"
+          className="h-auto w-full rounded-sm object-cover"
           sizes="100vw"
           draggable={false}
         />

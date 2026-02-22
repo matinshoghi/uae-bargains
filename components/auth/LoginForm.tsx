@@ -52,7 +52,7 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="section-label">Email</Label>
         <Input
           id="email"
           type="email"
@@ -63,7 +63,7 @@ export function LoginForm() {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password" className="section-label">Password</Label>
         <Input
           id="password"
           type="password"
@@ -94,7 +94,7 @@ export function LoginForm() {
         {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
         <button
           type="button"
-          className="text-primary underline-offset-4 hover:underline"
+          className="font-display font-semibold text-foreground underline-offset-4 hover:underline"
           onClick={() => {
             setIsSignUp(!isSignUp);
             setError(null);

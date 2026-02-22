@@ -11,7 +11,7 @@ export default function PrivacyPage() {
   return (
     <ProseLayout title="Privacy Policy" subtitle="Last updated: February 2026">
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           1. Information We Collect
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -28,7 +28,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           2. Data Visibility
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -39,7 +39,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">3. Cookies</h2>
+        <h2 className="font-display text-lg font-bold text-foreground">3. Cookies</h2>
         <p className="mt-2 text-muted-foreground">
           We use session cookies to keep you signed in and maintain your
           preferences. We use Vercel Analytics to understand aggregate site
@@ -48,7 +48,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           4. Data Processors
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -57,11 +57,11 @@ export default function PrivacyPage() {
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
           <li>
-            <strong className="text-[#1d1d1f]">Supabase</strong> — database
+            <strong className="text-foreground">Supabase</strong> — database
             hosting and authentication
           </li>
           <li>
-            <strong className="text-[#1d1d1f]">Vercel</strong> — application
+            <strong className="text-foreground">Vercel</strong> — application
             hosting and analytics
           </li>
         </ul>
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           5. Your Rights
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
           data by contacting us via the{" "}
           <Link
             href="/contact"
-            className="underline underline-offset-4 hover:text-[#1d1d1f]"
+            className="underline underline-offset-4 hover:text-foreground"
           >
             Contact Us
           </Link>{" "}
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           6. Account Deactivation &amp; Deletion
         </h2>
         <p className="mt-2 text-muted-foreground">
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
       </section>
 
       <section>
-        <h2 className="text-lg font-semibold text-[#1d1d1f]">
+        <h2 className="font-display text-lg font-bold text-foreground">
           7. Changes to This Policy
         </h2>
         <p className="mt-2 text-muted-foreground">

@@ -45,12 +45,12 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
   return (
     <article
-      className={`relative flex items-start gap-4 px-1 py-6 ${expired ? "opacity-60" : ""}`}
+      className={`relative flex items-start gap-4 border-b border-foreground/10 px-1 py-5 last:border-b-0 ${expired ? "opacity-60" : ""}`}
     >
       {/* Content */}
-      <div className="min-w-0 flex-1 space-y-1.5">
+      <div className="min-w-0 flex-1 space-y-2">
         {/* Title */}
-        <h3 className="text-[15px] font-semibold leading-snug">
+        <h3 className="font-display text-[15px] font-bold leading-snug tracking-tight">
           <Link
             href={`/deals/${deal.id}`}
             className="after:absolute after:inset-0"
@@ -70,10 +70,12 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
         {(deal.price != null || deal.original_price != null) && (
           <div className="flex items-baseline gap-2">
             {deal.price != null && deal.price === 0 ? (
-              <Badge className="bg-emerald-600 text-xs">Free</Badge>
+              <Badge>Free</Badge>
             ) : deal.price != null ? (
-              <span className="text-sm font-bold text-emerald-600">
-                {formatPriceShort(deal.price)}
+              <span className="font-display text-sm font-bold text-primary-foreground">
+                <span className="inline-flex items-center rounded-sm bg-primary px-1.5 py-0.5">
+                  {formatPriceShort(deal.price)}
+                </span>
               </span>
             ) : null}
 
@@ -85,7 +87,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
             {deal.discount_percentage != null &&
               deal.discount_percentage > 0 && (
-                <Badge variant="secondary" className="px-1.5 py-0 text-[10px]">
+                <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
                   -{deal.discount_percentage}%
                 </Badge>
               )}
@@ -93,7 +95,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
         )}
 
         {/* Meta row */}
-        <div className="flex items-center gap-2.5 pt-1 text-xs text-muted-foreground">
+        <div className="flex items-center gap-2.5 pt-0.5 text-xs text-muted-foreground">
           <div className="relative z-10">
             <VoteButton
               entityType="deal"
@@ -110,14 +112,14 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             <span>{deal.comment_count}</span>
           </div>
 
-          <span className="text-border">&middot;</span>
+          <span className="text-foreground/20">&middot;</span>
 
           <time dateTime={deal.created_at}>
             {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
           </time>
 
           <>
-            <span className="text-border">&middot;</span>
+            <span className="text-foreground/20">&middot;</span>
             {deal.profiles ? (
               <Link
                 href={`/user/${deal.profiles.username}`}
@@ -132,8 +134,8 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
           {deal.categories && CategoryIcon && (
             <Badge
-              variant="secondary"
-              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px]"
+              variant="outline"
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
             >
               <CategoryIcon className="h-3 w-3" />
               {deal.categories.label}
@@ -151,7 +153,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
       {/* Thumbnail */}
       <div className="shrink-0 self-center">
         {deal.image_url ? (
-          <div className="relative h-20 w-20 overflow-hidden rounded-xl border bg-muted/40 md:h-[100px] md:w-[100px]">
+          <div className="relative h-20 w-20 overflow-hidden rounded-sm border-[1.5px] border-foreground/10 bg-muted/40 md:h-[100px] md:w-[100px]">
             <Image
               src={deal.image_url}
               alt={deal.title}
@@ -162,7 +164,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             />
           </div>
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-xl border bg-muted md:h-[100px] md:w-[100px]">
+          <div className="flex h-20 w-20 items-center justify-center rounded-sm border-[1.5px] border-foreground/10 bg-muted md:h-[100px] md:w-[100px]">
             <ImageIcon className="h-6 w-6 text-muted-foreground" />
           </div>
         )}

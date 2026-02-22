@@ -57,7 +57,6 @@ export function DealForm({ categories, initialData }: DealFormProps) {
     null
   );
 
-  // Persist form values from server action response
   const v = state?.values ?? {};
 
   const [categoryId, setCategoryId] = useState(initialData?.category_id ?? "");
@@ -71,7 +70,6 @@ export function DealForm({ categories, initialData }: DealFormProps) {
   const [removeImage, setRemoveImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync category from returned values
   useEffect(() => {
     if (v.category_id) setCategoryId(v.category_id);
   }, [v.category_id]);
@@ -111,30 +109,28 @@ export function DealForm({ categories, initialData }: DealFormProps) {
     }
   }
 
-  // Parse expiry date for the date input (strip time portion)
   const defaultExpiry = initialData?.expires_at
     ? initialData.expires_at.split("T")[0]
     : "";
 
   return (
     <form action={formAction} className="space-y-6">
-      {/* Hidden field to signal image removal */}
       <input type="hidden" name="remove_image" value={removeImage ? "true" : "false"} />
 
-      {/* Title — locked in edit mode */}
+      {/* Title */}
       {isEditing ? (
         <div className="space-y-2">
-          <Label>Title</Label>
-          <p className="bg-muted text-muted-foreground rounded-md border px-3 py-2 text-sm">
+          <Label className="section-label">Title</Label>
+          <p className="rounded-sm border-[1.5px] border-foreground/10 bg-muted px-3 py-2 text-sm text-muted-foreground">
             {initialData.title}
           </p>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-xs text-muted-foreground">
             Title cannot be changed after posting.
           </p>
         </div>
       ) : (
         <div className="space-y-2">
-          <Label htmlFor="title">Title *</Label>
+          <Label htmlFor="title" className="section-label">Title *</Label>
           <Input
             id="title"
             name="title"
@@ -150,7 +146,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description">Description *</Label>
+        <Label htmlFor="description" className="section-label">Description *</Label>
         <Textarea
           id="description"
           name="description"
@@ -172,18 +168,18 @@ export function DealForm({ categories, initialData }: DealFormProps) {
           name="is_free"
           checked={isFree}
           onChange={(e) => setIsFree(e.target.checked)}
-          className="h-4 w-4 rounded border"
+          className="h-4 w-4 rounded-sm border-[1.5px] border-foreground/20 accent-primary"
         />
         <Label htmlFor="is_free" className="cursor-pointer font-normal">
           This deal is free
         </Label>
       </div>
 
-      {/* Price row — hidden when free */}
+      {/* Price row */}
       {!isFree && (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="price">Deal Price (AED)</Label>
+            <Label htmlFor="price" className="section-label">Deal Price (AED)</Label>
             <Input
               id="price"
               name="price"
@@ -202,7 +198,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="original_price">Original Price (AED)</Label>
+            <Label htmlFor="original_price" className="section-label">Original Price (AED)</Label>
             <Input
               id="original_price"
               name="original_price"
@@ -227,7 +223,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
 
       {/* Category */}
       <div className="space-y-2">
-        <Label>Category *</Label>
+        <Label className="section-label">Category *</Label>
         <input type="hidden" name="category_id" value={categoryId} />
         <Select value={categoryId} onValueChange={setCategoryId} required>
           <SelectTrigger>
@@ -248,7 +244,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
 
       {/* URL */}
       <div className="space-y-2">
-        <Label htmlFor="url">Deal URL</Label>
+        <Label htmlFor="url" className="section-label">Deal URL</Label>
         <Input
           id="url"
           name="url"
@@ -263,7 +259,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
 
       {/* Location */}
       <div className="space-y-2">
-        <Label htmlFor="location">Location</Label>
+        <Label htmlFor="location" className="section-label">Location</Label>
         <Input
           id="location"
           name="location"
@@ -277,7 +273,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
 
       {/* Expiry */}
       <div className="space-y-2">
-        <Label htmlFor="expires_at">Expiry Date</Label>
+        <Label htmlFor="expires_at" className="section-label">Expiry Date</Label>
         <Input
           id="expires_at"
           name="expires_at"
@@ -290,9 +286,9 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         )}
       </div>
 
-      {/* Image — file input always in DOM so FormData includes the file */}
+      {/* Image */}
       <div className="space-y-2">
-        <Label>Image</Label>
+        <Label className="section-label">Image</Label>
         <input
           ref={fileInputRef}
           type="file"
@@ -307,12 +303,12 @@ export function DealForm({ categories, initialData }: DealFormProps) {
             <img
               src={imagePreview}
               alt="Preview"
-              className="max-h-[200px] max-w-[300px] rounded-lg border object-cover"
+              className="max-h-[200px] max-w-[300px] rounded-sm border-[1.5px] border-foreground/10 object-cover"
             />
             <button
               type="button"
               onClick={clearImage}
-              className="bg-background absolute -top-2 -right-2 rounded-full border p-1 shadow-sm"
+              className="absolute -top-2 -right-2 rounded-sm border-[1.5px] border-foreground/15 bg-background p-1"
             >
               <X className="h-4 w-4" />
             </button>
@@ -324,13 +320,13 @@ export function DealForm({ categories, initialData }: DealFormProps) {
               alt="Current image"
               width={300}
               height={200}
-              className="max-h-[200px] rounded-lg border object-cover"
+              className="max-h-[200px] rounded-sm border-[1.5px] border-foreground/10 object-cover"
               unoptimized
             />
             <button
               type="button"
               onClick={clearImage}
-              className="bg-background absolute -top-2 -right-2 rounded-full border p-1 shadow-sm"
+              className="absolute -top-2 -right-2 rounded-sm border-[1.5px] border-foreground/15 bg-background p-1"
             >
               <X className="h-4 w-4" />
             </button>
@@ -338,10 +334,10 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         ) : (
           <label
             onClick={() => fileInputRef.current?.click()}
-            className="border-input hover:bg-accent flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed px-6 py-8 transition-colors"
+            className="flex cursor-pointer flex-col items-center gap-2 rounded-sm border-[1.5px] border-dashed border-foreground/20 px-6 py-8 transition-colors hover:border-foreground/40 hover:bg-muted/50"
           >
-            <ImagePlus className="text-muted-foreground h-8 w-8" />
-            <span className="text-muted-foreground text-sm">
+            <ImagePlus className="h-8 w-8 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
               Click to upload (JPEG, PNG, WebP — max 5MB)
             </span>
           </label>

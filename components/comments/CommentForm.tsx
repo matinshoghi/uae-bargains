@@ -45,10 +45,9 @@ export function CommentForm({
     }
   }
 
-  // Sticky bottom bar mode for top-level comments
   if (sticky && !parentId) {
     return (
-      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 border-t border-zinc-200 bg-white md:bottom-0">
+      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 border-t-[1.5px] border-foreground/10 bg-background md:bottom-0">
         <form
           ref={formRef}
           action={action}
@@ -62,14 +61,14 @@ export function CommentForm({
             required
             onFocus={handleAuthGate}
             readOnly={!isLoggedIn}
-            className="flex-1 rounded-full border border-zinc-200 px-4 py-2 text-sm
-                       focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="flex-1 rounded-sm border-[1.5px] border-foreground/15 px-4 py-2 text-sm
+                       focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
           />
           <button
             type="submit"
             disabled={isPending || !isLoggedIn}
-            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white
-                       transition-colors hover:bg-emerald-700 disabled:opacity-50"
+            className="font-display rounded-sm bg-primary px-4 py-2 text-sm font-semibold uppercase tracking-wide text-primary-foreground
+                       transition-colors hover:brightness-95 disabled:opacity-50"
           >
             {isPending ? "..." : "Post"}
           </button>
@@ -84,7 +83,6 @@ export function CommentForm({
     );
   }
 
-  // Inline mode for replies
   return (
     <form ref={formRef} action={action} className="mb-4">
       <input type="hidden" name="deal_id" value={dealId} />
@@ -96,8 +94,8 @@ export function CommentForm({
         rows={parentId ? 2 : 3}
         autoFocus={autoFocus}
         required
-        className="w-full resize-none rounded-lg border border-zinc-200 px-3 py-2 text-sm
-                   focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+        className="w-full resize-none rounded-sm border-[1.5px] border-foreground/20 px-3 py-2 text-sm
+                   focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
       />
 
       {state?.error?.content && (
@@ -110,8 +108,8 @@ export function CommentForm({
         <button
           type="submit"
           disabled={isPending}
-          className="rounded-lg bg-emerald-600 px-4 py-1.5 text-sm font-medium text-white
-                     transition-colors hover:bg-emerald-700 disabled:opacity-50"
+          className="font-display rounded-sm bg-primary px-4 py-1.5 text-sm font-semibold uppercase tracking-wide text-primary-foreground
+                     transition-colors hover:brightness-95 disabled:opacity-50"
         >
           {isPending ? "Posting..." : parentId ? "Reply" : "Comment"}
         </button>
@@ -119,7 +117,7 @@ export function CommentForm({
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-700"
+            className="px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             Cancel
           </button>

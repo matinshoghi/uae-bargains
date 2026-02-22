@@ -21,7 +21,6 @@ function wasEdited(deal: DealWithRelations) {
   if (!deal.updated_at || !deal.created_at) return false;
   const created = new Date(deal.created_at).getTime();
   const updated = new Date(deal.updated_at).getTime();
-  // More than 60s difference to account for DB triggers
   return updated - created > 60_000;
 }
 
@@ -40,11 +39,9 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
   return (
     <article className="space-y-6">
       {/* Category + Time + Author Actions */}
-      <div className="text-muted-foreground flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
         {deal.categories && (
-          <span className="font-medium">
-            {deal.categories.label}
-          </span>
+          <Badge variant="outline">{deal.categories.label}</Badge>
         )}
         <span>&middot;</span>
         <time dateTime={deal.created_at}>
@@ -67,11 +64,11 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-bold md:text-3xl">{deal.title}</h1>
+      <h1 className="font-display text-2xl font-bold tracking-tight md:text-3xl">{deal.title}</h1>
 
       {/* Image */}
       {deal.image_url && (
-        <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+        <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-foreground/10">
           <Image
             src={deal.image_url}
             alt={deal.title}
@@ -87,21 +84,23 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       {(deal.price != null || deal.original_price != null) && (
         <div className="flex items-baseline gap-3">
           {deal.price != null && deal.price === 0 ? (
-            <Badge className="bg-emerald-600 text-lg">Free</Badge>
+            <Badge className="text-lg">Free</Badge>
           ) : deal.price != null ? (
-            <span className="text-2xl font-bold text-emerald-600">
-              {formatPrice(deal.price)}
+            <span className="font-display text-2xl font-bold">
+              <span className="inline-flex items-center rounded-sm bg-primary px-2 py-0.5 text-primary-foreground">
+                {formatPrice(deal.price)}
+              </span>
             </span>
           ) : null}
 
           {deal.original_price != null && (
-            <span className="text-muted-foreground text-lg line-through">
+            <span className="text-lg text-muted-foreground line-through">
               {formatPrice(deal.original_price)}
             </span>
           )}
 
           {deal.discount_percentage != null && deal.discount_percentage > 0 && (
-            <Badge variant="secondary">-{deal.discount_percentage}%</Badge>
+            <Badge variant="outline">-{deal.discount_percentage}%</Badge>
           )}
         </div>
       )}
@@ -128,14 +127,14 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         )}
 
         {deal.location && (
-          <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span>{deal.location}</span>
           </div>
         )}
 
         {deal.expires_at && (
-          <div className="text-muted-foreground flex items-center gap-1.5 text-sm">
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
             <span>
               {expired
@@ -147,7 +146,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Vote + Share + Posted by */}
-      <div className="border-t pt-4">
+      <div className="border-t border-foreground/10 pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <VoteButton
@@ -161,13 +160,12 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             <ShareButtons url={`/deals/${deal.id}`} title={deal.title} />
           </div>
 
-          {/* Posted by */}
           {deal.profiles ? (
             <Link
               href={`/user/${deal.profiles.username}`}
               className="flex items-center gap-2 hover:opacity-80"
             >
-              <span className="text-muted-foreground text-sm">Posted by</span>
+              <span className="text-sm text-muted-foreground">Posted by</span>
               <Avatar className="h-6 w-6">
                 <AvatarImage src={deal.profiles.avatar_url ?? undefined} />
                 <AvatarFallback className="text-xs">
@@ -176,13 +174,13 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
                     .toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-sm font-medium">
+              <span className="font-display text-sm font-semibold">
                 {deal.profiles.display_name ?? deal.profiles.username}
               </span>
             </Link>
           ) : (
             <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-sm">Posted by</span>
+              <span className="text-sm text-muted-foreground">Posted by</span>
               <span className="text-sm font-medium text-muted-foreground">
                 [deleted]
               </span>

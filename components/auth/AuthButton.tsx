@@ -56,7 +56,7 @@ export function AuthButton({ variant = "default" }: { variant?: "default" | "lin
   }, []);
 
   if (loading) {
-    return <div className="h-8 w-8 animate-pulse rounded-full bg-muted" />;
+    return <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />;
   }
 
   if (!user) {
@@ -64,7 +64,7 @@ export function AuthButton({ variant = "default" }: { variant?: "default" | "lin
       return (
         <Link
           href="/login"
-          className="text-sm font-medium text-[#1d1d1f] transition-colors duration-200 hover:text-[#6e6e73]"
+          className="font-display text-sm font-semibold text-foreground transition-colors duration-200 hover:text-muted-foreground"
         >
           Sign In
         </Link>
@@ -97,15 +97,15 @@ export function AuthButton({ variant = "default" }: { variant?: "default" | "lin
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Avatar className="h-8 w-8">
+        <Button variant="ghost" size="icon" className="rounded-sm">
+          <Avatar className="h-8 w-8 rounded-sm">
             <AvatarImage src={avatarUrl} alt={displayName} />
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            <AvatarFallback className="rounded-sm text-xs">{initials}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
-        <div className="px-2 py-1.5 text-sm font-medium">{displayName}</div>
+        <div className="font-display px-2 py-1.5 text-sm font-semibold">{displayName}</div>
         <DropdownMenuSeparator />
         {profile && (
           <DropdownMenuItem asChild>

@@ -14,17 +14,11 @@ const EASING = "cubic-bezier(0.28, 0.11, 0.32, 1)";
 function CompactNav({ visible }: { visible: boolean }) {
   return (
     <nav
-      className="fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[980px] -translate-x-1/2"
+      className="fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[980px] -translate-x-1/2 rounded-sm border-[1.5px] border-foreground/15 bg-background"
       style={{
         top: visible ? "12px" : "-100px",
         opacity: visible ? 1 : 0,
         transition: `top ${TRANSITION_MS}ms ${EASING}, opacity ${TRANSITION_MS}ms ${EASING}`,
-        backgroundColor: "rgba(255, 255, 255, 0.72)",
-        backdropFilter: "saturate(180%) blur(20px)",
-        WebkitBackdropFilter: "saturate(180%) blur(20px)",
-        border: "1px solid rgba(0, 0, 0, 0.1)",
-        borderRadius: "16px",
-        boxShadow: "0 4px 16px rgba(0, 0, 0, 0.08)",
       }}
     >
       <div className="flex h-[56px] items-center justify-between px-4 sm:px-6">
@@ -42,7 +36,7 @@ function CompactNav({ visible }: { visible: boolean }) {
         <div className="flex items-center gap-3 md:gap-6">
           <Link
             href="/deals/new"
-            className="inline-flex items-center justify-center whitespace-nowrap rounded-full border border-[#1d1d1f] px-2.5 py-1.5 text-[11px] font-medium text-[#1d1d1f] transition-all duration-200 hover:bg-[#1d1d1f] hover:text-white md:px-4 md:py-2 md:text-[13px]"
+            className="font-display inline-flex items-center justify-center whitespace-nowrap rounded-sm bg-primary px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground transition-all duration-200 hover:brightness-95 md:px-4 md:py-2 md:text-[12px]"
           >
             <Plus className="mr-1 h-3 w-3 md:h-3.5 md:w-3.5" />
             <span className="hidden sm:inline">Post Deal</span>
@@ -73,7 +67,6 @@ export function NavBar() {
     if (shouldShow !== compactVisibleRef.current) {
       compactVisibleRef.current = shouldShow;
       if (shouldShow) setCompactReady(true);
-      // Use rAF to ensure DOM has painted before triggering transition
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           setCompactVisible(shouldShow);
@@ -89,8 +82,7 @@ export function NavBar() {
 
   return (
     <>
-      {/* Initial nav — scrolls away with page content */}
-      <header className="relative z-40 border-b border-border bg-background">
+      <header className="relative z-40 border-b-[1.5px] border-foreground/10 bg-background">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center">
             <Image
@@ -106,7 +98,7 @@ export function NavBar() {
           <div className="flex items-center gap-3 md:gap-6">
             <Link
               href="/deals/new"
-              className="inline-flex items-center justify-center rounded-lg border border-[#1d1d1f] px-3 py-2 text-xs font-semibold text-[#1d1d1f] transition-all duration-200 hover:bg-[#1d1d1f]/10 md:px-5 md:py-2.5 md:text-sm"
+              className="font-display inline-flex items-center justify-center rounded-sm bg-primary px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground transition-all duration-200 hover:brightness-95 md:px-5 md:py-2.5 md:text-sm"
             >
               <Plus className="mr-1.5 h-4 w-4" />
               Post Deal
@@ -116,7 +108,6 @@ export function NavBar() {
         </div>
       </header>
 
-      {/* Compact nav — stays mounted once shown, visibility controlled by animation */}
       {mounted &&
         compactReady &&
         createPortal(
