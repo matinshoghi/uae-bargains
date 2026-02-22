@@ -12,9 +12,13 @@ import {
 
 export function CommentMenu({
   isAuthor,
+  onEdit,
+  onDelete,
 }: {
   commentId: string;
   isAuthor: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }) {
   return (
     <DropdownMenu>
@@ -34,13 +38,13 @@ export function CommentMenu({
         {isAuthor && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => toast("Coming soon")}>
+            <DropdownMenuItem onClick={onEdit}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => toast("Coming soon")}
+              onClick={onDelete}
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete

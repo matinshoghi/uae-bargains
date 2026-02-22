@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VoteButton } from "@/components/shared/VoteButton";
 import { ShareButtons } from "@/components/shared/ShareButtons";
+import { DealActions } from "@/components/deals/DealActions";
 import { formatPrice } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
 
@@ -16,18 +17,29 @@ function isExpired(deal: DealWithRelations) {
   return false;
 }
 
+function wasEdited(deal: DealWithRelations) {
+  if (!deal.updated_at || !deal.created_at) return false;
+  const created = new Date(deal.created_at).getTime();
+  const updated = new Date(deal.updated_at).getTime();
+  // More than 60s difference to account for DB triggers
+  return updated - created > 60_000;
+}
+
 interface DealDetailProps {
   deal: DealWithRelations;
   userVote?: 1 | -1 | null;
   isLoggedIn?: boolean;
+  currentUserId?: string | null;
 }
 
-export function DealDetail({ deal, userVote = null, isLoggedIn = false }: DealDetailProps) {
+export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentUserId }: DealDetailProps) {
   const expired = isExpired(deal);
+  const isAuthor = !!deal.user_id && currentUserId === deal.user_id;
+  const edited = wasEdited(deal);
 
   return (
     <article className="space-y-6">
-      {/* Category + Time */}
+      {/* Category + Time + Author Actions */}
       <div className="text-muted-foreground flex items-center gap-2 text-sm">
         {deal.categories && (
           <span className="font-medium">
@@ -38,7 +50,20 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false }: DealDe
         <time dateTime={deal.created_at}>
           {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
         </time>
+        {edited && (
+          <span
+            className="cursor-help"
+            title={`Edited ${format(new Date(deal.updated_at), "MMM d, yyyy 'at' h:mm a")}`}
+          >
+            (edited)
+          </span>
+        )}
         {expired && <Badge variant="destructive">Expired</Badge>}
+        {isAuthor && (
+          <div className="ml-auto">
+            <DealActions dealId={deal.id} />
+          </div>
+        )}
       </div>
 
       {/* Title */}
@@ -137,7 +162,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false }: DealDe
           </div>
 
           {/* Posted by */}
-          {deal.profiles && (
+          {deal.profiles ? (
             <Link
               href={`/user/${deal.profiles.username}`}
               className="flex items-center gap-2 hover:opacity-80"
@@ -155,6 +180,13 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false }: DealDe
                 {deal.profiles.display_name ?? deal.profiles.username}
               </span>
             </Link>
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground text-sm">Posted by</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                [deleted]
+              </span>
+            </div>
           )}
         </div>
       </div>

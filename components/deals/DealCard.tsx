@@ -116,17 +116,19 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
           </time>
 
-          {deal.profiles && (
-            <>
-              <span className="text-border">&middot;</span>
+          <>
+            <span className="text-border">&middot;</span>
+            {deal.profiles ? (
               <Link
                 href={`/user/${deal.profiles.username}`}
                 className="relative z-10 hover:text-foreground hover:underline"
               >
                 {deal.profiles.display_name ?? deal.profiles.username}
               </Link>
-            </>
-          )}
+            ) : (
+              <span>[deleted]</span>
+            )}
+          </>
 
           {deal.categories && CategoryIcon && (
             <Badge

@@ -11,7 +11,7 @@ export type DealWithRelations = DealRow & {
 };
 
 export type CommentWithProfile = CommentRow & {
-  profiles: Pick<ProfileRow, "username" | "display_name" | "avatar_url">;
+  profiles: Pick<ProfileRow, "username" | "display_name" | "avatar_url"> | null;
 };
 
 export type CommentWithChildren = CommentWithProfile & {

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SettingsForm } from "@/components/user/SettingsForm";
+import { DeleteAccountSection } from "@/components/user/DeleteAccountSection";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default async function SettingsPage() {
     <div className="mx-auto max-w-lg px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold">Settings</h1>
       <SettingsForm profile={profile} />
+      <DeleteAccountSection />
     </div>
   );
 }

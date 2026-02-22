@@ -55,3 +55,72 @@ export async function createComment(formData: FormData) {
 
   revalidatePath(`/deals/${deal_id}`);
 }
+
+const updateSchema = z.object({
+  content: z.string().trim().min(1, "Comment cannot be empty").max(2000),
+});
+
+export async function updateComment(commentId: string, content: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Must be signed in");
+
+  const parsed = updateSchema.safeParse({ content });
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors.content?.[0] ?? "Invalid content" };
+  }
+
+  // Fetch comment to verify ownership and get deal_id
+  const { data: comment } = await supabase
+    .from("comments")
+    .select("user_id, deal_id")
+    .eq("id", commentId)
+    .single();
+
+  if (!comment || comment.user_id !== user.id) {
+    return { error: "Not authorized" };
+  }
+
+  const { error } = await supabase
+    .from("comments")
+    .update({ content: parsed.data.content, updated_at: new Date().toISOString() })
+    .eq("id", commentId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/deals/${comment.deal_id}`);
+}
+
+export async function deleteComment(commentId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Must be signed in");
+
+  // Fetch comment to verify ownership and get deal_id
+  const { data: comment } = await supabase
+    .from("comments")
+    .select("user_id, deal_id")
+    .eq("id", commentId)
+    .single();
+
+  if (!comment || comment.user_id !== user.id) {
+    return { error: "Not authorized" };
+  }
+
+  const { error } = await supabase
+    .from("comments")
+    .delete()
+    .eq("id", commentId);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath(`/deals/${comment.deal_id}`);
+}

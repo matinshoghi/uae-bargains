@@ -69,7 +69,7 @@ export interface Database {
       deals: {
         Row: {
           id: string;
-          user_id: string;
+          user_id: string | null;
           category_id: string;
           title: string;
           description: string;
@@ -136,7 +136,7 @@ export interface Database {
         Row: {
           id: string;
           deal_id: string;
-          user_id: string;
+          user_id: string | null;
           parent_id: string | null;
           content: string;
           depth: number;

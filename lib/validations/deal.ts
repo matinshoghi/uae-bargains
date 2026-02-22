@@ -18,37 +18,42 @@ const optionalPrice = z
     return isNaN(num) ? undefined : num;
   });
 
+// Shared fields used by both create and update schemas
+const sharedFields = {
+  description: z
+    .string()
+    .min(10, "Description must be at least 10 characters")
+    .max(2000, "Description must be under 2000 characters"),
+  is_free: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => val === "on"),
+  price: optionalPrice,
+  original_price: optionalPrice,
+  url: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => (val ? normalizeUrl(val) : ""))
+    .pipe(z.string().url("Must be a valid URL").or(z.literal(""))),
+  location: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => val ?? "")
+    .pipe(z.string().max(200, "Location must be under 200 characters")),
+  category_id: z.string().uuid("Select a category"),
+  expires_at: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => val ?? ""),
+};
+
 export const createDealSchema = z
   .object({
     title: z
       .string()
       .min(5, "Title must be at least 5 characters")
       .max(120, "Title must be under 120 characters"),
-    description: z
-      .string()
-      .min(10, "Description must be at least 10 characters")
-      .max(2000, "Description must be under 2000 characters"),
-    is_free: z
-      .union([z.string(), z.null()])
-      .optional()
-      .transform((val) => val === "on"),
-    price: optionalPrice,
-    original_price: optionalPrice,
-    url: z
-      .union([z.string(), z.null()])
-      .optional()
-      .transform((val) => (val ? normalizeUrl(val) : ""))
-      .pipe(z.string().url("Must be a valid URL").or(z.literal(""))),
-    location: z
-      .union([z.string(), z.null()])
-      .optional()
-      .transform((val) => val ?? "")
-      .pipe(z.string().max(200, "Location must be under 200 characters")),
-    category_id: z.string().uuid("Select a category"),
-    expires_at: z
-      .union([z.string(), z.null()])
-      .optional()
-      .transform((val) => val ?? ""),
+    ...sharedFields,
   })
   .refine(
     (data) => {
@@ -58,23 +63,46 @@ export const createDealSchema = z
       }
       return true;
     },
-    {
-      message: "Original price must be higher than deal price",
-      path: ["original_price"],
-    }
+    { message: "Original price must be higher than deal price", path: ["original_price"] }
   )
   .refine(
-    (data) => {
-      if (data.price != null && data.price < 0) return false;
-      return true;
-    },
+    (data) => !(data.price != null && data.price < 0),
     { message: "Price must be 0 or more", path: ["price"] }
   )
   .refine(
+    (data) => !(data.original_price != null && data.original_price <= 0),
+    { message: "Original price must be a positive number", path: ["original_price"] }
+  )
+  .refine(
     (data) => {
-      if (data.original_price != null && data.original_price <= 0) return false;
+      if (!data.expires_at) return true;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const expiry = new Date(data.expires_at + "T00:00:00");
+      return expiry >= today;
+    },
+    { message: "Expiry date cannot be in the past", path: ["expires_at"] }
+  );
+
+// Update schema — identical to create but without title (locked after posting)
+export const updateDealSchema = z
+  .object(sharedFields)
+  .refine(
+    (data) => {
+      if (data.is_free) return true;
+      if (data.price != null && data.original_price != null) {
+        return data.original_price > data.price;
+      }
       return true;
     },
+    { message: "Original price must be higher than deal price", path: ["original_price"] }
+  )
+  .refine(
+    (data) => !(data.price != null && data.price < 0),
+    { message: "Price must be 0 or more", path: ["price"] }
+  )
+  .refine(
+    (data) => !(data.original_price != null && data.original_price <= 0),
     { message: "Original price must be a positive number", path: ["original_price"] }
   )
   .refine(
@@ -89,3 +117,4 @@ export const createDealSchema = z
   );
 
 export type CreateDealInput = z.infer<typeof createDealSchema>;
+export type UpdateDealInput = z.infer<typeof updateDealSchema>;

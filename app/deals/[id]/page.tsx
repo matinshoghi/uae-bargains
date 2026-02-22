@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const deal = await getDeal(id);
 
-  if (!deal) {
+  if (!deal || deal.status === "removed") {
     return { title: "Deal Not Found" };
   }
 
@@ -51,6 +51,18 @@ export default async function DealPage({ params }: Props) {
 
   if (!deal) {
     notFound();
+  }
+
+  // Show a simple notice for removed deals (like Reddit's [deleted])
+  if (deal.status === "removed") {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <div className="text-muted-foreground rounded-lg border border-dashed p-8 text-center">
+          <p className="text-lg font-medium">This deal has been removed</p>
+          <p className="mt-1 text-sm">The author deleted this deal.</p>
+        </div>
+      </div>
+    );
   }
 
   // Fetch current user's vote for this deal
@@ -74,7 +86,7 @@ export default async function DealPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} />
+      <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} />
 
       <div className="mt-8 border-t border-zinc-100 pt-6">
         <CommentSection dealId={id} currentUserId={user?.id ?? null} />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState, useRef, useEffect } from "react";
-import { createDeal, type DealFormState } from "@/lib/actions/deals";
+import { createDeal, updateDeal, type DealFormState } from "@/lib/actions/deals";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImagePlus, X } from "lucide-react";
+import Image from "next/image";
 
 type Category = {
   id: string;
@@ -22,10 +23,32 @@ type Category = {
   slug: string;
 };
 
-export function DealForm({ categories }: { categories: Category[] }) {
+type InitialData = {
+  id: string;
+  title: string;
+  description: string;
+  price: number | null;
+  original_price: number | null;
+  url: string | null;
+  location: string | null;
+  category_id: string;
+  expires_at: string | null;
+  image_url: string | null;
+};
+
+interface DealFormProps {
+  categories: Category[];
+  initialData?: InitialData;
+}
+
+export function DealForm({ categories, initialData }: DealFormProps) {
+  const isEditing = !!initialData;
+
   const [state, formAction, isPending] = useActionState(
     async (prevState: DealFormState, formData: FormData) => {
-      const result = await createDeal(prevState, formData);
+      const result = isEditing
+        ? await updateDeal(initialData!.id, prevState, formData)
+        : await createDeal(prevState, formData);
       if (result?.message) {
         toast.error(result.message);
       }
@@ -37,9 +60,15 @@ export function DealForm({ categories }: { categories: Category[] }) {
   // Persist form values from server action response
   const v = state?.values ?? {};
 
-  const [categoryId, setCategoryId] = useState("");
-  const [isFree, setIsFree] = useState(false);
+  const [categoryId, setCategoryId] = useState(initialData?.category_id ?? "");
+  const [isFree, setIsFree] = useState(
+    initialData ? initialData.price === 0 && initialData.original_price === null : false
+  );
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [existingImage, setExistingImage] = useState<string | null>(
+    initialData?.image_url ?? null
+  );
+  const [removeImage, setRemoveImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Sync category from returned values
@@ -68,32 +97,56 @@ export function DealForm({ categories }: { categories: Category[] }) {
       return;
     }
 
+    setExistingImage(null);
+    setRemoveImage(false);
     setImagePreview(URL.createObjectURL(file));
   }
 
   function clearImage() {
     setImagePreview(null);
+    setExistingImage(null);
+    setRemoveImage(true);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   }
 
+  // Parse expiry date for the date input (strip time portion)
+  const defaultExpiry = initialData?.expires_at
+    ? initialData.expires_at.split("T")[0]
+    : "";
+
   return (
     <form action={formAction} className="space-y-6">
-      {/* Title */}
-      <div className="space-y-2">
-        <Label htmlFor="title">Title *</Label>
-        <Input
-          id="title"
-          name="title"
-          placeholder="e.g. 50% off Nike Air Max at Dubai Mall"
-          defaultValue={v.title ?? ""}
-          required
-        />
-        {state?.errors?.title && (
-          <p className="text-sm text-red-500">{state.errors.title[0]}</p>
-        )}
-      </div>
+      {/* Hidden field to signal image removal */}
+      <input type="hidden" name="remove_image" value={removeImage ? "true" : "false"} />
+
+      {/* Title — locked in edit mode */}
+      {isEditing ? (
+        <div className="space-y-2">
+          <Label>Title</Label>
+          <p className="bg-muted text-muted-foreground rounded-md border px-3 py-2 text-sm">
+            {initialData.title}
+          </p>
+          <p className="text-muted-foreground text-xs">
+            Title cannot be changed after posting.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="title">Title *</Label>
+          <Input
+            id="title"
+            name="title"
+            placeholder="e.g. 50% off Nike Air Max at Dubai Mall"
+            defaultValue={v.title ?? ""}
+            required
+          />
+          {state?.errors?.title && (
+            <p className="text-sm text-red-500">{state.errors.title[0]}</p>
+          )}
+        </div>
+      )}
 
       {/* Description */}
       <div className="space-y-2">
@@ -103,7 +156,7 @@ export function DealForm({ categories }: { categories: Category[] }) {
           name="description"
           placeholder="Describe the deal — where to find it, any conditions, why it's good..."
           rows={4}
-          defaultValue={v.description ?? ""}
+          defaultValue={v.description ?? initialData?.description ?? ""}
           required
         />
         {state?.errors?.description && (
@@ -138,7 +191,11 @@ export function DealForm({ categories }: { categories: Category[] }) {
               step="0.01"
               min="0"
               placeholder="299"
-              defaultValue={v.price ?? ""}
+              defaultValue={
+                v.price ?? (initialData?.price != null && initialData.price !== 0
+                  ? String(initialData.price)
+                  : "")
+              }
             />
             {state?.errors?.price && (
               <p className="text-sm text-red-500">{state.errors.price[0]}</p>
@@ -153,7 +210,11 @@ export function DealForm({ categories }: { categories: Category[] }) {
               step="0.01"
               min="0"
               placeholder="599"
-              defaultValue={v.original_price ?? ""}
+              defaultValue={
+                v.original_price ?? (initialData?.original_price != null
+                  ? String(initialData.original_price)
+                  : "")
+              }
             />
             {state?.errors?.original_price && (
               <p className="text-sm text-red-500">
@@ -193,7 +254,7 @@ export function DealForm({ categories }: { categories: Category[] }) {
           name="url"
           type="text"
           placeholder="www.example.com/deal or https://example.com/deal"
-          defaultValue={v.url ?? ""}
+          defaultValue={v.url ?? initialData?.url ?? ""}
         />
         {state?.errors?.url && (
           <p className="text-sm text-red-500">{state.errors.url[0]}</p>
@@ -207,7 +268,7 @@ export function DealForm({ categories }: { categories: Category[] }) {
           id="location"
           name="location"
           placeholder="e.g. Dubai Mall, Level 2"
-          defaultValue={v.location ?? ""}
+          defaultValue={v.location ?? initialData?.location ?? ""}
         />
         {state?.errors?.location && (
           <p className="text-sm text-red-500">{state.errors.location[0]}</p>
@@ -222,7 +283,7 @@ export function DealForm({ categories }: { categories: Category[] }) {
           name="expires_at"
           type="date"
           min={new Date().toISOString().split("T")[0]}
-          defaultValue={v.expires_at ?? ""}
+          defaultValue={v.expires_at ?? defaultExpiry}
         />
         {state?.errors?.expires_at && (
           <p className="text-sm text-red-500">{state.errors.expires_at[0]}</p>
@@ -256,6 +317,24 @@ export function DealForm({ categories }: { categories: Category[] }) {
               <X className="h-4 w-4" />
             </button>
           </div>
+        ) : existingImage ? (
+          <div className="relative w-fit">
+            <Image
+              src={existingImage}
+              alt="Current image"
+              width={300}
+              height={200}
+              className="max-h-[200px] rounded-lg border object-cover"
+              unoptimized
+            />
+            <button
+              type="button"
+              onClick={clearImage}
+              className="bg-background absolute -top-2 -right-2 rounded-full border p-1 shadow-sm"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         ) : (
           <label
             onClick={() => fileInputRef.current?.click()}
@@ -274,7 +353,13 @@ export function DealForm({ categories }: { categories: Category[] }) {
 
       {/* Submit */}
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Posting..." : "Post Deal"}
+        {isPending
+          ? isEditing
+            ? "Saving..."
+            : "Posting..."
+          : isEditing
+            ? "Save Changes"
+            : "Post Deal"}
       </Button>
     </form>
   );
