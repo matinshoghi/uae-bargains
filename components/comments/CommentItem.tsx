@@ -103,7 +103,7 @@ export function CommentItem({
         </Avatar>
         {isDeleted ? (
           <span className="text-sm font-medium text-muted-foreground">
-            [deleted]
+            [deleted user]
           </span>
         ) : (
           <Link

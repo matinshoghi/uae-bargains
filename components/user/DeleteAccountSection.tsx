@@ -104,7 +104,7 @@ export function DeleteAccountSection() {
                 <span className="mt-0.5 text-muted-foreground">·</span>
                 <span>
                   Your deals and comments will remain visible as{" "}
-                  <span className="font-medium">[deleted]</span>
+                  <span className="font-medium">[deleted user]</span>
                 </span>
               </li>
               <li className="flex items-start gap-2">

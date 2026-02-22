@@ -68,7 +68,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
 
       {/* Image */}
       {deal.image_url && (
-        <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-foreground/10">
+        <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-foreground/10 bg-white">
           <Image
             src={deal.image_url}
             alt={deal.title}
@@ -182,7 +182,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Posted by</span>
               <span className="text-sm font-medium text-muted-foreground">
-                [deleted]
+                [deleted user]
               </span>
             </div>
           )}

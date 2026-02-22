@@ -122,6 +122,22 @@ Full visual overhaul of the UAE Bargains UI to a light-base retro aesthetic. The
 
 ---
 
+## Follow-up Refinements (2026-02-22)
+
+### Background color update
+- Changed `--background` from warm cream `oklch(0.98 0.005 90)` (~#faf9f4) to neutral gray `oklch(0.955 0 0)` (#f1f1f1), matching hypermondays.com's background.
+
+### DealCard layout updates
+- **Larger thumbnails**: Increased image size from 80px/100px to 144px/180px (~2x) so the image roughly matches the card height.
+- **Category badge above title**: Moved the category pill (with icon) from the meta row at the bottom to sit above the deal title, giving it more prominence.
+- **Red discount percentage**: Changed the discount badge from the default outline to use `text-destructive` + `border-destructive` (the same red used in the Danger Zone / delete account section).
+
+**Files changed:**
+- `app/globals.css` — `--background` value
+- `components/deals/DealCard.tsx` — thumbnail size, category badge position, discount badge color
+
+---
+
 ## What Was NOT Changed
 
 - Database schema, migrations, or backend logic

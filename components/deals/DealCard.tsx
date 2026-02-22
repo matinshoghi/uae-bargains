@@ -49,6 +49,17 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
     >
       {/* Content */}
       <div className="min-w-0 flex-1 space-y-2">
+        {/* Category badge — above title */}
+        {deal.categories && CategoryIcon && (
+          <Badge
+            variant="outline"
+            className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
+          >
+            <CategoryIcon className="h-3 w-3" />
+            {deal.categories.label}
+          </Badge>
+        )}
+
         {/* Title */}
         <h3 className="font-display text-[15px] font-bold leading-snug tracking-tight">
           <Link
@@ -87,7 +98,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
             {deal.discount_percentage != null &&
               deal.discount_percentage > 0 && (
-                <Badge variant="outline" className="px-1.5 py-0 text-[10px]">
+                <Badge variant="outline" className="border-destructive px-1.5 py-0 text-[10px] text-destructive">
                   -{deal.discount_percentage}%
                 </Badge>
               )}
@@ -128,19 +139,9 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
                 {deal.profiles.display_name ?? deal.profiles.username}
               </Link>
             ) : (
-              <span>[deleted]</span>
+              <span>[deleted user]</span>
             )}
           </>
-
-          {deal.categories && CategoryIcon && (
-            <Badge
-              variant="outline"
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
-            >
-              <CategoryIcon className="h-3 w-3" />
-              {deal.categories.label}
-            </Badge>
-          )}
 
           {expired && (
             <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
@@ -150,22 +151,22 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
         </div>
       </div>
 
-      {/* Thumbnail */}
+      {/* Thumbnail — 2x larger */}
       <div className="shrink-0 self-center">
         {deal.image_url ? (
-          <div className="relative h-20 w-20 overflow-hidden rounded-sm border-[1.5px] border-foreground/10 bg-muted/40 md:h-[100px] md:w-[100px]">
+          <div className="relative h-36 w-36 overflow-hidden rounded-sm border-[1.5px] border-foreground/10 bg-white md:h-[180px] md:w-[180px]">
             <Image
               src={deal.image_url}
               alt={deal.title}
               fill
-              className="object-contain p-1.5"
-              sizes="(max-width: 768px) 80px, 100px"
+              className="object-contain p-2"
+              sizes="(max-width: 768px) 144px, 180px"
               unoptimized
             />
           </div>
         ) : (
-          <div className="flex h-20 w-20 items-center justify-center rounded-sm border-[1.5px] border-foreground/10 bg-muted md:h-[100px] md:w-[100px]">
-            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+          <div className="flex h-36 w-36 items-center justify-center rounded-sm border-[1.5px] border-foreground/10 bg-muted md:h-[180px] md:w-[180px]">
+            <ImageIcon className="h-8 w-8 text-muted-foreground" />
           </div>
         )}
       </div>
