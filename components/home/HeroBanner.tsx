@@ -67,7 +67,7 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
 
   return (
     <div
-      className="grain-overlay relative select-none overflow-hidden rounded-sm border-[1.5px] border-foreground/10"
+      className="grain-overlay relative select-none overflow-hidden rounded-sm ring-[1.5px] ring-inset ring-foreground/10"
       onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
       onTouchMove={(e) => onDragMove(e.touches[0].clientX)}
       onTouchEnd={onDragEnd}
@@ -117,31 +117,28 @@ function BannerSlide({ banner }: { banner: HeroBanner }) {
     : {};
 
   return (
-    <Tag {...linkProps} className="relative block w-full shrink-0">
-      <div className="hidden md:block">
-        <Image
-          src={banner.desktop_image_url}
-          alt=""
-          width={1024}
-          height={288}
-          priority
-          className="h-auto w-full rounded-sm object-cover"
-          sizes="(min-width: 1024px) 1024px, 100vw"
-          draggable={false}
-        />
-      </div>
-      <div className="block md:hidden">
-        <Image
-          src={banner.mobile_image_url || banner.desktop_image_url}
-          alt=""
-          width={640}
-          height={280}
-          priority
-          className="h-auto w-full rounded-sm object-cover"
-          sizes="100vw"
-          draggable={false}
-        />
-      </div>
+    <Tag
+      {...linkProps}
+      className="relative w-full shrink-0 overflow-hidden aspect-[640/280] md:aspect-[1024/288]"
+    >
+      <Image
+        src={banner.desktop_image_url}
+        alt=""
+        fill
+        priority
+        className="hidden scale-[1.01] object-cover md:block"
+        sizes="(min-width: 1024px) 1024px, 100vw"
+        draggable={false}
+      />
+      <Image
+        src={banner.mobile_image_url || banner.desktop_image_url}
+        alt=""
+        fill
+        priority
+        className="scale-[1.01] object-cover md:hidden"
+        sizes="100vw"
+        draggable={false}
+      />
     </Tag>
   );
 }
