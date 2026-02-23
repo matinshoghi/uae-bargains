@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { updateProfile, type ProfileFormState } from "@/lib/actions/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ interface SettingsFormProps {
 }
 
 export function SettingsForm({ profile }: SettingsFormProps) {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [removeAvatar, setRemoveAvatar] = useState(false);
@@ -27,6 +29,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
       const result = await updateProfile(prevState, formData);
       if (result?.success) {
         toast.success("Profile updated");
+        router.refresh();
       }
       return result;
     },

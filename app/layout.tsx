@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { NavBar } from "@/components/layout/NavBar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Footer } from "@/components/layout/Footer";
+import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -34,17 +35,38 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+type ServerProfile = {
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let serverProfile: ServerProfile | null = null;
+  if (user) {
+    const { data } = await supabase
+      .from("profiles")
+      .select("username, display_name, avatar_url")
+      .eq("id", user.id)
+      .single();
+    serverProfile = data;
+  }
+
   return (
     <html lang="en">
       <body
         className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <NavBar />
+        <NavBar serverProfile={serverProfile} />
         <main className="mx-auto min-h-screen max-w-5xl pb-20 md:pb-0">
           {children}
         </main>

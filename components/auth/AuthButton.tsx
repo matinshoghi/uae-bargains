@@ -23,11 +23,22 @@ type Profile = {
   avatar_url: string | null;
 };
 
-export function AuthButton({ variant = "default" }: { variant?: "default" | "link" }) {
+export function AuthButton({
+  variant = "default",
+  initialProfile = null,
+}: {
+  variant?: "default" | "link";
+  initialProfile?: Profile | null;
+}) {
   const router = useRouter();
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(initialProfile);
   const [loading, setLoading] = useState(true);
+
+  // Sync when the server layout re-fetches after router.refresh()
+  useEffect(() => {
+    setProfile(initialProfile);
+  }, [initialProfile]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -84,8 +95,11 @@ export function AuthButton({ variant = "default" }: { variant?: "default" | "lin
     user.email?.split("@")[0] ??
     "User";
 
-  const avatarUrl =
-    profile?.avatar_url ?? user.user_metadata?.avatar_url;
+  // Only fall back to Google metadata when profile failed to load entirely.
+  // If profile loaded but avatar_url is null, the user removed their avatar — respect that.
+  const avatarUrl = profile !== null
+    ? profile.avatar_url
+    : (user.user_metadata?.avatar_url ?? null);
 
   const initials = displayName
     .split(" ")

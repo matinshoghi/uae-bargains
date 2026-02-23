@@ -7,11 +7,17 @@ import Image from "next/image";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { Plus } from "lucide-react";
 
+type ServerProfile = {
+  username: string;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
 const SCROLL_THRESHOLD_RATIO = 0.8;
 const TRANSITION_MS = 800;
 const EASING = "cubic-bezier(0.28, 0.11, 0.32, 1)";
 
-function CompactNav({ visible }: { visible: boolean }) {
+function CompactNav({ visible, serverProfile }: { visible: boolean; serverProfile: ServerProfile | null }) {
   return (
     <nav
       className="fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[980px] -translate-x-1/2 rounded-sm border-2 border-foreground bg-background"
@@ -42,14 +48,14 @@ function CompactNav({ visible }: { visible: boolean }) {
             <span className="hidden sm:inline">Post Deal</span>
             <span className="sm:hidden">Post</span>
           </Link>
-          <AuthButton variant="link" />
+          <AuthButton variant="link" initialProfile={serverProfile} />
         </div>
       </div>
     </nav>
   );
 }
 
-export function NavBar() {
+export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null }) {
   const [mounted, setMounted] = useState(false);
   const [compactReady, setCompactReady] = useState(false);
   const [compactVisible, setCompactVisible] = useState(false);
@@ -103,7 +109,7 @@ export function NavBar() {
               <Plus className="mr-1.5 h-4 w-4" />
               Post Deal
             </Link>
-            <AuthButton variant="link" />
+            <AuthButton variant="link" initialProfile={serverProfile} />
           </div>
         </div>
       </header>
@@ -111,7 +117,7 @@ export function NavBar() {
       {mounted &&
         compactReady &&
         createPortal(
-          <CompactNav visible={compactVisible} />,
+          <CompactNav visible={compactVisible} serverProfile={serverProfile} />,
           document.body
         )}
     </>
