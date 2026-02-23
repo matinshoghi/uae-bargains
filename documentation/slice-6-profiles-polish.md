@@ -100,11 +100,11 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
   const { username } = await params;
   const profile = await fetchProfileByUsername(username);
 
-  if (!profile) return { title: "User Not Found — UAE Bargains" };
+  if (!profile) return { title: "User Not Found — HalaSaves" };
 
   return {
-    title: `${profile.display_name} (@${profile.username}) — UAE Bargains`,
-    description: `View deals posted by ${profile.display_name} on UAE Bargains.`,
+    title: `${profile.display_name} (@${profile.username}) — HalaSaves`,
+    description: `View deals posted by ${profile.display_name} on HalaSaves.`,
   };
 }
 ```
@@ -363,14 +363,14 @@ Use shadcn's toast system for action feedback.
 ```typescript
 export const metadata: Metadata = {
   title: {
-    default: "UAE Bargains — Community Deals for UAE",
-    template: "%s — UAE Bargains",
+    default: "HalaSaves — Community Deals for UAE",
+    template: "%s — HalaSaves",
   },
   description: "Discover and share the best deals in UAE. Community-driven bargains on electronics, dining, fashion, groceries, and travel.",
   openGraph: {
     type: "website",
     locale: "en_AE",
-    siteName: "UAE Bargains",
+    siteName: "HalaSaves",
   },
 };
 ```
@@ -380,7 +380,7 @@ export const metadata: Metadata = {
 Already covered in Slices 2 and 6:
 - Deal detail: dynamic title + description from deal content
 - User profile: dynamic title from username
-- Category page: "Electronics Deals — UAE Bargains"
+- Category page: "Electronics Deals — HalaSaves"
 
 ### 7.3 Sitemap (Optional, post-MVP)
 
@@ -556,11 +556,11 @@ app/
 ### T6.7 — SEO
 | # | Test | Steps | Expected |
 |---|------|-------|----------|
-| 1 | Homepage title | Check `<title>` tag | "UAE Bargains — Community Deals for UAE" |
-| 2 | Deal page title | Check `<title>` on deal page | "[Deal Title] — UAE Bargains" |
-| 3 | User profile title | Check `<title>` on profile | "[Name] (@username) — UAE Bargains" |
+| 1 | Homepage title | Check `<title>` tag | "HalaSaves — Community Deals for UAE" |
+| 2 | Deal page title | Check `<title>` on deal page | "[Deal Title] — HalaSaves" |
+| 3 | User profile title | Check `<title>` on profile | "[Name] (@username) — HalaSaves" |
 | 4 | OG tags present | View page source on deal page | og:title, og:description, og:image |
-| 5 | Category page title | View `/category/electronics` | "Electronics Deals — UAE Bargains" |
+| 5 | Category page title | View `/category/electronics` | "Electronics Deals — HalaSaves" |
 
 ### T6.8 — Mobile Polish
 | # | Test | Steps | Expected |

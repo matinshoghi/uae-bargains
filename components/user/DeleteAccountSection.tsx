@@ -46,7 +46,7 @@ export function DeleteAccountSection() {
       </div>
 
       {/* Trigger row */}
-      <div className="rounded-sm border-[1.5px] border-red-200 bg-red-50/40 p-4 dark:bg-red-950/20">
+      <div className="rounded-sm border-2 border-red-200 bg-red-50/40 p-4 dark:bg-red-950/20">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm font-medium">Delete account</p>
@@ -73,7 +73,7 @@ export function DeleteAccountSection() {
             if (e.target === e.currentTarget) handleClose();
           }}
         >
-            <div className="w-full max-w-md rounded-sm border-[1.5px] border-foreground/15 bg-background p-6">
+            <div className="w-full max-w-md rounded-sm border-2 border-foreground/15 bg-background p-6">
             {/* Header */}
             <div className="mb-5">
               <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-red-100">

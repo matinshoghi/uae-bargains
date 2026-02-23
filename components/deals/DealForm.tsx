@@ -63,6 +63,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
   const [isFree, setIsFree] = useState(
     initialData ? initialData.price === 0 && initialData.original_price === null : false
   );
+  const [rulesAccepted, setRulesAccepted] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [existingImage, setExistingImage] = useState<string | null>(
     initialData?.image_url ?? null
@@ -121,7 +122,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
       {isEditing ? (
         <div className="space-y-2">
           <Label className="section-label">Title</Label>
-          <p className="rounded-sm border-[1.5px] border-foreground/10 bg-muted px-3 py-2 text-sm text-muted-foreground">
+          <p className="rounded-sm border-2 border-foreground/10 bg-muted px-3 py-2 text-sm text-muted-foreground">
             {initialData.title}
           </p>
           <p className="text-xs text-muted-foreground">
@@ -168,7 +169,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
           name="is_free"
           checked={isFree}
           onChange={(e) => setIsFree(e.target.checked)}
-          className="h-4 w-4 rounded-sm border-[1.5px] border-foreground/20 accent-primary"
+          className="h-4 w-4 rounded-sm border-2 border-foreground/20 accent-primary"
         />
         <Label htmlFor="is_free" className="cursor-pointer font-normal">
           This deal is free
@@ -303,12 +304,12 @@ export function DealForm({ categories, initialData }: DealFormProps) {
             <img
               src={imagePreview}
               alt="Preview"
-              className="max-h-[200px] max-w-[300px] rounded-sm border-[1.5px] border-foreground/10 object-cover"
+              className="max-h-[200px] max-w-[300px] rounded-sm border-2 border-foreground/10 object-cover"
             />
             <button
               type="button"
               onClick={clearImage}
-              className="absolute -top-2 -right-2 rounded-sm border-[1.5px] border-foreground/15 bg-background p-1"
+              className="absolute -top-2 -right-2 rounded-sm border-2 border-foreground/15 bg-background p-1"
             >
               <X className="h-4 w-4" />
             </button>
@@ -320,13 +321,13 @@ export function DealForm({ categories, initialData }: DealFormProps) {
               alt="Current image"
               width={300}
               height={200}
-              className="max-h-[200px] rounded-sm border-[1.5px] border-foreground/10 object-cover"
+              className="max-h-[200px] rounded-sm border-2 border-foreground/10 object-cover"
               unoptimized
             />
             <button
               type="button"
               onClick={clearImage}
-              className="absolute -top-2 -right-2 rounded-sm border-[1.5px] border-foreground/15 bg-background p-1"
+              className="absolute -top-2 -right-2 rounded-sm border-2 border-foreground/15 bg-background p-1"
             >
               <X className="h-4 w-4" />
             </button>
@@ -334,7 +335,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         ) : (
           <label
             onClick={() => fileInputRef.current?.click()}
-            className="flex cursor-pointer flex-col items-center gap-2 rounded-sm border-[1.5px] border-dashed border-foreground/20 px-6 py-8 transition-colors hover:border-foreground/40 hover:bg-muted/50"
+            className="flex cursor-pointer flex-col items-center gap-2 rounded-sm border-2 border-dashed border-foreground/20 px-6 py-8 transition-colors hover:border-foreground/40 hover:bg-muted/50"
           >
             <ImagePlus className="h-8 w-8 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
@@ -347,8 +348,24 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         )}
       </div>
 
+      {/* Rules acknowledgement — new posts only */}
+      {!isEditing && (
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="rules_accepted"
+            checked={rulesAccepted}
+            onChange={(e) => setRulesAccepted(e.target.checked)}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded-sm border-2 border-foreground/20 accent-primary"
+          />
+          <Label htmlFor="rules_accepted" className="cursor-pointer font-normal leading-snug">
+            I have read the posting rules and confirm this deal follows them.
+          </Label>
+        </div>
+      )}
+
       {/* Submit */}
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <Button type="submit" className="w-full" disabled={isPending || (!isEditing && !rulesAccepted)}>
         {isPending
           ? isEditing
             ? "Saving..."

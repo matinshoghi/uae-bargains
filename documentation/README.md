@@ -1,4 +1,4 @@
-# UAE Bargains - Community Deals Platform for UAE
+# HalaSaves - Community Deals Platform for UAE
 
 > **Status:** Brainstorming Phase (Feb 2026)
 > **Target MVP Launch:** March 3, 2026
@@ -145,7 +145,7 @@ The cold start problem is real but gets solved with a live product, not a theore
 
 ## Comparison with Nourly
 
-| Aspect | Nourly | UAE Bargains |
+| Aspect | Nourly | HalaSaves |
 |--------|---------|---------------|
 | **Business Model** | B2B2C marketplace | C2C deals platform |
 | **Revenue Model** | 15% commission | Ads + affiliate links |

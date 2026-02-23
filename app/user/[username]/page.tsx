@@ -19,11 +19,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
   const profile = await fetchProfileByUsername(username);
 
-  if (!profile) return { title: "User Not Found — UAE Bargains" };
+  if (!profile) return { title: "User Not Found — HalaSaves" };
 
   return {
     title: `${profile.display_name ?? profile.username} (@${profile.username})`,
-    description: `View deals posted by ${profile.display_name ?? profile.username} on UAE Bargains.`,
+    description: `View deals posted by ${profile.display_name ?? profile.username} on HalaSaves.`,
   };
 }
 
@@ -51,7 +51,7 @@ export default async function UserProfilePage({ params }: Props) {
           size="lg"
           className="mx-auto mb-3"
         />
-        <h1 className="text-xl font-bold">{displayName}</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight md:text-3xl">{displayName}</h1>
         <p className="text-sm text-muted-foreground">
           @{profile.username} &middot; Member since{" "}
           {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
@@ -71,7 +71,7 @@ export default async function UserProfilePage({ params }: Props) {
 
       {/* User's deals */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">Their Deals</h2>
+        <h2 className="font-display mb-4 border-b-2 border-foreground pb-3 text-2xl font-bold uppercase tracking-tight">Their Deals</h2>
         {deals.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">
             No deals posted yet.

@@ -64,11 +64,11 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Title */}
-      <h1 className="font-display text-2xl font-bold tracking-tight md:text-3xl">{deal.title}</h1>
+      <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{deal.title}</h1>
 
       {/* Image */}
       {deal.image_url && (
-        <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-foreground/10 bg-white">
+        <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-2 border-foreground/10 bg-background">
           <Image
             src={deal.image_url}
             alt={deal.title}
@@ -146,7 +146,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Vote + Share + Posted by */}
-      <div className="border-t border-foreground/10 pt-4">
+      <div className="border-t-2 border-foreground pt-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <VoteButton

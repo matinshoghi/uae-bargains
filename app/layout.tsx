@@ -22,15 +22,15 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: {
-    default: "UAE Bargains — Community Deals for UAE",
-    template: "%s — UAE Bargains",
+    default: "HalaSaves — Community Deals for UAE",
+    template: "%s — HalaSaves",
   },
   description:
     "Discover and share the best deals in UAE. Community-driven bargains on electronics, dining, fashion, groceries, and travel.",
   openGraph: {
     type: "website",
     locale: "en_AE",
-    siteName: "UAE Bargains",
+    siteName: "HalaSaves",
   },
 };
 

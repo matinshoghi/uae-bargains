@@ -18,7 +18,7 @@ export default function ProfileLoading() {
       <Skeleton className="mb-4 h-6 w-28" />
       <div className="space-y-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="flex gap-4 rounded-sm border-[1.5px] border-foreground/15 p-4">
+          <div key={i} className="flex gap-4 border-b-2 border-foreground/15 py-4">
             <Skeleton className="hidden h-20 w-20 shrink-0 rounded-lg md:block" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-3 w-32" />

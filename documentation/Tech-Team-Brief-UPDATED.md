@@ -1,4 +1,4 @@
-# UAE Bargains — Product Brief for Tech Team
+# HalaSaves — Product Brief for Tech Team
 
 > **Created:** February 17, 2026
 > **Purpose:** High-level overview for engineering/design teams
@@ -77,7 +77,7 @@ A clean, modern platform where UAE residents can:
 
 ---
 
-## What Makes UAE Bargains Different
+## What Makes HalaSaves Different
 
 ### 1. AI-Enhanced Discovery
 We're not building a basic scraper. We're using AI to:
@@ -196,5 +196,5 @@ UAE deserves a deals platform built for UAE residents, by people who understand 
 
 ---
 
-*Prepared for: Matin & UAE Bargains Team*
+*Prepared for: Matin & HalaSaves Team*
 *Updated with voting system research: February 17, 2026*

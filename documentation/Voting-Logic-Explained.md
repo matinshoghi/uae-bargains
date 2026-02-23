@@ -1,7 +1,7 @@
-# UAE Bargains — Voting System Logic Explained
+# HalaSaves — Voting System Logic Explained
 
 > **Created:** February 17, 2026
-> **Purpose:** Clear explanation of OzBargain voting system for UAE Bargains implementation
+> **Purpose:** Clear explanation of OzBargain voting system for HalaSaves implementation
 
 ---
 
@@ -44,7 +44,7 @@ Comments that point out issues like:
 
 ---
 
-## Key Design Decisions for UAE Bargains
+## Key Design Decisions for HalaSaves
 
 ### 1. Use Same System for Deals AND Comments
 

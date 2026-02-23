@@ -4,31 +4,31 @@ import { ProseLayout } from "@/components/layout/ProseLayout";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Learn about UAE Bargains — the community-driven deals platform for savvy shoppers across the UAE.",
+    "Learn about HalaSaves — the community-driven deals platform for savvy shoppers across the UAE.",
 };
 
 export default function AboutPage() {
   return (
     <ProseLayout
-      title="About UAE Bargains"
+      title="About HalaSaves"
       subtitle="The community-driven deals platform for the UAE"
     >
       <section>
         <p>
-          UAE Bargains is not just a website — it <strong>is</strong> you, the
+          HalaSaves is not just a website — it <strong>is</strong> you, the
           community of savvy shoppers across the UAE. Every deal you see was
           posted by a real person who wanted to share a great find with their
           neighbours.
         </p>
         <p className="mt-4">
-          We built UAE Bargains because great deals deserve to be shared, not
+          We built HalaSaves because great deals deserve to be shared, not
           missed. Whether it&apos;s a flash sale at a mall, a discount code, or
-          a free community event, UAE Bargains is where you find it first.
+          a free community event, HalaSaves is where you find it first.
         </p>
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-bold text-foreground">How It Works</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground">How It Works</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {[
             {
@@ -52,7 +52,7 @@ export default function AboutPage() {
               body: "Leave comments to add context, share experiences, or ask questions about a deal.",
             },
           ].map(({ step, title, body }) => (
-            <div key={step} className="rounded-sm border-[1.5px] border-foreground/10 p-4">
+            <div key={step} className="thick-rule p-4 pt-3">
               <div className="section-label mb-2 text-muted-foreground">
                 Step {step}
               </div>
@@ -64,7 +64,7 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-bold text-foreground">
+        <h2 className="font-display text-2xl font-bold text-foreground">
           Community Guidelines
         </h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-muted-foreground">
@@ -77,11 +77,11 @@ export default function AboutPage() {
       </section>
 
       <section>
-        <h2 className="font-display text-lg font-bold text-foreground">
+        <h2 className="font-display text-2xl font-bold text-foreground">
           For Merchants
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Merchants are welcome to post deals on UAE Bargains under the same
+          Merchants are welcome to post deals on HalaSaves under the same
           rules as everyone else. There are no listing fees. However, deals are
           judged by the community — if your deal isn&apos;t genuine, it will be
           downvoted.

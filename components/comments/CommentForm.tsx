@@ -47,7 +47,7 @@ export function CommentForm({
 
   if (sticky && !parentId) {
     return (
-      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 border-t-[1.5px] border-foreground/10 bg-background md:bottom-0">
+      <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-40 border-t-2 border-foreground bg-background md:bottom-0">
         <form
           ref={formRef}
           action={action}
@@ -61,7 +61,7 @@ export function CommentForm({
             required
             onFocus={handleAuthGate}
             readOnly={!isLoggedIn}
-            className="flex-1 rounded-sm border-[1.5px] border-foreground/15 px-4 py-2 text-sm
+            className="flex-1 rounded-sm border-2 border-foreground/20 px-4 py-2 text-sm
                        focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
           />
           <button
@@ -94,7 +94,7 @@ export function CommentForm({
         rows={parentId ? 2 : 3}
         autoFocus={autoFocus}
         required
-        className="w-full resize-none rounded-sm border-[1.5px] border-foreground/20 px-3 py-2 text-sm
+        className="w-full resize-none rounded-sm border-2 border-foreground/20 px-3 py-2 text-sm
                    focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
       />
 

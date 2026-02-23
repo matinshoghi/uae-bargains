@@ -205,7 +205,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   // Fetch deal title + description for OG tags
   return {
-    title: `${deal.title} — UAE Bargains`,
+    title: `${deal.title} — HalaSaves`,
     description: deal.description.slice(0, 160),
     openGraph: {
       title: deal.title,
@@ -311,6 +311,6 @@ app/
 ### T2.5 — SEO Metadata
 | # | Test | Steps | Expected |
 |---|------|-------|----------|
-| 1 | Page title | View page source or browser tab | Title: "[Deal Title] — UAE Bargains" |
+| 1 | Page title | View page source or browser tab | Title: "[Deal Title] — HalaSaves" |
 | 2 | OG tags | Inspect `<meta>` tags | og:title, og:description, og:image present |
 | 3 | Description truncated | Deal with long description | og:description is max 160 chars |

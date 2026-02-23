@@ -58,7 +58,7 @@ export async function createSeedUser(
       return { error: "Display name must be 1-50 characters" };
     }
 
-    const email = `seed-${crypto.randomUUID()}@internal.uaebargains.app`;
+    const email = `seed-${crypto.randomUUID()}@internal.halasaves.app`;
     const password = crypto.randomUUID() + crypto.randomUUID();
 
     // The handle_new_user trigger uses these metadata fields to populate the profile

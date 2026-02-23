@@ -19,7 +19,7 @@ This is the final slice. The app is feature-complete. This slice focuses on depl
 1. Push code to GitHub (private repo)
 2. Go to vercel.com → Import Project → select the repo
 3. Framework: Next.js (auto-detected)
-4. Root directory: `uae-bargains` (since the Next.js project is nested)
+4. Root directory: `halasaves` (since the Next.js project is nested)
 
 ### 1.2 Environment Variables
 
@@ -241,7 +241,7 @@ Consider adding Sentry later for production error tracking. Not needed for initi
 ## 6. File Structure — Final
 
 ```
-uae-bargains/
+halasaves/
 ├── app/
 │   ├── layout.tsx
 │   ├── page.tsx

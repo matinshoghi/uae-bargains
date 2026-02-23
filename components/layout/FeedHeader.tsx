@@ -29,28 +29,30 @@ export function FeedHeader() {
   }
 
   return (
-    <div className="mb-4 flex items-center justify-between">
-      <h1 className="font-display text-2xl font-bold uppercase tracking-tight">
-        {SORT_LABELS[currentSort] ?? "Hot Deals"}
-      </h1>
-
-      <DropdownMenu>
-        <DropdownMenuTrigger className="font-display flex items-center gap-1 rounded-sm border-[1.5px] border-foreground/15 px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
+    <div className="mb-6">
+      <div className="flex items-end justify-between border-b-2 border-foreground pb-3">
+        <h1 className="font-display text-4xl font-bold uppercase tracking-tight md:text-5xl">
           {SORT_LABELS[currentSort] ?? "Hot Deals"}
-          <ChevronDown className="h-4 w-4" />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {Object.entries(SORT_LABELS).map(([key, label]) => (
-            <DropdownMenuItem
-              key={key}
-              onClick={() => handleSort(key)}
-              className={currentSort === key ? "font-semibold" : ""}
-            >
-              {label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </h1>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="font-display flex items-center gap-1 rounded-sm border-2 border-foreground px-3 py-1.5 text-sm font-semibold uppercase tracking-wide transition-colors hover:bg-foreground hover:text-background">
+            {SORT_LABELS[currentSort] ?? "Hot Deals"}
+            <ChevronDown className="h-4 w-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {Object.entries(SORT_LABELS).map(([key, label]) => (
+              <DropdownMenuItem
+                key={key}
+                onClick={() => handleSort(key)}
+                className={currentSort === key ? "font-semibold" : ""}
+              >
+                {label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-# UAE Bargains — Project Summary
+# HalaSaves — Project Summary
 
 > **Created:** February 17, 2026
 > **Purpose:** Quick overview of all project documentation
@@ -28,7 +28,7 @@ A community-driven deals platform for UAE, enhanced by AI. Inspired by OzBargain
 
 ### What Makes This Different from OzBargain
 
-| Aspect | OzBargain | UAE Bargains |
+| Aspect | OzBargain | HalaSaves |
 |--------|-----------|---------------|
 | **Market** | Australia | UAE (AED) |
 | **Currency** | AUD | UAE Dirham |

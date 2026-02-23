@@ -67,7 +67,7 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
 
   return (
     <div
-      className="grain-overlay relative select-none overflow-hidden rounded-sm ring-[1.5px] ring-inset ring-foreground/10"
+      className="grain-overlay relative select-none overflow-hidden rounded-sm ring-2 ring-inset ring-foreground/15"
       onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
       onTouchMove={(e) => onDragMove(e.touches[0].clientX)}
       onTouchEnd={onDragEnd}

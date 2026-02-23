@@ -8,7 +8,7 @@
 
 ## Overview
 
-Full visual overhaul of the UAE Bargains UI to a light-base retro aesthetic. The goal is to look intentional, editorial, and handcrafted — distinctly not a cookie-cutter AI-generated design.
+Full visual overhaul of the HalaSaves UI to a light-base retro aesthetic. The goal is to look intentional, editorial, and handcrafted — distinctly not a cookie-cutter AI-generated design.
 
 ### Design Direction
 

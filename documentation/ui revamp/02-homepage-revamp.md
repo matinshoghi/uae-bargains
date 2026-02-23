@@ -20,7 +20,7 @@ Revamped the homepage from a single-column layout with category filter pills and
 
 ### Created
 - **FeedHeader** (`components/layout/FeedHeader.tsx`) — displays dynamic heading ("Hot Deals", "Newest Deals", "Top Deals") with a dropdown menu to switch sort mode
-- **Sidebar** (`components/layout/Sidebar.tsx`) — right-side panel with "About UAE Bargains" description and share buttons (WhatsApp, Facebook, Copy Link, Native Share)
+- **Sidebar** (`components/layout/Sidebar.tsx`) — right-side panel with "About HalaSaves" description and share buttons (WhatsApp, Facebook, Copy Link, Native Share)
 
 ### Modified
 - **Homepage** (`app/page.tsx`) — two-column flex layout; sidebar shows above feed on mobile (`lg:hidden`), sticky right column on desktop (`lg:block`)
@@ -36,7 +36,7 @@ Desktop (lg+):
 ┌──────────────────────────────────────────────┐
 │ NavBar                                       │
 ├─────────────────────────┬────────────────────┤
-│ FeedHeader (H1 + sort)  │ About UAE Bargains │
+│ FeedHeader (H1 + sort)  │ About HalaSaves │
 │ ────────────────────    │ ──────────────     │
 │ Deal 1                  │ Share buttons      │
 │ ──────                  │                    │

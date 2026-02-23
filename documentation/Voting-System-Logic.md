@@ -1,7 +1,7 @@
-# UAE Bargains — Voting System Logic
+# HalaSaves — Voting System Logic
 
 > **Created:** February 17, 2026
-> **Purpose:** Document OzBargain's voting logic for UAE Bargains implementation
+> **Purpose:** Document OzBargain's voting logic for HalaSaves implementation
 
 ---
 
@@ -25,7 +25,7 @@ A negative vote can be **revoked (removed)** if:
 
 ---
 
-## What This Means for UAE Bargains
+## What This Means for HalaSaves
 
 ### Similar System for Deals
 

@@ -4,7 +4,7 @@ import { ProseLayout } from "@/components/layout/ProseLayout";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
-  description: "Privacy Policy for UAE Bargains.",
+  description: "Privacy Policy for HalaSaves.",
 };
 
 export default function PrivacyPage() {

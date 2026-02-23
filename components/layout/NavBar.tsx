@@ -14,7 +14,7 @@ const EASING = "cubic-bezier(0.28, 0.11, 0.32, 1)";
 function CompactNav({ visible }: { visible: boolean }) {
   return (
     <nav
-      className="fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[980px] -translate-x-1/2 rounded-sm border-[1.5px] border-foreground/15 bg-background"
+      className="fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[980px] -translate-x-1/2 rounded-sm border-2 border-foreground bg-background"
       style={{
         top: visible ? "12px" : "-100px",
         opacity: visible ? 1 : 0,
@@ -25,7 +25,7 @@ function CompactNav({ visible }: { visible: boolean }) {
         <Link href="/" className="flex-shrink-0">
           <Image
             src="/logo.svg"
-            alt="UAE Bargains"
+            alt="HalaSaves"
             width={90}
             height={30}
             priority
@@ -82,12 +82,12 @@ export function NavBar() {
 
   return (
     <>
-      <header className="relative z-40 border-b-[1.5px] border-foreground/10 bg-background">
+      <header className="relative z-40 border-b-2 border-foreground bg-background">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center">
             <Image
               src="/logo.svg"
-              alt="UAE Bargains"
+              alt="HalaSaves"
               width={120}
               height={40}
               priority

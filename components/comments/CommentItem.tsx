@@ -87,8 +87,8 @@ export function CommentItem({
   return (
     <div
       className={cn(
-        comment.depth === 0 && "rounded-sm border-[1.5px] border-foreground/8 bg-card p-4",
-        comment.depth > 0 && "ml-10 mt-3 border-l-2 border-foreground/10 pl-4 pt-3"
+        comment.depth === 0 && "border-b-2 border-foreground/10 py-5",
+        comment.depth > 0 && "ml-10 mt-3 border-l-2 border-foreground/15 pl-4 pt-3"
       )}
     >
       {/* Header */}
@@ -131,7 +131,7 @@ export function CommentItem({
             rows={3}
             autoFocus
             maxLength={2000}
-            className="w-full resize-none rounded-sm border-[1.5px] border-foreground/20 px-3 py-2 text-sm
+            className="w-full resize-none rounded-sm border-2 border-foreground/20 px-3 py-2 text-sm
                        focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
           />
           <div className="mt-2 flex gap-2">

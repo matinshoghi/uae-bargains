@@ -57,7 +57,7 @@ export default async function DealPage({ params }: Props) {
   if (deal.status === "removed") {
     return (
       <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="rounded-sm border-[1.5px] border-dashed border-foreground/15 p-8 text-center text-muted-foreground">
+        <div className="rounded-sm border-2 border-dashed border-foreground/15 p-8 text-center text-muted-foreground">
           <p className="text-lg font-medium">This deal has been removed</p>
           <p className="mt-1 text-sm">The author deleted this deal.</p>
         </div>
@@ -88,7 +88,7 @@ export default async function DealPage({ params }: Props) {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} />
 
-      <div className="mt-8 border-t border-foreground/10 pt-6">
+      <div className="mt-10 border-t-2 border-foreground pt-8">
         <CommentSection dealId={id} currentUserId={user?.id ?? null} />
       </div>
     </div>

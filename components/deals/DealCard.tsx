@@ -45,7 +45,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
   return (
     <article
-      className={`relative flex items-start gap-4 border-b border-foreground/10 px-1 py-5 last:border-b-0 ${expired ? "opacity-60" : ""}`}
+      className={`relative flex items-start gap-4 border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
     >
       {/* Content */}
       <div className="min-w-0 flex-1 space-y-2">
@@ -154,7 +154,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
       {/* Thumbnail — 2x larger */}
       <div className="shrink-0 self-center">
         {deal.image_url ? (
-          <div className="relative h-36 w-36 overflow-hidden rounded-sm border-[1.5px] border-foreground/10 bg-white md:h-[180px] md:w-[180px]">
+          <div className="relative h-36 w-36 overflow-hidden rounded-sm border-2 border-foreground/10 bg-background md:h-[180px] md:w-[180px]">
             <Image
               src={deal.image_url}
               alt={deal.title}
@@ -165,7 +165,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             />
           </div>
         ) : (
-          <div className="flex h-36 w-36 items-center justify-center rounded-sm border-[1.5px] border-foreground/10 bg-muted md:h-[180px] md:w-[180px]">
+          <div className="flex h-36 w-36 items-center justify-center rounded-sm border-2 border-foreground/10 bg-muted md:h-[180px] md:w-[180px]">
             <ImageIcon className="h-8 w-8 text-muted-foreground" />
           </div>
         )}

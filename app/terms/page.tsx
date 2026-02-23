@@ -4,7 +4,7 @@ import { ProseLayout } from "@/components/layout/ProseLayout";
 
 export const metadata: Metadata = {
   title: "Terms of Use",
-  description: "Terms of Use for UAE Bargains.",
+  description: "Terms of Use for HalaSaves.",
 };
 
 export default function TermsPage() {
@@ -15,7 +15,7 @@ export default function TermsPage() {
           1. Acceptance of Terms
         </h2>
         <p className="mt-2 text-muted-foreground">
-          By accessing or using UAE Bargains (&ldquo;the Service&rdquo;), you
+          By accessing or using HalaSaves (&ldquo;the Service&rdquo;), you
           agree to be bound by these Terms of Use, our Deal Posting Guidelines,
           Commenting Guidelines, and{" "}
           <Link
@@ -36,7 +36,7 @@ export default function TermsPage() {
         <p className="mt-2 text-muted-foreground">
           You must provide accurate information when creating an account. You are
           responsible for maintaining the security of your account credentials.
-          Accounts are non-transferable. UAE Bargains reserves the right to
+          Accounts are non-transferable. HalaSaves reserves the right to
           refuse or terminate any registration at its discretion.
         </p>
       </section>
@@ -83,7 +83,7 @@ export default function TermsPage() {
           >
             Privacy Policy
           </Link>
-          , which is incorporated into these Terms by reference. UAE Bargains may
+          , which is incorporated into these Terms by reference. HalaSaves may
           monitor and disclose information where required by law.
         </p>
       </section>
@@ -93,7 +93,7 @@ export default function TermsPage() {
           6. Account Termination
         </h2>
         <p className="mt-2 text-muted-foreground">
-          You may deactivate your account at any time. UAE Bargains may suspend
+          You may deactivate your account at any time. HalaSaves may suspend
           or terminate your account at any time, with or without notice, for
           conduct that violates these Terms or is otherwise harmful to the
           community, other users, or third parties.
@@ -105,10 +105,10 @@ export default function TermsPage() {
           7. Limitation of Liability &amp; Governing Law
         </h2>
         <p className="mt-2 text-muted-foreground">
-          UAE Bargains is provided on an &ldquo;as is&rdquo; basis. We make no
+          HalaSaves is provided on an &ldquo;as is&rdquo; basis. We make no
           warranties regarding the accuracy of deals posted by community
-          members. UAE Bargains is not affiliated with any merchants listed on
-          this website. Users indemnify UAE Bargains against all third-party
+          members. HalaSaves is not affiliated with any merchants listed on
+          this website. Users indemnify HalaSaves against all third-party
           claims, legal costs, and damages arising from use of the platform.
         </p>
         <p className="mt-3 text-muted-foreground">

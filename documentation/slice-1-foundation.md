@@ -65,7 +65,7 @@ Add to `.gitignore` if not already present:
 ### 3.1 Create Supabase Project
 
 1. Go to supabase.com → New Project
-2. Name: `uae-bargains`
+2. Name: `halasaves`
 3. Region: Choose closest to UAE (e.g., `ap-south-1` Mumbai or `me-south-1` if available)
 4. Generate and save the database password
 
@@ -608,7 +608,7 @@ export async function signOut() {
 
 ### 6.2 `components/layout/Header.tsx` (Client Component)
 
-- Logo (text-based for now — "UAE Bargains")
+- Logo (text-based for now — "HalaSaves")
 - Desktop: sort tabs placeholder + category links + "Post Deal" button + AuthButton
 - Mobile: logo + "Post Deal" + AuthButton (categories move to CategoryBar below)
 - Sticky top, white background, subtle bottom border
