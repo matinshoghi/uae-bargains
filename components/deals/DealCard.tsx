@@ -24,6 +24,7 @@ import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { VoteButton } from "@/components/shared/VoteButton";
 import { formatPriceShort } from "@/lib/utils";
+import { stripMarkdown } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
 
 function isExpired(deal: DealWithRelations) {
@@ -91,7 +92,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
         {/* Description */}
         {deal.description && (
           <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-            {deal.description}
+            {stripMarkdown(deal.description)}
           </p>
         )}
 

@@ -23,7 +23,7 @@ const sharedFields = {
   description: z
     .string()
     .min(10, "Description must be at least 10 characters")
-    .max(2000, "Description must be under 2000 characters"),
+    .max(5000, "Description must be under 5000 characters"),
   is_free: z
     .union([z.string(), z.null()])
     .optional()

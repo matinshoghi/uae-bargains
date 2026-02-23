@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VoteButton } from "@/components/shared/VoteButton";
 import { ShareButtons } from "@/components/shared/ShareButtons";
 import { DealActions } from "@/components/deals/DealActions";
+import { MarkdownRenderer } from "@/components/deals/MarkdownRenderer";
 import { formatPrice } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
 
@@ -106,9 +107,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       )}
 
       {/* Description */}
-      <div className="whitespace-pre-line leading-relaxed">
-        {deal.description}
-      </div>
+      <MarkdownRenderer content={deal.description} />
 
       {/* Metadata row */}
       <div className="flex flex-wrap items-center gap-3">

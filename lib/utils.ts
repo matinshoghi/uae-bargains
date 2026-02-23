@@ -26,3 +26,15 @@ export function shortTimeAgo(dateString: string): string {
   if (months < 12) return `${months}mo`;
   return `${Math.floor(days / 365)}y`;
 }
+
+/** Strip markdown syntax for plain-text previews (e.g. feed cards). */
+export function stripMarkdown(md: string): string {
+  return md
+    .replace(/[*_~`]+/g, "")          // bold, italic, strikethrough, code
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // [text](url) → text
+    .replace(/^#{1,6}\s+/gm, "")      // headings
+    .replace(/^[-*+]\s+/gm, "")       // unordered list markers
+    .replace(/^\d+\.\s+/gm, "")       // ordered list markers
+    .replace(/\n{2,}/g, " ")          // collapse multiple newlines
+    .trim();
+}

@@ -3,7 +3,7 @@
 import { useActionState, useState, useRef, useEffect } from "react";
 import { createDeal, updateDeal, type DealFormState } from "@/lib/actions/deals";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { MarkdownEditor } from "@/components/deals/MarkdownEditor";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -147,13 +147,11 @@ export function DealForm({ categories, initialData }: DealFormProps) {
 
       {/* Description */}
       <div className="space-y-2">
-        <Label htmlFor="description" className="section-label">Description *</Label>
-        <Textarea
-          id="description"
+        <Label className="section-label">Description *</Label>
+        <MarkdownEditor
           name="description"
-          placeholder="Describe the deal — where to find it, any conditions, why it's good..."
-          rows={4}
           defaultValue={v.description ?? initialData?.description ?? ""}
+          placeholder="Describe the deal — where to find it, any conditions, why it's good..."
           required
         />
         {state?.errors?.description && (
