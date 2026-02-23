@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { toast } from "sonner";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
 
 interface SettingsFormProps {
   profile: {
@@ -20,6 +20,7 @@ interface SettingsFormProps {
 export function SettingsForm({ profile }: SettingsFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
 
   const [state, formAction, isPending] = useActionState(
     async (prevState: ProfileFormState, formData: FormData) => {
@@ -43,6 +44,13 @@ export function SettingsForm({ profile }: SettingsFormProps) {
     }
 
     setAvatarPreview(URL.createObjectURL(file));
+    setRemoveAvatar(false);
+  }
+
+  function handleRemoveAvatar() {
+    setAvatarPreview(null);
+    setRemoveAvatar(true);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   const displayName = profile.display_name ?? profile.username;
@@ -54,11 +62,11 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         <Label className="section-label">Avatar</Label>
         <div className="flex items-center gap-4">
           <UserAvatar
-            src={avatarPreview ?? profile.avatar_url}
+            src={removeAvatar ? null : (avatarPreview ?? profile.avatar_url)}
             name={displayName}
             size="lg"
           />
-          <div>
+          <div className="flex gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -67,6 +75,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
               className="hidden"
               onChange={handleAvatarChange}
             />
+            {removeAvatar && <input type="hidden" name="remove_avatar" value="1" />}
             <Button
               type="button"
               variant="outline"
@@ -76,6 +85,17 @@ export function SettingsForm({ profile }: SettingsFormProps) {
               <ImagePlus className="mr-2 h-4 w-4" />
               Change
             </Button>
+            {(avatarPreview || (!removeAvatar && profile.avatar_url)) && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRemoveAvatar}
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Remove
+              </Button>
+            )}
           </div>
         </div>
         {state?.errors?.avatar && (

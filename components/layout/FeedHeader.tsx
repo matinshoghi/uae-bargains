@@ -12,7 +12,7 @@ import {
 const SORT_LABELS: Record<string, string> = {
   hot: "Hot Deals",
   new: "Newest Deals",
-  top: "Top Deals",
+  top: "Popular Deals",
 };
 
 export function FeedHeader() {

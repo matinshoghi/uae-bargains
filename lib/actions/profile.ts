@@ -37,9 +37,10 @@ export async function updateProfile(
     return { errors: parsed.error.flatten().fieldErrors };
   }
 
-  // Handle avatar upload
-  let avatar_url: string | undefined;
+  // Handle avatar upload or removal
+  let avatarUpdate: { avatar_url: string | null } | undefined;
   const avatarFile = formData.get("avatar") as File | null;
+  const shouldRemoveAvatar = formData.get("remove_avatar") === "1";
 
   if (avatarFile && avatarFile.size > 0) {
     const fileExt = avatarFile.name.split(".").pop();
@@ -56,14 +57,16 @@ export async function updateProfile(
     const { data: publicUrl } = supabase.storage
       .from("deal-images")
       .getPublicUrl(filePath);
-    avatar_url = publicUrl.publicUrl;
+    avatarUpdate = { avatar_url: publicUrl.publicUrl };
+  } else if (shouldRemoveAvatar) {
+    avatarUpdate = { avatar_url: null };
   }
 
   const { error } = await supabase
     .from("profiles")
     .update({
       ...parsed.data,
-      ...(avatar_url && { avatar_url }),
+      ...avatarUpdate,
     })
     .eq("id", user.id);
 
