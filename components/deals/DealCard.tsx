@@ -19,7 +19,6 @@ import {
   PawPrint,
   Gamepad2,
   Sparkles,
-  Pin,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -161,13 +160,6 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
               <span>[deleted user]</span>
             )}
           </>
-
-          {deal.is_featured && (
-            <Badge variant="outline" className="inline-flex items-center gap-0.5 px-1.5 py-0 text-[10px]">
-              <Pin className="h-2.5 w-2.5" />
-              Pinned
-            </Badge>
-          )}
 
           {expired && (
             <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
