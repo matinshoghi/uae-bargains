@@ -87,6 +87,7 @@ export interface Database {
           downvote_count: number;
           comment_count: number;
           hot_score: number;
+          is_featured: boolean;
           status: "active" | "expired" | "removed";
           created_at: string;
           updated_at: string;
@@ -103,6 +104,7 @@ export interface Database {
           location?: string | null;
           image_url?: string | null;
           expires_at?: string | null;
+          is_featured?: boolean;
           status?: "active" | "expired" | "removed";
         };
         Update: {
@@ -116,6 +118,7 @@ export interface Database {
           location?: string | null;
           image_url?: string | null;
           expires_at?: string | null;
+          is_featured?: boolean;
           status?: "active" | "expired" | "removed";
           updated_at?: string;
         };

@@ -356,6 +356,8 @@ CREATE TRIGGER on_comment_change
 -- ============================================
 -- 7. HOT SCORE function
 -- ============================================
+-- Uses +3 base score so new/unvoted deals float to top by recency instead of
+-- being trapped at 0 and ranking below old deals with 1-2 artificial upvotes.
 CREATE OR REPLACE FUNCTION calculate_hot_score(
   p_upvotes INTEGER,
   p_downvotes INTEGER,
@@ -365,7 +367,7 @@ DECLARE
   net_score FLOAT;
   hours FLOAT;
 BEGIN
-  net_score := GREATEST(p_upvotes - p_downvotes - 1, 0);
+  net_score := GREATEST(p_upvotes - p_downvotes + 3, 0);
   hours := EXTRACT(EPOCH FROM (now() - p_created_at)) / 3600.0;
   RETURN net_score / POWER(hours + 2, 1.5);
 END;

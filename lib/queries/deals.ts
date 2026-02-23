@@ -54,6 +54,7 @@ export async function fetchDeals({
     case "hot":
     default:
       query = query
+        .order("is_featured", { ascending: false })
         .order("hot_score", { ascending: false })
         .order("created_at", { ascending: false });
       break;

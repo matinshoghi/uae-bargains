@@ -83,6 +83,31 @@ export default function AdminDashboard() {
             Post deals, upvote, and comment as seed users.
           </p>
         </Link>
+
+        <Link
+          href="/admin/featured"
+          className="group rounded-xl border border-border p-6 transition-colors hover:border-foreground/20 hover:bg-accent"
+        >
+          <div className="flex items-center gap-3">
+            <svg
+              className="h-5 w-5 text-muted-foreground group-hover:text-foreground"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M16.5 3.75V16.5L12 14.25 7.5 16.5V3.75m9 0H18A2.25 2.25 0 0 1 20.25 6v12A2.25 2.25 0 0 1 18 20.25H6A2.25 2.25 0 0 1 3.75 18V6A2.25 2.25 0 0 1 6 3.75h1.5m9 0h-9"
+              />
+            </svg>
+            <h3 className="font-semibold">Featured Deals</h3>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Pin deals to the top of the Hot feed regardless of score.
+          </p>
+        </Link>
       </div>
     </div>
   );
