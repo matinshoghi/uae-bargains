@@ -28,11 +28,6 @@ export default async function HomePage({
         </div>
       )}
 
-      {/* Mobile sidebar — shown above feed on small screens */}
-      <div className="mb-6 lg:hidden">
-        <Sidebar />
-      </div>
-
       <div className="flex gap-8">
         {/* Deal feed */}
         <div className="min-w-0 flex-1">
@@ -51,6 +46,11 @@ export default async function HomePage({
         <aside className="hidden w-[300px] shrink-0 lg:block">
           <Sidebar />
         </aside>
+      </div>
+
+      {/* Mobile sidebar — shown below feed on small screens */}
+      <div className="mt-8 lg:hidden">
+        <Sidebar />
       </div>
     </div>
   );
