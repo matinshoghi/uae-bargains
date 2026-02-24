@@ -11,7 +11,7 @@ interface FetchDealsOptions {
 
 const DEAL_SELECT = `
   *,
-  profiles:user_id (username, display_name, avatar_url),
+  profiles:user_id (username, avatar_url),
   categories:category_id (label, slug)
 `;
 

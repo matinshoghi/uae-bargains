@@ -32,7 +32,7 @@ export function SeedCommentForm({ users }: { users: SeedUserWithProfile[] }) {
             <option value="">Select a seed user...</option>
             {users.map((u) => (
               <option key={u.user_id} value={u.user_id}>
-                {u.profiles.display_name || u.profiles.username} (@{u.profiles.username})
+                @{u.profiles.username}
               </option>
             ))}
           </select>

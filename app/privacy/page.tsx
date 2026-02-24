@@ -32,8 +32,8 @@ export default function PrivacyPage() {
           2. Data Visibility
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Your username, display name, and posted content (deals, comments) are
-          publicly visible. Your email address is never shown publicly. Votes you
+          Your username and posted content (deals, comments) are
+          publicly visible.
           cast are aggregated and not attributed to you individually.
         </p>
       </section>

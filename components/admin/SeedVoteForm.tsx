@@ -108,9 +108,8 @@ export function SeedVoteForm({ users }: { users: SeedUserWithProfile[] }) {
                 className="h-4 w-4 rounded border-border"
               />
               <span className="font-medium">
-                {u.profiles.display_name || u.profiles.username}
+                @{u.profiles.username}
               </span>
-              <span className="text-muted-foreground">@{u.profiles.username}</span>
             </label>
           ))}
         </div>

@@ -30,7 +30,6 @@ type Category = {
 type ProfileOption = {
   id: string;
   username: string;
-  display_name: string | null;
   is_seed: boolean;
 };
 
@@ -158,7 +157,6 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
             {profiles.map((p) => (
               <SelectItem key={p.id} value={p.id}>
                 {p.username}
-                {p.display_name ? ` (${p.display_name})` : ""}
                 {p.is_seed ? " 🌱" : ""}
               </SelectItem>
             ))}

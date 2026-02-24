@@ -6,7 +6,6 @@ export type SeedUserWithProfile = {
   created_at: string;
   profiles: {
     username: string;
-    display_name: string | null;
     avatar_url: string | null;
     created_at?: string;
   };
@@ -20,7 +19,7 @@ export async function fetchSeedUser(
   const { data, error } = await admin
     .from("seed_accounts")
     .select(
-      "user_id, notes, created_at, profiles:user_id (username, display_name, avatar_url, created_at)"
+      "user_id, notes, created_at, profiles:user_id (username, avatar_url, created_at)"
     )
     .eq("user_id", userId)
     .single();
@@ -34,7 +33,7 @@ export async function fetchSeedUsers(): Promise<SeedUserWithProfile[]> {
 
   const { data, error } = await admin
     .from("seed_accounts")
-    .select("user_id, notes, created_at, profiles:user_id (username, display_name, avatar_url)")
+    .select("user_id, notes, created_at, profiles:user_id (username, avatar_url)")
     .order("created_at", { ascending: false });
 
   if (error) throw error;

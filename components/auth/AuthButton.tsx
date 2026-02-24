@@ -19,7 +19,6 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 type Profile = {
   username: string;
-  display_name: string | null;
   avatar_url: string | null;
 };
 
@@ -48,7 +47,7 @@ export function AuthButton({
       if (data.user) {
         const { data: profileData } = await supabase
           .from("profiles")
-          .select("username, display_name, avatar_url")
+          .select("username, avatar_url")
           .eq("id", data.user.id)
           .single();
         setProfile(profileData as Profile | null);
@@ -88,12 +87,7 @@ export function AuthButton({
     );
   }
 
-  const displayName =
-    profile?.display_name ??
-    user.user_metadata?.full_name ??
-    user.user_metadata?.name ??
-    user.email?.split("@")[0] ??
-    "User";
+  const displayName = profile?.username ?? user.email?.split("@")[0] ?? "User";
 
   // Only fall back to Google metadata when profile failed to load entirely.
   // If profile loaded but avatar_url is null, the user removed their avatar — respect that.
@@ -102,7 +96,7 @@ export function AuthButton({
     : (user.user_metadata?.avatar_url ?? null);
 
   const initials = displayName
-    .split(" ")
+    .split(/[_-]/)
     .map((n: string) => n[0])
     .join("")
     .toUpperCase()

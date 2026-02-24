@@ -17,7 +17,6 @@ export function SeedUserEditForm({ user }: SeedUserEditFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const [displayName, setDisplayName] = useState(user.profiles.display_name ?? "");
   const [username, setUsername] = useState(user.profiles.username);
   const [avatarUrl, setAvatarUrl] = useState(user.profiles.avatar_url ?? "");
   const [notes, setNotes] = useState(user.notes ?? "");
@@ -32,7 +31,6 @@ export function SeedUserEditForm({ user }: SeedUserEditFormProps) {
 
     startTransition(async () => {
       const result = await updateSeedUser(user.user_id, {
-        display_name: displayName.trim(),
         username: username.trim(),
         avatar_url: avatarUrl.trim() || null,
         notes: notes.trim() || null,
@@ -51,20 +49,6 @@ export function SeedUserEditForm({ user }: SeedUserEditFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Display Name */}
-      <div className="space-y-2">
-        <Label htmlFor="edit-display-name" className="section-label">
-          Display Name <span className="text-red-500">*</span>
-        </Label>
-        <Input
-          id="edit-display-name"
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
-          placeholder="Sarah Ahmed"
-          required
-        />
-      </div>
-
       {/* Username */}
       <div className="space-y-2">
         <Label htmlFor="edit-username" className="section-label">

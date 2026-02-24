@@ -5,7 +5,6 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const updateProfileSchema = z.object({
-  display_name: z.string().min(1, "Display name is required").max(50, "Max 50 characters"),
   username: z
     .string()
     .min(3, "Username must be at least 3 characters")
@@ -29,7 +28,6 @@ export async function updateProfile(
   if (!user) throw new Error("Must be signed in");
 
   const parsed = updateProfileSchema.safeParse({
-    display_name: formData.get("display_name"),
     username: formData.get("username"),
   });
 

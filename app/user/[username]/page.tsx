@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!profile) return { title: "User Not Found — HalaSaves" };
 
   return {
-    title: `${profile.display_name ?? profile.username} (@${profile.username})`,
-    description: `View deals posted by ${profile.display_name ?? profile.username} on HalaSaves.`,
+    title: `${profile.username} (@${profile.username})`,
+    description: `View deals posted by ${profile.username} on HalaSaves.`,
   };
 }
 
@@ -39,21 +39,19 @@ export default async function UserProfilePage({ params }: Props) {
     getUserDealVotes(),
   ]);
 
-  const displayName = profile.display_name ?? profile.username;
-
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
       {/* Profile header */}
       <div className="mb-8 text-center">
         <UserAvatar
           src={profile.avatar_url}
-          name={displayName}
+          name={profile.username}
           size="lg"
           className="mx-auto mb-3"
         />
-        <h1 className="font-display text-2xl font-bold tracking-tight md:text-3xl">{displayName}</h1>
+        <h1 className="font-display text-2xl font-bold tracking-tight md:text-3xl">@{profile.username}</h1>
         <p className="text-sm text-muted-foreground">
-          @{profile.username} &middot; Member since{" "}
+          Member since{" "}
           {formatDistanceToNow(new Date(profile.created_at), { addSuffix: true })}
         </p>
 

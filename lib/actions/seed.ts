@@ -44,7 +44,6 @@ export async function createSeedUser(
     const admin = createAdminClient();
 
     const username = (formData.get("username") as string)?.trim();
-    const displayName = (formData.get("display_name") as string)?.trim();
     const avatarUrl = (formData.get("avatar_url") as string)?.trim() || null;
     const notes = (formData.get("notes") as string)?.trim() || null;
 
@@ -54,21 +53,16 @@ export async function createSeedUser(
     if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
       return { error: "Username can only contain letters, numbers, hyphens, and underscores" };
     }
-    if (!displayName || displayName.length < 1 || displayName.length > 50) {
-      return { error: "Display name must be 1-50 characters" };
-    }
 
     const email = `seed-${crypto.randomUUID()}@internal.halasaves.app`;
     const password = crypto.randomUUID() + crypto.randomUUID();
 
-    // The handle_new_user trigger uses these metadata fields to populate the profile
     const { data: authUser, error: authError } = await admin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
       user_metadata: {
         preferred_username: username,
-        full_name: displayName,
         avatar_url: avatarUrl,
       },
     });
@@ -78,6 +72,21 @@ export async function createSeedUser(
         return { error: "A user with this username already exists" };
       }
       return { error: authError.message };
+    }
+
+    // The handle_new_user trigger creates the profile row, but metadata
+    // may not propagate reliably — overwrite with the correct values.
+    const { error: profileError } = await admin
+      .from("profiles")
+      .update({
+        username,
+        avatar_url: avatarUrl,
+      })
+      .eq("id", authUser.user.id);
+
+    if (profileError) {
+      await admin.auth.admin.deleteUser(authUser.user.id);
+      return { error: profileError.message };
     }
 
     const { error: seedError } = await admin.from("seed_accounts").insert({
@@ -100,7 +109,6 @@ export async function createSeedUser(
 export async function updateSeedUser(
   userId: string,
   fields: {
-    display_name: string;
     username: string;
     avatar_url: string | null;
     notes: string | null;
@@ -127,9 +135,6 @@ export async function updateSeedUser(
     if (!/^[a-zA-Z0-9_-]+$/.test(fields.username)) {
       return { error: "Username can only contain letters, numbers, hyphens, and underscores" };
     }
-    if (!fields.display_name || fields.display_name.length < 1 || fields.display_name.length > 50) {
-      return { error: "Display name must be 1-50 characters" };
-    }
 
     // Check username uniqueness (excluding current user)
     const { data: existing } = await admin
@@ -144,7 +149,6 @@ export async function updateSeedUser(
     // Update profile
     const profileUpdate: Record<string, unknown> = {
       username: fields.username,
-      display_name: fields.display_name,
       avatar_url: fields.avatar_url,
     };
     if (fields.created_at) {

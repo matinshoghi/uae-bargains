@@ -34,7 +34,7 @@ export default async function AdminEditDealPage({ params }: Props) {
   // Fetch all profiles for the author dropdown
   const { data: profiles } = await admin
     .from("profiles")
-    .select("id, username, display_name")
+    .select("id, username")
     .order("username", { ascending: true });
 
   // Fetch seed account IDs to highlight them
@@ -68,7 +68,6 @@ export default async function AdminEditDealPage({ params }: Props) {
             (profiles ?? []).map((p) => ({
               id: p.id,
               username: p.username,
-              display_name: p.display_name,
               is_seed: seedUserIds.has(p.id),
             }))
           }

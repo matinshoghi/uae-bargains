@@ -42,16 +42,13 @@ function SeedUserRow({ user }: { user: SeedUserWithProfile }) {
     >
       <UserAvatar
         src={user.profiles.avatar_url}
-        name={user.profiles.display_name || user.profiles.username}
+        name={user.profiles.username}
         size="md"
       />
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="font-medium text-sm">
-            {user.profiles.display_name || user.profiles.username}
-          </span>
-          <span className="text-sm text-muted-foreground">
             @{user.profiles.username}
           </span>
         </div>

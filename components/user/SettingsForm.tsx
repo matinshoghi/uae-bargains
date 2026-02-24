@@ -12,7 +12,6 @@ import { ImagePlus, Trash2 } from "lucide-react";
 
 interface SettingsFormProps {
   profile: {
-    display_name: string | null;
     username: string;
     avatar_url: string | null;
   };
@@ -56,8 +55,6 @@ export function SettingsForm({ profile }: SettingsFormProps) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
-  const displayName = profile.display_name ?? profile.username;
-
   return (
     <form action={formAction} className="space-y-6">
       {/* Avatar */}
@@ -66,7 +63,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         <div className="flex items-center gap-4">
           <UserAvatar
             src={removeAvatar ? null : (avatarPreview ?? profile.avatar_url)}
-            name={displayName}
+            name={profile.username}
             size="lg"
           />
           <div className="flex gap-2">
@@ -103,20 +100,6 @@ export function SettingsForm({ profile }: SettingsFormProps) {
         </div>
         {state?.errors?.avatar && (
           <p className="text-sm text-red-500">{state.errors.avatar[0]}</p>
-        )}
-      </div>
-
-      {/* Display Name */}
-      <div className="space-y-2">
-        <Label htmlFor="display_name" className="section-label">Display Name</Label>
-        <Input
-          id="display_name"
-          name="display_name"
-          defaultValue={profile.display_name ?? ""}
-          required
-        />
-        {state?.errors?.display_name && (
-          <p className="text-sm text-red-500">{state.errors.display_name[0]}</p>
         )}
       </div>
 

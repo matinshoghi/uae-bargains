@@ -37,7 +37,6 @@ export const metadata: Metadata = {
 
 type ServerProfile = {
   username: string;
-  display_name: string | null;
   avatar_url: string | null;
 };
 
@@ -55,7 +54,7 @@ export default async function RootLayout({
   if (user) {
     const { data } = await supabase
       .from("profiles")
-      .select("username, display_name, avatar_url")
+      .select("username, avatar_url")
       .eq("id", user.id)
       .single();
     serverProfile = data;

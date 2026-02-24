@@ -8,7 +8,7 @@ export default async function AdminFeaturedPage() {
   const { data, error } = await supabase
     .from("deals")
     .select(
-      `*, profiles:user_id (username, display_name, avatar_url), categories:category_id (label, slug)`
+      `*, profiles:user_id (username, avatar_url), categories:category_id (label, slug)`
     )
     .eq("status", "active")
     .order("is_featured", { ascending: false })

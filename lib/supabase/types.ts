@@ -13,7 +13,6 @@ export interface Database {
         Row: {
           id: string;
           username: string;
-          display_name: string | null;
           avatar_url: string | null;
           reputation: number;
           is_admin: boolean;
@@ -23,7 +22,6 @@ export interface Database {
         Insert: {
           id: string;
           username: string;
-          display_name?: string | null;
           avatar_url?: string | null;
           reputation?: number;
           is_admin?: boolean;
@@ -33,7 +31,6 @@ export interface Database {
         Update: {
           id?: string;
           username?: string;
-          display_name?: string | null;
           avatar_url?: string | null;
           reputation?: number;
           is_admin?: boolean;

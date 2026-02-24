@@ -38,7 +38,7 @@ export async function fetchUserDeals(userId: string): Promise<DealWithRelations[
     .from("deals")
     .select(`
       *,
-      profiles:user_id (username, display_name, avatar_url),
+      profiles:user_id (username, avatar_url),
       categories:category_id (label, slug)
     `)
     .eq("user_id", userId)

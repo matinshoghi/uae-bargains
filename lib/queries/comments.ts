@@ -11,7 +11,7 @@ export async function fetchComments(
     .select(
       `
       *,
-      profiles:user_id (username, display_name, avatar_url)
+      profiles:user_id (username, avatar_url)
     `
     )
     .eq("deal_id", dealId)

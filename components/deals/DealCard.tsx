@@ -182,7 +182,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
                 href={`/user/${deal.profiles.username}`}
                 className="relative z-10 hover:text-foreground hover:underline"
               >
-                {deal.profiles.display_name ?? deal.profiles.username}
+                {deal.profiles.username}
               </Link>
             ) : (
               <span>[deleted user]</span>

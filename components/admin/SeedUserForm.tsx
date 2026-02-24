@@ -17,37 +17,21 @@ export function SeedUserForm() {
 
   return (
     <form ref={formRef} action={action} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor="display_name" className="block text-sm font-medium">
-            Display Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="display_name"
-            name="display_name"
-            type="text"
-            required
-            placeholder="Sarah Ahmed"
-            className="mt-1.5 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="username" className="block text-sm font-medium">
-            Username <span className="text-red-500">*</span>
-          </label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            required
-            placeholder="sarah_ahmed"
-            className="mt-1.5 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
-          />
-          <p className="mt-1 text-xs text-muted-foreground">
-            3-30 characters. Letters, numbers, hyphens, underscores only.
-          </p>
-        </div>
+      <div>
+        <label htmlFor="username" className="block text-sm font-medium">
+          Username <span className="text-red-500">*</span>
+        </label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          required
+          placeholder="sarah_ahmed"
+          className="mt-1.5 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+        />
+        <p className="mt-1 text-xs text-muted-foreground">
+          3-30 characters. Letters, numbers, hyphens, underscores only.
+        </p>
       </div>
 
       <div>

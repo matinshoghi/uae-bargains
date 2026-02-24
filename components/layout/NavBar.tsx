@@ -9,7 +9,6 @@ import { Plus } from "lucide-react";
 
 type ServerProfile = {
   username: string;
-  display_name: string | null;
   avatar_url: string | null;
 };
 

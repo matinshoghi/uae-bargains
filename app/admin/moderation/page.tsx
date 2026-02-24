@@ -8,7 +8,7 @@ export default async function AdminModerationPage() {
   const { data, error } = await supabase
     .from("deals")
     .select(
-      `*, profiles:user_id (username, display_name, avatar_url), categories:category_id (label, slug)`
+      `*, profiles:user_id (username, avatar_url), categories:category_id (label, slug)`
     )
     .order("created_at", { ascending: false });
 
