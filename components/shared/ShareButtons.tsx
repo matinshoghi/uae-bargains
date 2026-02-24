@@ -21,7 +21,7 @@ function ShareButton({
     <button
       onClick={onClick}
       aria-label={label}
-      className="flex h-10 w-10 items-center justify-center rounded-full border transition-colors hover:bg-muted"
+      className="flex h-9 w-9 items-center justify-center rounded-full border transition-colors hover:bg-muted"
       title={label}
     >
       <Icon className="h-4 w-4" />
@@ -90,7 +90,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
   }
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2">
       <ShareButton icon={WhatsAppIcon} label="Share on WhatsApp" onClick={shareOnWhatsApp} />
       <ShareButton icon={FacebookIcon} label="Share on Facebook" onClick={shareOnFacebook} />
       <ShareButton icon={Link2} label="Copy link" onClick={copyLink} />

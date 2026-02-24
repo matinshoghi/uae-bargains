@@ -4,7 +4,6 @@ import { formatDistanceToNow, format } from "date-fns";
 import { ExternalLink, MapPin, Calendar, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { VoteButton } from "@/components/shared/VoteButton";
 import { ShareButtons } from "@/components/shared/ShareButtons";
 import { DealActions } from "@/components/deals/DealActions";
@@ -38,23 +37,11 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
   const edited = wasEdited(deal);
 
   return (
-    <article className="space-y-6">
-      {/* Category + Time + Author Actions */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+    <article className="space-y-6 overflow-hidden">
+      {/* Category + Badges + Author Actions */}
+      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         {deal.categories && (
           <Badge variant="outline">{deal.categories.label}</Badge>
-        )}
-        <span>&middot;</span>
-        <time dateTime={deal.created_at}>
-          {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
-        </time>
-        {edited && (
-          <span
-            className="cursor-help"
-            title={`Edited ${format(new Date(deal.updated_at), "MMM d, yyyy 'at' h:mm a")}`}
-          >
-            (edited)
-          </span>
         )}
         {deal.is_featured && (
           <Badge className="inline-flex items-center gap-1">
@@ -71,7 +58,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Title */}
-      <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{deal.title}</h1>
+      <h1 className="font-display text-2xl font-bold tracking-tight md:text-4xl">{deal.title}</h1>
 
       {/* Image */}
       {deal.image_url && (
@@ -150,46 +137,43 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         )}
       </div>
 
-      {/* Vote + Share + Posted by */}
-      <div className="border-t-2 border-foreground pt-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <VoteButton
-              entityType="deal"
-              entityId={deal.id}
-              upvoteCount={deal.upvote_count}
-              downvoteCount={deal.downvote_count}
-              userVote={userVote}
-              isLoggedIn={isLoggedIn}
-            />
-            <ShareButtons url={`/deals/${deal.id}`} title={deal.title} />
-          </div>
+      {/* Vote + Share */}
+      <div className="border-t-2 border-foreground pt-4 space-y-2">
+        <div className="flex items-center gap-3">
+          <VoteButton
+            entityType="deal"
+            entityId={deal.id}
+            upvoteCount={deal.upvote_count}
+            downvoteCount={deal.downvote_count}
+            userVote={userVote}
+            isLoggedIn={isLoggedIn}
+          />
+          <ShareButtons url={`/deals/${deal.id}`} title={deal.title} />
+        </div>
 
+        {/* Posted by + Time */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
           {deal.profiles ? (
             <Link
               href={`/user/${deal.profiles.username}`}
-              className="flex items-center gap-2 hover:opacity-80"
+              className="font-display font-semibold text-foreground hover:opacity-80"
             >
-              <span className="text-sm text-muted-foreground">Posted by</span>
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={deal.profiles.avatar_url ?? undefined} />
-                <AvatarFallback className="text-xs">
-                  {(deal.profiles.display_name ?? deal.profiles.username)
-                    .charAt(0)
-                    .toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span className="font-display text-sm font-semibold">
-                {deal.profiles.display_name ?? deal.profiles.username}
-              </span>
+              {deal.profiles.username}
             </Link>
           ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Posted by</span>
-              <span className="text-sm font-medium text-muted-foreground">
-                [deleted user]
-              </span>
-            </div>
+            <span className="font-medium">[deleted]</span>
+          )}
+          <span>&middot;</span>
+          <time dateTime={deal.created_at}>
+            {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
+          </time>
+          {edited && (
+            <span
+              className="cursor-help"
+              title={`Edited ${format(new Date(deal.updated_at), "MMM d, yyyy 'at' h:mm a")}`}
+            >
+              (edited)
+            </span>
           )}
         </div>
       </div>
