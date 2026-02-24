@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow, format } from "date-fns";
-import { ExternalLink, MapPin, Calendar } from "lucide-react";
+import { ExternalLink, MapPin, Calendar, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -55,6 +55,12 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
           >
             (edited)
           </span>
+        )}
+        {deal.is_featured && (
+          <Badge className="inline-flex items-center gap-1">
+            <Award className="h-3 w-3" />
+            Staff Pick
+          </Badge>
         )}
         {expired && <Badge variant="destructive">Expired</Badge>}
         {isAuthor && (

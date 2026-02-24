@@ -9,8 +9,8 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="hidden border-t-2 border-foreground bg-foreground text-background md:block">
-      <div className="grain-overlay mx-auto max-w-7xl px-6 py-14 lg:px-8">
+    <footer className="border-t-2 border-foreground bg-foreground text-background">
+      <div className="grain-overlay mx-auto max-w-7xl px-6 py-10 pb-24 md:py-14 md:pb-14 lg:px-8">
         <div className="flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
           {/* Branding */}
           <div className="max-w-sm space-y-3">

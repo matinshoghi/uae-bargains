@@ -19,6 +19,7 @@ import {
   PawPrint,
   Gamepad2,
   Sparkles,
+  Award,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -67,19 +68,26 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
     <article
       className={`relative border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
     >
-      {/* Top row: category badge + share */}
+      {/* Top row: category badge + staff pick + share */}
       <div className="mb-2 flex items-center justify-between">
-        {deal.categories && CategoryIcon ? (
-          <Badge
-            variant="outline"
-            className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
-          >
-            <CategoryIcon className="h-3 w-3" />
-            {deal.categories.label}
-          </Badge>
-        ) : (
-          <span />
-        )}
+        <div className="flex items-center gap-1.5">
+          {deal.categories && CategoryIcon ? (
+            <Badge
+              variant="outline"
+              className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
+            >
+              <CategoryIcon className="h-3 w-3" />
+              {deal.categories.label}
+            </Badge>
+          ) : null}
+
+          {deal.is_featured && (
+            <Badge className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]">
+              <Award className="h-3 w-3" />
+              Staff Pick
+            </Badge>
+          )}
+        </div>
 
         <ShareIconButton
           url={`/deals/${deal.id}`}
