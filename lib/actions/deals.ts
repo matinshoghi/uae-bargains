@@ -1,9 +1,11 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createDealSchema, updateDealSchema } from "@/lib/validations/deal";
-import { extractOgImage } from "@/lib/og";
+import { captureImageForDeal } from "@/lib/og";
 import { optimizeImage } from "@/lib/images";
+import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -106,37 +108,6 @@ export async function createDeal(
     image_url = publicUrl.publicUrl;
   }
 
-  // Auto-extract OG image if no image was uploaded and a URL is provided
-  // Downloads the image and saves to Supabase Storage for consistent serving
-  if (!image_url && url) {
-    const ogImageUrl = await extractOgImage(url);
-    if (ogImageUrl) {
-      try {
-        const imgResponse = await fetch(ogImageUrl, {
-          signal: AbortSignal.timeout(5000),
-        });
-        if (imgResponse.ok) {
-          const rawBuffer = await imgResponse.arrayBuffer();
-          const optimized = await optimizeImage(rawBuffer);
-          const filePath = `${user.id}/${crypto.randomUUID()}.${optimized.ext}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from("deal-images")
-            .upload(filePath, optimized.buffer, { contentType: optimized.contentType });
-
-          if (!uploadError) {
-            const { data: publicUrl } = supabase.storage
-              .from("deal-images")
-              .getPublicUrl(filePath);
-            image_url = publicUrl.publicUrl;
-          }
-        }
-      } catch {
-        // Download/upload failed — deal proceeds without image
-      }
-    }
-  }
-
   // Store expiry as end-of-day in local time (not UTC)
   // This prevents timezone offset showing the wrong date
   const expiresAtValue = expires_at ? `${expires_at}T23:59:59` : null;
@@ -162,6 +133,23 @@ export async function createDeal(
 
   if (error) {
     return { message: error.message, values };
+  }
+
+  // Auto-extract image in the background if none was uploaded
+  if (!image_url && url) {
+    const dealId = deal.id;
+    const userId = user.id;
+    const dealUrl = url;
+    after(async () => {
+      const admin = createAdminClient();
+      const capturedUrl = await captureImageForDeal(dealUrl, userId, admin);
+      if (capturedUrl) {
+        await admin
+          .from("deals")
+          .update({ image_url: capturedUrl })
+          .eq("id", dealId);
+      }
+    });
   }
 
   redirect(`/deals/${deal.id}`);

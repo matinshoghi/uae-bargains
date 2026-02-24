@@ -343,6 +343,9 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         {state?.errors?.image && (
           <p className="text-sm text-red-500">{state.errors.image[0]}</p>
         )}
+        <p className="text-xs text-muted-foreground">
+          No image? We&apos;ll automatically grab one from your deal link.
+        </p>
       </div>
 
       {/* Rules acknowledgement — new posts only */}
