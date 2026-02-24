@@ -7,12 +7,14 @@ export function CommentList({
   isLoggedIn,
   dealId,
   currentUserId,
+  isAdmin = false,
 }: {
   comments: CommentWithChildren[];
   userCommentVotes: Record<string, number>;
   isLoggedIn: boolean;
   dealId: string;
   currentUserId: string | null;
+  isAdmin?: boolean;
 }) {
   if (comments.length === 0) return null;
 
@@ -27,6 +29,7 @@ export function CommentList({
           isLoggedIn={isLoggedIn}
           dealId={dealId}
           currentUserId={currentUserId}
+          isAdmin={isAdmin}
         />
       ))}
     </div>

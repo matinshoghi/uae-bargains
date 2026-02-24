@@ -53,23 +53,37 @@ export default async function DealPage({ params }: Props) {
     notFound();
   }
 
-  // Show a simple notice for removed deals (like Reddit's [deleted])
-  if (deal.status === "removed") {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="rounded-sm border-2 border-dashed border-foreground/15 p-8 text-center text-muted-foreground">
-          <p className="text-lg font-medium">This deal has been removed</p>
-          <p className="mt-1 text-sm">The author deleted this deal.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Fetch current user's vote for this deal
+  // Fetch current user for auth + admin check
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .single();
+    isAdmin = !!profile?.is_admin;
+  }
+
+  // Show a simple notice for removed deals (admins can still see + act on them)
+  if (deal.status === "removed" && !isAdmin) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <div className="rounded-sm border-2 border-dashed border-foreground/15 p-8 text-center text-muted-foreground">
+          <p className="text-lg font-medium">This deal has been removed</p>
+          <p className="mt-1 text-sm">
+            {deal.removed_by === "admin"
+              ? "This deal was removed by a moderator."
+              : "The author deleted this deal."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   let userVote: 1 | -1 | null = null;
   if (user) {
@@ -86,10 +100,10 @@ export default async function DealPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} />
+      <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
 
       <div className="mt-10 border-t-2 border-foreground pt-8">
-        <CommentSection dealId={id} currentUserId={user?.id ?? null} />
+        <CommentSection dealId={id} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
       </div>
     </div>
   );

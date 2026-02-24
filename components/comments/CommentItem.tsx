@@ -19,6 +19,7 @@ import { ReplyButton } from "./ReplyButton";
 import { CommentMenu } from "./CommentMenu";
 import { CommentList } from "./CommentList";
 import { updateComment, deleteComment } from "@/lib/actions/comments";
+import { adminDeleteComment } from "@/lib/actions/admin";
 import { cn, shortTimeAgo } from "@/lib/utils";
 import type { CommentWithChildren } from "@/lib/types";
 
@@ -29,6 +30,7 @@ export function CommentItem({
   isLoggedIn,
   dealId,
   currentUserId,
+  isAdmin = false,
 }: {
   comment: CommentWithChildren;
   userVote: 1 | -1 | null;
@@ -36,6 +38,7 @@ export function CommentItem({
   isLoggedIn: boolean;
   dealId: string;
   currentUserId: string | null;
+  isAdmin?: boolean;
 }) {
   const isDeleted = !comment.profiles;
   const isAuthor = !isDeleted && currentUserId === comment.user_id;
@@ -73,7 +76,10 @@ export function CommentItem({
 
   async function handleDelete() {
     setIsDeleting(true);
-    const result = await deleteComment(comment.id);
+    // Admins use the admin delete action (bypasses ownership check)
+    const result = isAdmin && !isAuthor
+      ? await adminDeleteComment(comment.id)
+      : await deleteComment(comment.id);
     setIsDeleting(false);
 
     if (result?.error) {
@@ -181,6 +187,7 @@ export function CommentItem({
           <CommentMenu
             commentId={comment.id}
             isAuthor={isAuthor}
+            isAdmin={isAdmin}
             onEdit={() => {
               setEditContent(comment.content);
               setIsEditing(true);
@@ -198,6 +205,7 @@ export function CommentItem({
             isLoggedIn={isLoggedIn}
             dealId={dealId}
             currentUserId={currentUserId}
+            isAdmin={isAdmin}
           />
         </div>
       )}

@@ -9,9 +9,11 @@ import { CommentList } from "./CommentList";
 export async function CommentSection({
   dealId,
   currentUserId,
+  isAdmin = false,
 }: {
   dealId: string;
   currentUserId: string | null;
+  isAdmin?: boolean;
 }) {
   const isLoggedIn = !!currentUserId;
 
@@ -34,6 +36,7 @@ export async function CommentSection({
         isLoggedIn={isLoggedIn}
         dealId={dealId}
         currentUserId={currentUserId}
+        isAdmin={isAdmin}
       />
 
       <CommentForm dealId={dealId} isLoggedIn={isLoggedIn} sticky />

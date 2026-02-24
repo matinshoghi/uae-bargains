@@ -12,11 +12,13 @@ import {
 
 export function CommentMenu({
   isAuthor,
+  isAdmin = false,
   onEdit,
   onDelete,
 }: {
   commentId: string;
   isAuthor: boolean;
+  isAdmin?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
 }) {
@@ -48,6 +50,18 @@ export function CommentMenu({
             >
               <Trash2 className="mr-2 h-4 w-4" />
               Delete
+            </DropdownMenuItem>
+          </>
+        )}
+        {isAdmin && !isAuthor && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={onDelete}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete (Admin)
             </DropdownMenuItem>
           </>
         )}

@@ -89,6 +89,8 @@ export interface Database {
           hot_score: number;
           is_featured: boolean;
           status: "active" | "expired" | "removed";
+          removed_by: string | null;
+          removal_reason: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -106,6 +108,8 @@ export interface Database {
           expires_at?: string | null;
           is_featured?: boolean;
           status?: "active" | "expired" | "removed";
+          removed_by?: string | null;
+          removal_reason?: string | null;
         };
         Update: {
           user_id?: string | null;
@@ -120,6 +124,8 @@ export interface Database {
           expires_at?: string | null;
           is_featured?: boolean;
           status?: "active" | "expired" | "removed";
+          removed_by?: string | null;
+          removal_reason?: string | null;
           updated_at?: string;
         };
         Relationships: [

@@ -20,6 +20,7 @@ interface MarkdownEditorProps {
   defaultValue?: string;
   placeholder?: string;
   required?: boolean;
+  onChange?: (value: string) => void;
 }
 
 type FormatAction = {
@@ -46,6 +47,7 @@ export function MarkdownEditor({
   defaultValue = "",
   placeholder,
   required,
+  onChange: onChangeProp,
 }: MarkdownEditorProps) {
   const [value, setValue] = useState(defaultValue);
   const [mode, setMode] = useState<"write" | "preview">("write");
@@ -114,12 +116,13 @@ export function MarkdownEditor({
       }
 
       setValue(newText);
+      onChangeProp?.(newText);
       requestAnimationFrame(() => {
         textarea.focus();
         textarea.setSelectionRange(cursorPos, cursorPos);
       });
     },
-    [value]
+    [value, onChangeProp]
   );
 
   return (
@@ -184,7 +187,10 @@ export function MarkdownEditor({
         <textarea
           ref={textareaRef}
           value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => {
+            setValue(e.target.value);
+            onChangeProp?.(e.target.value);
+          }}
           placeholder={placeholder}
           rows={6}
           className="w-full resize-y bg-transparent px-3 py-2 text-sm leading-relaxed placeholder:text-muted-foreground focus:outline-none"

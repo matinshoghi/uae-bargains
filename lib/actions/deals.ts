@@ -327,7 +327,7 @@ export async function deleteDeal(dealId: string): Promise<{ error?: string }> {
   // Soft delete — set status to 'removed'
   const { error } = await supabase
     .from("deals")
-    .update({ status: "removed" as const, updated_at: new Date().toISOString() })
+    .update({ status: "removed" as const, removed_by: "author", updated_at: new Date().toISOString() })
     .eq("id", dealId);
 
   if (error) {

@@ -35,6 +35,12 @@ export default async function AdminLayout({
               Dashboard
             </Link>
             <Link
+              href="/admin/moderation"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              Moderation
+            </Link>
+            <Link
               href="/admin/banners"
               className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >

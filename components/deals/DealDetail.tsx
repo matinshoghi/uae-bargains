@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { VoteButton } from "@/components/shared/VoteButton";
 import { ShareButtons } from "@/components/shared/ShareButtons";
 import { DealActions } from "@/components/deals/DealActions";
+import { AdminDealActions } from "@/components/deals/AdminDealActions";
 import { MarkdownRenderer } from "@/components/deals/MarkdownRenderer";
 import { formatPrice } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
@@ -29,15 +30,29 @@ interface DealDetailProps {
   userVote?: 1 | -1 | null;
   isLoggedIn?: boolean;
   currentUserId?: string | null;
+  isAdmin?: boolean;
 }
 
-export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentUserId }: DealDetailProps) {
+export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentUserId, isAdmin = false }: DealDetailProps) {
   const expired = isExpired(deal);
   const isAuthor = !!deal.user_id && currentUserId === deal.user_id;
   const edited = wasEdited(deal);
+  const isRemoved = deal.status === "removed";
 
   return (
     <article className="space-y-6 overflow-hidden">
+      {/* Admin removal banner */}
+      {isRemoved && isAdmin && (
+        <div className="rounded-sm border-2 border-dashed border-red-500/30 bg-red-50 p-4 dark:bg-red-950/20">
+          <p className="text-sm font-medium text-red-600 dark:text-red-400">
+            This deal is removed{deal.removed_by === "admin" ? " by a moderator" : " by the author"}.
+          </p>
+          {deal.removal_reason && (
+            <p className="mt-1 text-sm text-red-500">Reason: {deal.removal_reason}</p>
+          )}
+        </div>
+      )}
+
       {/* Category + Badges + Author Actions */}
       <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
         {deal.categories && (
@@ -50,11 +65,15 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
           </Badge>
         )}
         {expired && <Badge variant="destructive">Expired</Badge>}
-        {isAuthor && (
-          <div className="ml-auto">
+        {isRemoved && <Badge variant="destructive">Removed</Badge>}
+        <div className="ml-auto flex items-center gap-1">
+          {isAdmin && (
+            <AdminDealActions dealId={deal.id} isRemoved={isRemoved} />
+          )}
+          {isAuthor && !isRemoved && (
             <DealActions dealId={deal.id} />
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* Title */}
