@@ -67,7 +67,7 @@ export default async function RootLayout({
         className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
         <NavBar serverProfile={serverProfile} />
-        <main className="mx-auto min-h-screen max-w-5xl pb-20 md:pb-0">
+        <main className="mx-auto min-h-screen max-w-7xl pb-20 md:pb-0">
           {children}
         </main>
         <Footer />

@@ -16,7 +16,7 @@ function DealCardSkeleton() {
 
 export default function HomeLoading() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6">
+    <div className="px-4 py-6 sm:px-6 lg:px-8">
       <Skeleton className="mb-6 h-48 w-full rounded-sm" />
       <div className="flex gap-8">
         <div className="min-w-0 flex-1">

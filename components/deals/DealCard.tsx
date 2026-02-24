@@ -23,6 +23,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { VoteButton } from "@/components/shared/VoteButton";
+import { ShareIconButton } from "@/components/shared/ShareIconButton";
 import { formatPriceShort } from "@/lib/utils";
 import { stripMarkdown } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
@@ -64,12 +65,11 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
   return (
     <article
-      className={`relative flex items-start gap-4 border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
+      className={`relative border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
     >
-      {/* Content */}
-      <div className="min-w-0 flex-1 space-y-2">
-        {/* Category badge — above title */}
-        {deal.categories && CategoryIcon && (
+      {/* Top row: category badge + share */}
+      <div className="mb-2 flex items-center justify-between">
+        {deal.categories && CategoryIcon ? (
           <Badge
             variant="outline"
             className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
@@ -77,79 +77,98 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             <CategoryIcon className="h-3 w-3" />
             {deal.categories.label}
           </Badge>
+        ) : (
+          <span />
         )}
 
-        {/* Title */}
-        <h3 className="font-display text-[15px] font-bold leading-snug tracking-tight">
-          <Link
-            href={`/deals/${deal.id}`}
-            className="after:absolute after:inset-0"
-          >
-            {deal.title}
-          </Link>
-        </h3>
+        <ShareIconButton
+          url={`/deals/${deal.id}`}
+          title={deal.title}
+          className="relative z-10 text-muted-foreground transition-colors hover:text-foreground"
+        />
+      </div>
 
-        {/* Description */}
-        {deal.description && (
-          <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-            {stripMarkdown(deal.description)}
-          </p>
-        )}
+      {/* Title — full width */}
+      <h3 className="mb-2 font-display text-[15px] font-bold leading-snug tracking-tight">
+        <Link
+          href={`/deals/${deal.id}`}
+          className="after:absolute after:inset-0"
+        >
+          {deal.title}
+        </Link>
+      </h3>
 
-        {/* Price row */}
-        {(deal.price != null || deal.original_price != null) && (
-          <div className="flex items-baseline gap-2">
-            {deal.price != null && deal.price === 0 ? (
-              <Badge>Free</Badge>
-            ) : deal.price != null ? (
-              <span className="font-display text-sm font-bold text-primary-foreground">
-                <span className="inline-flex items-center rounded-sm bg-primary px-1.5 py-0.5">
-                  {formatPriceShort(deal.price)}
+      {/* Body: text left, image right */}
+      <div className="flex items-start gap-4">
+        <div className="min-w-0 flex-1 space-y-2">
+          {/* Description */}
+          {deal.description && (
+            <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+              {stripMarkdown(deal.description)}
+            </p>
+          )}
+
+          {/* Price row */}
+          {(deal.price != null || deal.original_price != null) && (
+            <div className="flex items-baseline gap-2">
+              {deal.price != null && deal.price === 0 ? (
+                <Badge>Free</Badge>
+              ) : deal.price != null ? (
+                <span className="font-display text-sm font-bold text-primary-foreground">
+                  <span className="inline-flex items-center rounded-sm bg-primary px-1.5 py-0.5">
+                    {formatPriceShort(deal.price)}
+                  </span>
                 </span>
-              </span>
-            ) : null}
+              ) : null}
 
-            {deal.original_price != null && (
-              <span className="text-xs text-muted-foreground line-through">
-                {formatPriceShort(deal.original_price)}
-              </span>
-            )}
-
-            {deal.discount_percentage != null &&
-              deal.discount_percentage > 0 && (
-                <Badge variant="outline" className="border-destructive px-1.5 py-0 text-[10px] text-destructive">
-                  -{deal.discount_percentage}%
-                </Badge>
+              {deal.original_price != null && (
+                <span className="text-xs text-muted-foreground line-through">
+                  {formatPriceShort(deal.original_price)}
+                </span>
               )}
+
+              {deal.discount_percentage != null &&
+                deal.discount_percentage > 0 && (
+                  <Badge variant="outline" className="border-destructive px-1.5 py-0 text-[10px] text-destructive">
+                    -{deal.discount_percentage}%
+                  </Badge>
+                )}
+            </div>
+          )}
+
+          {/* Meta row 1: votes + comments */}
+          <div className="flex items-center gap-2.5 pt-0.5 text-xs text-muted-foreground">
+            <div className="relative z-10">
+              <VoteButton
+                entityType="deal"
+                entityId={deal.id}
+                upvoteCount={deal.upvote_count}
+                downvoteCount={deal.downvote_count}
+                userVote={userVote}
+                isLoggedIn={isLoggedIn}
+              />
+            </div>
+
+            <div className="flex items-center gap-1">
+              <MessageSquare className="h-3.5 w-3.5" />
+              <span>{deal.comment_count}</span>
+            </div>
+
+            {expired && (
+              <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
+                Expired
+              </Badge>
+            )}
           </div>
-        )}
 
-        {/* Meta row */}
-        <div className="flex items-center gap-2.5 pt-0.5 text-xs text-muted-foreground">
-          <div className="relative z-10">
-            <VoteButton
-              entityType="deal"
-              entityId={deal.id}
-              upvoteCount={deal.upvote_count}
-              downvoteCount={deal.downvote_count}
-              userVote={userVote}
-              isLoggedIn={isLoggedIn}
-            />
-          </div>
+          {/* Meta row 2: timestamp + author */}
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <time dateTime={deal.created_at}>
+              {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
+            </time>
 
-          <div className="flex items-center gap-1">
-            <MessageSquare className="h-3.5 w-3.5" />
-            <span>{deal.comment_count}</span>
-          </div>
-
-          <span className="text-foreground/20">&middot;</span>
-
-          <time dateTime={deal.created_at}>
-            {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
-          </time>
-
-          <>
             <span className="text-foreground/20">&middot;</span>
+
             {deal.profiles ? (
               <Link
                 href={`/user/${deal.profiles.username}`}
@@ -160,34 +179,28 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             ) : (
               <span>[deleted user]</span>
             )}
-          </>
+          </div>
+        </div>
 
-          {expired && (
-            <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
-              Expired
-            </Badge>
+        {/* Thumbnail */}
+        <div className="shrink-0">
+          {deal.image_url ? (
+            <div className="relative h-28 w-28 overflow-hidden rounded-sm border-2 border-foreground/10 bg-background sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
+              <Image
+                src={deal.image_url}
+                alt={deal.title}
+                fill
+                className="object-contain p-2"
+                sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 180px"
+                unoptimized
+              />
+            </div>
+          ) : (
+            <div className="flex h-28 w-28 items-center justify-center rounded-sm border-2 border-foreground/10 bg-muted sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
+              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+            </div>
           )}
         </div>
-      </div>
-
-      {/* Thumbnail — 2x larger */}
-      <div className="shrink-0 self-center">
-        {deal.image_url ? (
-          <div className="relative h-36 w-36 overflow-hidden rounded-sm border-2 border-foreground/10 bg-background md:h-[180px] md:w-[180px]">
-            <Image
-              src={deal.image_url}
-              alt={deal.title}
-              fill
-              className="object-contain p-2"
-              sizes="(max-width: 768px) 144px, 180px"
-              unoptimized
-            />
-          </div>
-        ) : (
-          <div className="flex h-36 w-36 items-center justify-center rounded-sm border-2 border-foreground/10 bg-muted md:h-[180px] md:w-[180px]">
-            <ImageIcon className="h-8 w-8 text-muted-foreground" />
-          </div>
-        )}
       </div>
     </article>
   );

@@ -25,7 +25,7 @@ export default async function NewDealPage() {
     .returns<{ id: string; label: string; slug: string }[]>();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
+    <div className="px-4 py-8 sm:px-6 lg:px-8">
       {/* Mobile: rules above form */}
       <div className="mb-6 lg:hidden">
         <PostingRulesSidebar />
