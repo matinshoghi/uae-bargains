@@ -88,7 +88,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             fill
             className="object-contain"
             sizes="(max-width: 768px) 100vw, 768px"
-            unoptimized
+            priority
           />
         </div>
       )}

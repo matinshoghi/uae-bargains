@@ -200,7 +200,6 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
                 fill
                 className="object-contain p-2"
                 sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 180px"
-                unoptimized
               />
             </div>
           ) : (

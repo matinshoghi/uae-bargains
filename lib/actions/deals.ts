@@ -3,8 +3,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { createDealSchema, updateDealSchema } from "@/lib/validations/deal";
 import { extractOgImage } from "@/lib/og";
+import { optimizeImage } from "@/lib/images";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+
+const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10MB
 
 export type DealFormState = {
   errors?: Record<string, string[]>;
@@ -73,8 +76,8 @@ export async function createDeal(
   const imageFile = formData.get("image") as File | null;
 
   if (imageFile && imageFile.size > 0) {
-    if (imageFile.size > 5 * 1024 * 1024) {
-      return { errors: { image: ["Image must be under 5MB"] }, values };
+    if (imageFile.size > MAX_UPLOAD_SIZE) {
+      return { errors: { image: ["Image must be under 10MB"] }, values };
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -85,12 +88,12 @@ export async function createDeal(
       };
     }
 
-    const fileExt = imageFile.name.split(".").pop();
-    const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+    const optimized = await optimizeImage(await imageFile.arrayBuffer());
+    const filePath = `${user.id}/${crypto.randomUUID()}.${optimized.ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from("deal-images")
-      .upload(filePath, imageFile);
+      .upload(filePath, optimized.buffer, { contentType: optimized.contentType });
 
     if (uploadError) {
       return { errors: { image: ["Failed to upload image. Please try again."] }, values };
@@ -113,14 +116,13 @@ export async function createDeal(
           signal: AbortSignal.timeout(5000),
         });
         if (imgResponse.ok) {
-          const contentType = imgResponse.headers.get("content-type") ?? "image/jpeg";
-          const ext = contentType.includes("png") ? "png" : contentType.includes("webp") ? "webp" : "jpg";
-          const buffer = await imgResponse.arrayBuffer();
-          const filePath = `${user.id}/${crypto.randomUUID()}.${ext}`;
+          const rawBuffer = await imgResponse.arrayBuffer();
+          const optimized = await optimizeImage(rawBuffer);
+          const filePath = `${user.id}/${crypto.randomUUID()}.${optimized.ext}`;
 
           const { error: uploadError } = await supabase.storage
             .from("deal-images")
-            .upload(filePath, buffer, { contentType });
+            .upload(filePath, optimized.buffer, { contentType: optimized.contentType });
 
           if (!uploadError) {
             const { data: publicUrl } = supabase.storage
@@ -240,8 +242,8 @@ export async function updateDeal(
 
   // If user uploaded a new image
   if (imageFile && imageFile.size > 0) {
-    if (imageFile.size > 5 * 1024 * 1024) {
-      return { errors: { image: ["Image must be under 5MB"] }, values };
+    if (imageFile.size > MAX_UPLOAD_SIZE) {
+      return { errors: { image: ["Image must be under 10MB"] }, values };
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -260,12 +262,12 @@ export async function updateDeal(
       }
     }
 
-    const fileExt = imageFile.name.split(".").pop();
-    const filePath = `${user.id}/${crypto.randomUUID()}.${fileExt}`;
+    const optimized = await optimizeImage(await imageFile.arrayBuffer());
+    const filePath = `${user.id}/${crypto.randomUUID()}.${optimized.ext}`;
 
     const { error: uploadError } = await supabase.storage
       .from("deal-images")
-      .upload(filePath, imageFile);
+      .upload(filePath, optimized.buffer, { contentType: optimized.contentType });
 
     if (uploadError) {
       return { errors: { image: ["Failed to upload image. Please try again."] }, values };

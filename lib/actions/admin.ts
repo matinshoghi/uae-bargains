@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { optimizeImage } from "@/lib/images";
 import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {
@@ -150,8 +151,8 @@ export async function adminUploadDealImage(
       return { error: "No image provided" };
     }
 
-    if (imageFile.size > 5 * 1024 * 1024) {
-      return { error: "Image must be under 5MB" };
+    if (imageFile.size > 10 * 1024 * 1024) {
+      return { error: "Image must be under 10MB" };
     }
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
@@ -175,12 +176,12 @@ export async function adminUploadDealImage(
       }
     }
 
-    const fileExt = imageFile.name.split(".").pop();
-    const filePath = `admin/${crypto.randomUUID()}.${fileExt}`;
+    const optimized = await optimizeImage(await imageFile.arrayBuffer());
+    const filePath = `admin/${crypto.randomUUID()}.${optimized.ext}`;
 
     const { error: uploadError } = await admin.storage
       .from("deal-images")
-      .upload(filePath, imageFile);
+      .upload(filePath, optimized.buffer, { contentType: optimized.contentType });
 
     if (uploadError) return { error: "Failed to upload image" };
 

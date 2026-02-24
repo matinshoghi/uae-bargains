@@ -83,8 +83,8 @@ export function DealForm({ categories, initialData }: DealFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image must be under 5MB");
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be under 10MB");
       e.target.value = "";
       return;
     }
@@ -320,7 +320,6 @@ export function DealForm({ categories, initialData }: DealFormProps) {
               width={300}
               height={200}
               className="max-h-[200px] rounded-sm border-2 border-foreground/10 object-cover"
-              unoptimized
             />
             <button
               type="button"
@@ -337,7 +336,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
           >
             <ImagePlus className="h-8 w-8 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">
-              Click to upload (JPEG, PNG, WebP — max 5MB)
+              Click to upload (JPEG, PNG, WebP — max 10MB)
             </span>
           </label>
         )}
