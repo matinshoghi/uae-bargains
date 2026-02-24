@@ -8,8 +8,26 @@ export type SeedUserWithProfile = {
     username: string;
     display_name: string | null;
     avatar_url: string | null;
+    created_at?: string;
   };
 };
+
+export async function fetchSeedUser(
+  userId: string
+): Promise<SeedUserWithProfile | null> {
+  const admin = createAdminClient();
+
+  const { data, error } = await admin
+    .from("seed_accounts")
+    .select(
+      "user_id, notes, created_at, profiles:user_id (username, display_name, avatar_url, created_at)"
+    )
+    .eq("user_id", userId)
+    .single();
+
+  if (error) return null;
+  return data as unknown as SeedUserWithProfile;
+}
 
 export async function fetchSeedUsers(): Promise<SeedUserWithProfile[]> {
   const admin = createAdminClient();

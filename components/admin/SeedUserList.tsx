@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import Link from "next/link";
 import { deleteSeedUser } from "@/lib/actions/seed";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import type { SeedUserWithProfile } from "@/lib/queries/seed";
@@ -68,6 +69,16 @@ function SeedUserRow({ user }: { user: SeedUserWithProfile }) {
         <span className="hidden sm:inline rounded-md bg-accent px-2 py-1 font-mono">
           {user.user_id.slice(0, 8)}...
         </span>
+
+        <Link
+          href={`/admin/seed-users/${user.user_id}/edit`}
+          title="Edit seed user"
+          className="rounded-lg border border-border p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+          </svg>
+        </Link>
 
         <button
           onClick={handleDelete}

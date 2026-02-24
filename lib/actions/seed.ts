@@ -97,6 +97,82 @@ export async function createSeedUser(
   }
 }
 
+export async function updateSeedUser(
+  userId: string,
+  fields: {
+    display_name: string;
+    username: string;
+    avatar_url: string | null;
+    notes: string | null;
+    created_at: string | null;
+  }
+): Promise<SeedFormState> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    // Verify seed account exists
+    const { data: seedAccount } = await admin
+      .from("seed_accounts")
+      .select("user_id")
+      .eq("user_id", userId)
+      .single();
+
+    if (!seedAccount) return { error: "Seed user not found" };
+
+    // Validate
+    if (!fields.username || fields.username.length < 3 || fields.username.length > 30) {
+      return { error: "Username must be 3-30 characters" };
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(fields.username)) {
+      return { error: "Username can only contain letters, numbers, hyphens, and underscores" };
+    }
+    if (!fields.display_name || fields.display_name.length < 1 || fields.display_name.length > 50) {
+      return { error: "Display name must be 1-50 characters" };
+    }
+
+    // Check username uniqueness (excluding current user)
+    const { data: existing } = await admin
+      .from("profiles")
+      .select("id")
+      .eq("username", fields.username)
+      .neq("id", userId)
+      .single();
+
+    if (existing) return { error: "Username is already taken" };
+
+    // Update profile
+    const profileUpdate: Record<string, unknown> = {
+      username: fields.username,
+      display_name: fields.display_name,
+      avatar_url: fields.avatar_url,
+    };
+    if (fields.created_at) {
+      profileUpdate.created_at = fields.created_at;
+    }
+
+    const { error: profileError } = await admin
+      .from("profiles")
+      .update(profileUpdate)
+      .eq("id", userId);
+
+    if (profileError) return { error: profileError.message };
+
+    // Update seed_accounts notes
+    const { error: seedError } = await admin
+      .from("seed_accounts")
+      .update({ notes: fields.notes })
+      .eq("user_id", userId);
+
+    if (seedError) return { error: seedError.message };
+
+    revalidatePath("/admin/seed-users");
+    return { success: true };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
 export async function deleteSeedUser(userId: string): Promise<SeedFormState> {
   try {
     await requireAdmin();

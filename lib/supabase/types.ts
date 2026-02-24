@@ -37,6 +37,7 @@ export interface Database {
           avatar_url?: string | null;
           reputation?: number;
           is_admin?: boolean;
+          created_at?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -311,6 +312,7 @@ export interface Database {
         };
         Update: {
           notes?: string | null;
+          created_at?: string;
         };
         Relationships: [
           {
