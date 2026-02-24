@@ -20,7 +20,7 @@ DECLARE
 BEGIN
   -- Derive base username from Google preferred_username or email prefix
   base_username := COALESCE(
-    NEW.raw_user_meta_data->>'preferred_username',
+    NULLIF(NEW.raw_user_meta_data->>'preferred_username', ''),
     split_part(NEW.email, '@', 1)
   );
 
@@ -39,24 +39,27 @@ BEGIN
   -- Retry loop: append random 4-digit suffix on conflict
   LOOP
     BEGIN
-      INSERT INTO profiles (id, username, avatar_url)
+      INSERT INTO public.profiles (id, username, avatar_url, reputation, is_admin)
       VALUES (
         NEW.id,
         final_username,
-        NEW.raw_user_meta_data->>'avatar_url'
+        NEW.raw_user_meta_data->>'avatar_url',
+        0,
+        false
       );
       EXIT; -- success
     EXCEPTION WHEN unique_violation THEN
       attempt := attempt + 1;
       final_username := base_username || floor(random() * 9000 + 1000)::text;
       IF attempt > 10 THEN
-        -- ultimate fallback
         final_username := 'user_' || substr(replace(NEW.id::text, '-', ''), 1, 8);
-        INSERT INTO profiles (id, username, avatar_url)
+        INSERT INTO public.profiles (id, username, avatar_url, reputation, is_admin)
         VALUES (
           NEW.id,
           final_username,
-          NEW.raw_user_meta_data->>'avatar_url'
+          NEW.raw_user_meta_data->>'avatar_url',
+          0,
+          false
         );
         EXIT;
       END IF;
