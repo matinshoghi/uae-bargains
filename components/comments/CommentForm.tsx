@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { createComment } from "@/lib/actions/comments";
+import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { toast } from "sonner";
 
 type FormState = {
@@ -25,7 +25,7 @@ export function CommentForm({
   isLoggedIn?: boolean;
 }) {
   const formRef = useRef<HTMLFormElement>(null);
-  const router = useRouter();
+  const { openAuthModal } = useAuthModal();
   const [state, action, isPending] = useActionState(
     async (_prev: FormState, formData: FormData) => {
       const result = await createComment(formData);
@@ -41,7 +41,7 @@ export function CommentForm({
 
   function handleAuthGate() {
     if (!isLoggedIn) {
-      router.push("/login");
+      openAuthModal({ message: "Sign in to join the conversation" });
     }
   }
 

@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { NavBar } from "@/components/layout/NavBar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Footer } from "@/components/layout/Footer";
+import { AuthModalProvider } from "@/components/auth/AuthModalProvider";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -65,13 +66,15 @@ export default async function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <NavBar serverProfile={serverProfile} />
-        <main className="mx-auto min-h-screen max-w-7xl">
-          {children}
-        </main>
-        <Footer />
-        <MobileNav />
-        <Toaster />
+        <AuthModalProvider>
+          <NavBar serverProfile={serverProfile} />
+          <main className="mx-auto min-h-screen max-w-7xl">
+            {children}
+          </main>
+          <Footer />
+          <MobileNav />
+          <Toaster />
+        </AuthModalProvider>
         <Analytics />
         <SpeedInsights />
       </body>

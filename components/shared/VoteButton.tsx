@@ -3,7 +3,7 @@
 import { useOptimistic, useTransition } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
 import { voteDeal, voteComment } from "@/lib/actions/votes";
-import { useRouter } from "next/navigation";
+import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { cn } from "@/lib/utils";
 
 interface VoteButtonProps {
@@ -29,7 +29,7 @@ export function VoteButton({
   userVote,
   isLoggedIn,
 }: VoteButtonProps) {
-  const router = useRouter();
+  const { openAuthModal } = useAuthModal();
   const [isPending, startTransition] = useTransition();
 
   const [optimistic, setOptimistic] = useOptimistic<VoteState, 1 | -1>(
@@ -65,7 +65,7 @@ export function VoteButton({
     e.stopPropagation();
 
     if (!isLoggedIn) {
-      router.push("/login");
+      openAuthModal({ message: "Sign in to vote on this deal" });
       return;
     }
 

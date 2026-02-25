@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CommentForm } from "./CommentForm";
-import Link from "next/link";
+import { useAuthModal } from "@/components/auth/AuthModalProvider";
 
 export function ReplyButton({
   dealId,
@@ -14,15 +14,16 @@ export function ReplyButton({
   isLoggedIn: boolean;
 }) {
   const [showForm, setShowForm] = useState(false);
+  const { openAuthModal } = useAuthModal();
 
   if (!isLoggedIn) {
     return (
-      <Link
-        href="/login"
+      <button
+        onClick={() => openAuthModal({ message: "Sign in to reply" })}
         className="font-display text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
       >
         Reply
-      </Link>
+      </button>
     );
   }
 

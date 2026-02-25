@@ -5,14 +5,18 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(redirectPath?: string) {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
+
+  const callbackUrl = redirectPath
+    ? `${origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`
+    : `${origin}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${origin}/auth/callback`,
+      redirectTo: callbackUrl,
     },
   });
 
@@ -35,6 +39,35 @@ export async function signUp(email: string, password: string) {
     email,
     password,
     options: { emailRedirectTo: `${origin}/auth/callback` },
+  });
+
+  if (error) throw error;
+}
+
+export async function signInWithMagicLink(email: string, redirectPath?: string) {
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+
+  const callbackUrl = redirectPath
+    ? `${origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`
+    : `${origin}/auth/callback`;
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: callbackUrl,
+    },
+  });
+
+  if (error) throw error;
+}
+
+export async function resetPassword(email: string) {
+  const supabase = await createClient();
+  const origin = (await headers()).get("origin");
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/settings/reset-password`,
   });
 
   if (error) throw error;

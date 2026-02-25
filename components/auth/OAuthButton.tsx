@@ -3,14 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { signInWithGoogle } from "@/lib/actions/auth";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export function OAuthButton() {
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
 
   async function handleGoogleSignIn() {
     setLoading(true);
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(pathname === "/login" ? undefined : pathname);
     } catch {
       setLoading(false);
     }

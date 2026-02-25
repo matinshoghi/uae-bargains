@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -30,6 +31,7 @@ export function AuthButton({
   initialProfile?: Profile | null;
 }) {
   const router = useRouter();
+  const { openAuthModal } = useAuthModal();
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [profile, setProfile] = useState<Profile | null>(initialProfile);
   const [loading, setLoading] = useState(true);
@@ -72,17 +74,17 @@ export function AuthButton({
   if (!user) {
     if (variant === "link") {
       return (
-        <Link
-          href="/login"
+        <button
+          onClick={() => openAuthModal()}
           className="font-display text-sm font-semibold text-foreground transition-colors duration-200 hover:text-muted-foreground"
         >
           Sign In
-        </Link>
+        </button>
       );
     }
     return (
-      <Button asChild variant="default" size="sm">
-        <Link href="/login">Sign In</Link>
+      <Button variant="default" size="sm" onClick={() => openAuthModal()}>
+        Sign In
       </Button>
     );
   }
