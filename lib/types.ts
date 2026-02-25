@@ -10,6 +10,11 @@ export type DealWithRelations = DealRow & {
   categories: Pick<CategoryRow, "label" | "slug"> | null;
 };
 
+export type AdminComment = CommentRow & {
+  profiles: Pick<ProfileRow, "username" | "avatar_url"> | null;
+  deals: Pick<DealRow, "title"> | null;
+};
+
 export type CommentWithProfile = CommentRow & {
   profiles: Pick<ProfileRow, "username" | "avatar_url"> | null;
 };

@@ -240,6 +240,98 @@ export async function adminRemoveDealImage(
   }
 }
 
+export async function adminHideComment(
+  commentId: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    const { data: comment } = await admin
+      .from("comments")
+      .select("deal_id")
+      .eq("id", commentId)
+      .single();
+
+    if (!comment) return { error: "Comment not found" };
+
+    const { error } = await admin
+      .from("comments")
+      .update({ is_hidden: true })
+      .eq("id", commentId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath(`/deals/${comment.deal_id}`);
+    revalidatePath("/admin/comments");
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function adminUnhideComment(
+  commentId: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    const { data: comment } = await admin
+      .from("comments")
+      .select("deal_id")
+      .eq("id", commentId)
+      .single();
+
+    if (!comment) return { error: "Comment not found" };
+
+    const { error } = await admin
+      .from("comments")
+      .update({ is_hidden: false })
+      .eq("id", commentId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath(`/deals/${comment.deal_id}`);
+    revalidatePath("/admin/comments");
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function adminEditComment(
+  commentId: string,
+  fields: { content?: string; created_at?: string }
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    const { data: comment } = await admin
+      .from("comments")
+      .select("deal_id")
+      .eq("id", commentId)
+      .single();
+
+    if (!comment) return { error: "Comment not found" };
+
+    // Admin edits should NOT update updated_at — same convention as adminEditDeal
+    const { error } = await admin
+      .from("comments")
+      .update(fields)
+      .eq("id", commentId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath(`/deals/${comment.deal_id}`);
+    revalidatePath("/admin/comments");
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
 export async function adminDeleteComment(
   commentId: string
 ): Promise<{ error?: string }> {

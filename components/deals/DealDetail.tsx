@@ -173,12 +173,9 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         {/* Posted by + Time */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           {deal.profiles ? (
-            <Link
-              href={`/user/${deal.profiles.username}`}
-              className="font-display font-semibold text-foreground hover:opacity-80"
-            >
+            <span className="font-display font-semibold text-foreground">
               {deal.profiles.username}
-            </Link>
+            </span>
           ) : (
             <span className="font-medium">[deleted]</span>
           )}

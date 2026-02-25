@@ -153,6 +153,8 @@ export interface Database {
           depth: number;
           upvote_count: number;
           downvote_count: number;
+          is_hidden: boolean;
+          is_edited: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -163,10 +165,15 @@ export interface Database {
           parent_id?: string | null;
           content: string;
           depth?: number;
+          is_hidden?: boolean;
+          is_edited?: boolean;
         };
         Update: {
           user_id?: string | null;
           content?: string;
+          is_hidden?: boolean;
+          is_edited?: boolean;
+          created_at?: string;
           updated_at?: string;
         };
         Relationships: [

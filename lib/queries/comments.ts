@@ -15,6 +15,7 @@ export async function fetchComments(
     `
     )
     .eq("deal_id", dealId)
+    .eq("is_hidden", false)
     .order("created_at", { ascending: true });
 
   if (error) throw error;

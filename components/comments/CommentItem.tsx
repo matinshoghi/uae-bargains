@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -49,10 +48,7 @@ export function CommentItem({
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const isEdited =
-    comment.updated_at &&
-    comment.created_at &&
-    comment.updated_at !== comment.created_at;
+  const isEdited = comment.is_edited;
 
   async function handleSave() {
     const trimmed = editContent.trim();
@@ -112,12 +108,9 @@ export function CommentItem({
             [deleted user]
           </span>
         ) : (
-          <Link
-            href={`/user/${comment.profiles!.username}`}
-            className="font-display text-sm font-semibold hover:underline"
-          >
+          <span className="font-display text-sm font-semibold">
             @{comment.profiles!.username}
-          </Link>
+          </span>
         )}
         <span className="text-xs text-muted-foreground">
           {shortTimeAgo(comment.created_at)}

@@ -85,7 +85,7 @@ export async function updateComment(commentId: string, content: string) {
 
   const { error } = await supabase
     .from("comments")
-    .update({ content: parsed.data.content, updated_at: new Date().toISOString() })
+    .update({ content: parsed.data.content, is_edited: true, updated_at: new Date().toISOString() })
     .eq("id", commentId);
 
   if (error) {

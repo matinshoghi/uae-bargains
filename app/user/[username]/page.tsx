@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import type { Metadata } from "next";
 import { UserAvatar } from "@/components/shared/UserAvatar";
@@ -10,6 +9,7 @@ import {
   fetchUserDeals,
 } from "@/lib/queries/profiles";
 import { getUserDealVotes } from "@/lib/queries/deals";
+import { createClient } from "@/lib/supabase/server";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -29,9 +29,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function UserProfilePage({ params }: Props) {
   const { username } = await params;
-  const profile = await fetchProfileByUsername(username);
 
-  if (!profile) notFound();
+  // Only allow the logged-in user to view their own profile
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) notFound();
+
+  const profile = await fetchProfileByUsername(username);
+  if (!profile || profile.id !== user.id) notFound();
 
   const [stats, deals, { userVotes, isLoggedIn }] = await Promise.all([
     fetchUserStats(profile.id),
@@ -69,7 +74,7 @@ export default async function UserProfilePage({ params }: Props) {
 
       {/* User's deals */}
       <div>
-        <h2 className="font-display mb-4 border-b-2 border-foreground pb-3 text-2xl font-bold uppercase tracking-tight">Their Deals</h2>
+        <h2 className="font-display mb-4 border-b-2 border-foreground pb-3 text-2xl font-bold uppercase tracking-tight">My Deals</h2>
         {deals.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground">
             No deals posted yet.
