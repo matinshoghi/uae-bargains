@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MoreVertical, Pencil, Trash2, RotateCcw, Shield } from "lucide-react";
+import { Pencil, Trash2, RotateCcw, Shield, PenOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -29,15 +29,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { removeDeal, restoreDeal } from "@/lib/actions/admin";
+import { removeDeal, restoreDeal, resetEditedFlag } from "@/lib/actions/admin";
 import { toast } from "sonner";
 
 interface AdminDealActionsProps {
   dealId: string;
   isRemoved: boolean;
+  isEdited: boolean;
 }
 
-export function AdminDealActions({ dealId, isRemoved }: AdminDealActionsProps) {
+export function AdminDealActions({ dealId, isRemoved, isEdited }: AdminDealActionsProps) {
   const router = useRouter();
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [removeReason, setRemoveReason] = useState("");
@@ -67,6 +68,17 @@ export function AdminDealActions({ dealId, isRemoved }: AdminDealActionsProps) {
     });
   }
 
+  function handleResetEdited() {
+    startTransition(async () => {
+      const result = await resetEditedFlag(dealId);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Edited flag cleared");
+      }
+    });
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -83,6 +95,12 @@ export function AdminDealActions({ dealId, isRemoved }: AdminDealActionsProps) {
             <Pencil className="mr-2 h-4 w-4" />
             Admin Edit
           </DropdownMenuItem>
+          {isEdited && (
+            <DropdownMenuItem onClick={handleResetEdited} disabled={isPending}>
+              <PenOff className="mr-2 h-4 w-4" />
+              Clear Edited Flag
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           {isRemoved ? (
             <DropdownMenuItem onClick={handleRestore} disabled={isPending}>

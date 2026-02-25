@@ -61,6 +61,14 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
     deal.expires_at ? deal.expires_at.split("T")[0] : ""
   );
   const [userId, setUserId] = useState(deal.user_id ?? "");
+  const [createdAt, setCreatedAt] = useState(() => {
+    if (!deal.created_at) return "";
+    // Convert UTC to local time for datetime-local input
+    const d = new Date(deal.created_at);
+    const off = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - off * 60_000);
+    return local.toISOString().slice(0, 16);
+  });
 
   // Image state
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -114,6 +122,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
         location: location || null,
         expires_at: expiresAt ? `${expiresAt}T23:59:59` : null,
         user_id: userId || null,
+        created_at: createdAt ? new Date(createdAt).toISOString() : undefined,
       };
 
       const result = await adminEditDeal(deal.id, fields);
@@ -165,6 +174,17 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
         <p className="text-xs text-muted-foreground">
           🌱 indicates seed accounts. Change this to reassign the deal to another user.
         </p>
+      </div>
+
+      {/* Posted Date/Time */}
+      <div className="space-y-2">
+        <Label htmlFor="admin-created-at" className="section-label">Posted Date/Time</Label>
+        <Input
+          id="admin-created-at"
+          type="datetime-local"
+          value={createdAt}
+          onChange={(e) => setCreatedAt(e.target.value)}
+        />
       </div>
 
       {/* Title */}

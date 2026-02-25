@@ -3,6 +3,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { captureImageForDeal } from "@/lib/og";
+import { optimizeImage } from "@/lib/images";
+
+const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10MB
 
 export type SeedFormState = {
   error?: string;
@@ -223,7 +228,6 @@ export async function postDealAsSeedUser(
     const originalPriceRaw = formData.get("original_price") as string;
     const url = (formData.get("url") as string)?.trim() || null;
     const location = (formData.get("location") as string)?.trim() || null;
-    const imageUrl = (formData.get("image_url") as string)?.trim() || null;
     const expiresAt = (formData.get("expires_at") as string)?.trim() || null;
 
     if (!userId) return { error: "Select a seed user" };
@@ -240,11 +244,43 @@ export async function postDealAsSeedUser(
 
     if (!seedAccount) return { error: "User is not a seed account" };
 
+    // Handle image upload
+    let imageUrl: string | null = null;
+    const imageFile = formData.get("image") as File | null;
+
+    if (imageFile && imageFile.size > 0) {
+      if (imageFile.size > MAX_UPLOAD_SIZE) {
+        return { error: "Image must be under 10MB" };
+      }
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowedTypes.includes(imageFile.type)) {
+        return { error: "Only JPEG, PNG, and WebP images are accepted" };
+      }
+
+      const optimized = await optimizeImage(await imageFile.arrayBuffer());
+      const filePath = `${userId}/${crypto.randomUUID()}.${optimized.ext}`;
+
+      const { error: uploadError } = await admin.storage
+        .from("deal-images")
+        .upload(filePath, optimized.buffer, { contentType: optimized.contentType });
+
+      if (uploadError) {
+        return { error: "Failed to upload image. Please try again." };
+      }
+
+      const { data: publicUrl } = admin.storage
+        .from("deal-images")
+        .getPublicUrl(filePath);
+
+      imageUrl = publicUrl.publicUrl;
+    }
+
     const price = priceRaw ? parseFloat(priceRaw) : null;
     const originalPrice = originalPriceRaw ? parseFloat(originalPriceRaw) : null;
     const expiresAtValue = expiresAt ? `${expiresAt}T23:59:59` : null;
 
-    const { error } = await admin.from("deals").insert({
+    const { data: deal, error } = await admin.from("deals").insert({
       user_id: userId,
       category_id: categoryId,
       title,
@@ -255,9 +291,27 @@ export async function postDealAsSeedUser(
       location,
       image_url: imageUrl,
       expires_at: expiresAtValue,
-    });
+    })
+    .select("id")
+    .single();
 
     if (error) return { error: error.message };
+
+    // Auto-extract image in the background if none was uploaded
+    if (!imageUrl && url && deal) {
+      const dealId = deal.id;
+      const dealUrl = url;
+      after(async () => {
+        const adminClient = createAdminClient();
+        const capturedUrl = await captureImageForDeal(dealUrl, userId, adminClient);
+        if (capturedUrl) {
+          await adminClient
+            .from("deals")
+            .update({ image_url: capturedUrl })
+            .eq("id", dealId);
+        }
+      });
+    }
 
     revalidatePath("/");
     return { success: true };

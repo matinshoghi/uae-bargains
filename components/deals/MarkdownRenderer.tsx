@@ -17,13 +17,17 @@ const allowedElements = new Set([
 ]);
 
 const components: Components = {
+  // Inline formatting
+  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+  em: ({ children }) => <em className="italic">{children}</em>,
+  del: ({ children }) => <del className="line-through">{children}</del>,
   // Open links in new tab
   a: ({ children, href, ...props }) => (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="text-primary underline underline-offset-2 hover:text-primary/80"
+      className="text-blue-600 underline underline-offset-2 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
       {...props}
     >
       {children}

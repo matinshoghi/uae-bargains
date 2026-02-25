@@ -114,6 +114,7 @@ export async function adminEditDeal(
     location?: string | null;
     expires_at?: string | null;
     user_id?: string | null;
+    created_at?: string;
   }
 ): Promise<{ error?: string }> {
   try {
@@ -122,15 +123,52 @@ export async function adminEditDeal(
 
     // Don't update updated_at — admin edits should not trigger the
     // "(edited)" indicator visible to users. Only author self-edits do.
+    // When created_at changes, sync updated_at to match so the
+    // wasEdited() check (updated_at - created_at > 60s) stays clean.
+    const payload: Record<string, unknown> = { ...fields };
+    if (fields.created_at) {
+      payload.updated_at = fields.created_at;
+    }
+
     const { error } = await admin
       .from("deals")
-      .update(fields)
+      .update(payload)
       .eq("id", dealId);
 
     if (error) return { error: error.message };
 
     revalidatePath("/");
     revalidatePath("/admin/moderation");
+    revalidatePath(`/deals/${dealId}`);
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function resetEditedFlag(
+  dealId: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    // Sync updated_at to created_at so the wasEdited() check returns false
+    const { data: deal, error: fetchError } = await admin
+      .from("deals")
+      .select("created_at")
+      .eq("id", dealId)
+      .single();
+
+    if (fetchError || !deal) return { error: fetchError?.message ?? "Deal not found" };
+
+    const { error } = await admin
+      .from("deals")
+      .update({ updated_at: deal.created_at })
+      .eq("id", dealId);
+
+    if (error) return { error: error.message };
+
     revalidatePath(`/deals/${dealId}`);
     return {};
   } catch (e) {

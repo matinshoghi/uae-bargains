@@ -68,7 +68,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         {isRemoved && <Badge variant="destructive">Removed</Badge>}
         <div className="ml-auto flex items-center gap-1">
           {isAdmin && (
-            <AdminDealActions dealId={deal.id} isRemoved={isRemoved} />
+            <AdminDealActions dealId={deal.id} isRemoved={isRemoved} isEdited={edited} />
           )}
           {isAuthor && !isRemoved && (
             <DealActions dealId={deal.id} />
