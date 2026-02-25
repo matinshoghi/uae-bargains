@@ -21,7 +21,7 @@ export default async function HomePage({
   ]);
 
   return (
-    <div className="px-4 py-6 sm:px-6 lg:px-8">
+    <div className="px-4 pb-6 sm:px-6 lg:px-8">
       {banners.length > 0 && (
         <div className="mb-6">
           <HeroBannerCarousel banners={banners} />

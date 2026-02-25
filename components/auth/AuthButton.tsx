@@ -108,7 +108,7 @@ export function AuthButton({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="rounded-sm">
-          <Avatar className="h-8 w-8 rounded-sm">
+          <Avatar className="h-8 w-8 rounded-sm border border-foreground">
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className="rounded-sm text-xs">{initials}</AvatarFallback>
           </Avatar>

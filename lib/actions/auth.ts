@@ -5,18 +5,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 
-export async function signInWithGoogle(redirectPath?: string) {
+export async function signInWithGoogle() {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
-
-  const callbackUrl = redirectPath
-    ? `${origin}/auth/callback?next=${encodeURIComponent(redirectPath)}`
-    : `${origin}/auth/callback`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: callbackUrl,
+      redirectTo: `${origin}/auth/callback`,
     },
   });
 
@@ -123,5 +119,6 @@ export async function deleteAccount() {
     throw new Error("Failed to delete account. Please try again.");
   }
 
-  redirect("/");
+  // Sign out the server session so cookies are cleared
+  await supabase.auth.signOut();
 }

@@ -11,8 +11,12 @@ export function OAuthButton() {
 
   async function handleGoogleSignIn() {
     setLoading(true);
+    // Store the current path so the callback can redirect back here
+    if (pathname && pathname !== "/login") {
+      document.cookie = `auth_redirect=${pathname};path=/;max-age=600;SameSite=Lax`;
+    }
     try {
-      await signInWithGoogle(pathname === "/login" ? undefined : pathname);
+      await signInWithGoogle();
     } catch {
       setLoading(false);
     }

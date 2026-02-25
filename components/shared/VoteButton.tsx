@@ -82,7 +82,7 @@ export function VoteButton({
   const netScore = optimistic.upvoteCount - optimistic.downvoteCount;
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 rounded-sm border border-foreground">
       <button
         onClick={(e) => handleVote(e, 1)}
         disabled={isPending}
@@ -90,7 +90,7 @@ export function VoteButton({
         className={cn(
           "rounded-sm p-1.5 transition-colors",
           optimistic.userVote === 1
-            ? "bg-primary/20 text-primary-foreground"
+            ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:bg-muted hover:text-foreground"
         )}
       >

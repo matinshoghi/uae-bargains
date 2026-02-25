@@ -21,7 +21,7 @@ function ShareButton({
     <button
       onClick={onClick}
       aria-label={label}
-      className="flex h-9 w-9 items-center justify-center rounded-full border transition-colors hover:bg-muted"
+      className="flex h-9 w-9 items-center justify-center rounded-sm border border-foreground transition-colors hover:bg-muted"
       title={label}
     >
       <Icon className="h-4 w-4" />

@@ -68,47 +68,39 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
     <article
       className={`relative border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
     >
-      {/* Top row: category badge + staff pick + share */}
-      <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          {deal.categories && CategoryIcon ? (
-            <Badge
-              variant="outline"
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
-            >
-              <CategoryIcon className="h-3 w-3" />
-              {deal.categories.label}
-            </Badge>
-          ) : null}
-
-          {deal.is_featured && (
-            <Badge className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]">
-              <Award className="h-3 w-3" />
-              Staff Pick
-            </Badge>
-          )}
-        </div>
-
-        <ShareIconButton
-          url={`/deals/${deal.id}`}
-          title={deal.title}
-          className="relative z-10 text-muted-foreground transition-colors hover:text-foreground"
-        />
-      </div>
-
-      {/* Title — full width */}
-      <h3 className="mb-2 font-display text-[15px] font-bold leading-snug tracking-tight">
-        <Link
-          href={`/deals/${deal.id}`}
-          className="after:absolute after:inset-0"
-        >
-          {deal.title}
-        </Link>
-      </h3>
-
-      {/* Body: text left, image right */}
+      {/* Outer layout: text left, image right — image top-aligns with category row */}
       <div className="flex items-start gap-4">
         <div className="min-w-0 flex-1 space-y-2">
+          {/* Top row: category badge + staff pick (share moved to bottom) */}
+          <div className="flex items-center gap-1.5">
+            {deal.categories && CategoryIcon ? (
+              <Badge
+                variant="outline"
+                className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
+              >
+                <CategoryIcon className="h-3 w-3" />
+                {deal.categories.label}
+              </Badge>
+            ) : null}
+
+            {deal.is_featured && (
+              <Badge className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]">
+                <Award className="h-3 w-3" />
+                Staff Pick
+              </Badge>
+            )}
+          </div>
+
+          {/* Title */}
+          <h3 className="font-display text-[22px] font-bold leading-snug tracking-tight">
+            <Link
+              href={`/deals/${deal.id}`}
+              className="after:absolute after:inset-0"
+            >
+              {deal.title}
+            </Link>
+          </h3>
+
           {/* Description */}
           {deal.description && (
             <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
@@ -120,31 +112,31 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
           {(deal.price != null || deal.original_price != null) && (
             <div className="flex items-baseline gap-2">
               {deal.price != null && deal.price === 0 ? (
-                <Badge>Free</Badge>
+                <Badge className="text-[18px] px-1.5 py-0.5">Free</Badge>
               ) : deal.price != null ? (
-                <span className="font-display text-sm font-bold text-primary-foreground">
-                  <span className="inline-flex items-center rounded-sm bg-primary px-1.5 py-0.5">
+                <span className="font-display text-[18px] font-bold text-primary-foreground">
+                  <span className="inline-flex items-center rounded-sm border border-foreground bg-primary px-1.5 py-0.5">
                     {formatPriceShort(deal.price)}
                   </span>
                 </span>
               ) : null}
 
               {deal.original_price != null && (
-                <span className="text-xs text-muted-foreground line-through">
+                <span className="text-[18px] text-muted-foreground line-through">
                   {formatPriceShort(deal.original_price)}
                 </span>
               )}
 
               {deal.discount_percentage != null &&
                 deal.discount_percentage > 0 && (
-                  <Badge variant="outline" className="border-destructive px-1.5 py-0 text-[10px] text-destructive">
+                  <Badge variant="outline" className="border-destructive px-1.5 py-0.5 text-[18px] text-destructive">
                     -{deal.discount_percentage}%
                   </Badge>
                 )}
             </div>
           )}
 
-          {/* Meta row 1: votes + comments */}
+          {/* Meta row 1: votes + comments + share */}
           <div className="flex items-center gap-2.5 pt-0.5 text-xs text-muted-foreground">
             <div className="relative z-10">
               <VoteButton
@@ -161,6 +153,12 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
               <MessageSquare className="h-3.5 w-3.5" />
               <span>{deal.comment_count}</span>
             </div>
+
+            <ShareIconButton
+              url={`/deals/${deal.id}`}
+              title={deal.title}
+              className="relative z-10 text-muted-foreground transition-colors hover:text-foreground"
+            />
 
             {expired && (
               <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
@@ -185,20 +183,20 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
           </div>
         </div>
 
-        {/* Thumbnail */}
+        {/* Thumbnail — top-aligned with category row */}
         <div className="shrink-0">
           {deal.image_url ? (
-            <div className="relative h-28 w-28 overflow-hidden rounded-sm border-2 border-foreground/10 bg-background sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
+            <div className="relative h-28 w-28 overflow-hidden rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
               <Image
                 src={deal.image_url}
                 alt={deal.title}
                 fill
-                className="object-contain p-2"
+                className="object-contain"
                 sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 180px"
               />
             </div>
           ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-sm border-2 border-foreground/10 bg-muted sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
+            <div className="flex h-28 w-28 items-center justify-center rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
               <ImageIcon className="h-8 w-8 text-muted-foreground" />
             </div>
           )}

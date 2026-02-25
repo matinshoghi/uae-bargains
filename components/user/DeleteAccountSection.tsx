@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { deleteAccount } from "@/lib/actions/auth";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 export function DeleteAccountSection() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -28,7 +31,14 @@ export function DeleteAccountSection() {
     if (!isConfirmed) return;
     startTransition(async () => {
       try {
+        // Server-side: delete data + sign out server session
         await deleteAccount();
+        // Client-side: clear local auth state
+        const supabase = createClient();
+        await supabase.auth.signOut();
+        toast.success("Account deleted");
+        router.push("/");
+        router.refresh();
       } catch {
         toast.error("Something went wrong. Please try again.");
       }
