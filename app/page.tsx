@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { FeedHeader } from "@/components/layout/FeedHeader";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DealFeed } from "@/components/deals/DealFeed";
@@ -31,9 +30,7 @@ export default async function HomePage({
       <div className="flex gap-8">
         {/* Deal feed */}
         <div className="min-w-0 flex-1">
-          <Suspense>
-            <FeedHeader />
-          </Suspense>
+          <FeedHeader sort={sort} />
           <DealFeed
             initialDeals={deals}
             sort={sort}

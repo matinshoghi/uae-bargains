@@ -276,6 +276,11 @@ export interface Database {
           desktop_image_url: string;
           mobile_image_url: string | null;
           link_url: string | null;
+          banner_type: "image" | "dynamic";
+          title: string | null;
+          subtitle: string | null;
+          button_text: string | null;
+          button_url: string | null;
           is_active: boolean;
           sort_order: number;
           created_at: string;
@@ -286,6 +291,11 @@ export interface Database {
           desktop_image_url: string;
           mobile_image_url?: string | null;
           link_url?: string | null;
+          banner_type?: "image" | "dynamic";
+          title?: string | null;
+          subtitle?: string | null;
+          button_text?: string | null;
+          button_url?: string | null;
           is_active?: boolean;
           sort_order?: number;
           created_at?: string;
@@ -295,6 +305,11 @@ export interface Database {
           desktop_image_url?: string;
           mobile_image_url?: string | null;
           link_url?: string | null;
+          banner_type?: "image" | "dynamic";
+          title?: string | null;
+          subtitle?: string | null;
+          button_text?: string | null;
+          button_url?: string | null;
           is_active?: boolean;
           sort_order?: number;
           updated_at?: string;

@@ -113,6 +113,13 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
 }
 
 function BannerSlide({ banner }: { banner: HeroBanner }) {
+  if (banner.banner_type === "dynamic") {
+    return <DynamicBannerSlide banner={banner} />;
+  }
+  return <ImageBannerSlide banner={banner} />;
+}
+
+function ImageBannerSlide({ banner }: { banner: HeroBanner }) {
   const Tag = banner.link_url ? "a" : "div";
   const linkProps = banner.link_url
     ? { href: banner.link_url, target: "_blank", rel: "noopener noreferrer" }
@@ -142,5 +149,83 @@ function BannerSlide({ banner }: { banner: HeroBanner }) {
         draggable={false}
       />
     </Tag>
+  );
+}
+
+function DynamicBannerSlide({ banner }: { banner: HeroBanner }) {
+  return (
+    <div className="relative w-full shrink-0 overflow-hidden aspect-[640/280] md:aspect-[1024/288]">
+      <div className="absolute inset-0 bg-card" />
+
+      {/* Desktop: text left, image right */}
+      <div className="relative hidden h-full md:flex">
+        <div className="flex w-1/2 flex-col justify-center px-8 lg:px-12">
+          <h2 className="font-display text-2xl font-bold leading-tight lg:text-3xl">
+            {banner.title}
+          </h2>
+          {banner.subtitle && (
+            <p className="mt-2 text-sm text-muted-foreground lg:text-base">
+              {banner.subtitle}
+            </p>
+          )}
+          {banner.button_text && banner.button_url && (
+            <a
+              href={banner.button_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex w-fit items-center rounded-sm border-2 border-foreground bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              {banner.button_text}
+            </a>
+          )}
+        </div>
+        <div className="relative w-1/2">
+          <Image
+            src={banner.desktop_image_url}
+            alt={banner.title || ""}
+            fill
+            priority
+            className="scale-[1.01] object-cover"
+            sizes="50vw"
+            draggable={false}
+          />
+        </div>
+      </div>
+
+      {/* Mobile: text top, image bottom */}
+      <div className="relative flex h-full flex-col md:hidden">
+        <div className="flex flex-1 flex-col justify-center px-5 py-4">
+          <h2 className="font-display text-lg font-bold leading-tight">
+            {banner.title}
+          </h2>
+          {banner.subtitle && (
+            <p className="mt-1 text-xs text-muted-foreground">
+              {banner.subtitle}
+            </p>
+          )}
+          {banner.button_text && banner.button_url && (
+            <a
+              href={banner.button_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex w-fit items-center rounded-sm border-2 border-foreground bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground"
+            >
+              {banner.button_text}
+            </a>
+          )}
+        </div>
+        <div className="relative h-1/2 w-full">
+          <Image
+            src={banner.mobile_image_url || banner.desktop_image_url}
+            alt={banner.title || ""}
+            fill
+            priority
+            className="scale-[1.01] object-cover"
+            sizes="100vw"
+            draggable={false}
+          />
+        </div>
+      </div>
+    </div>
   );
 }

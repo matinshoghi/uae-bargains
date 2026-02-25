@@ -80,6 +80,8 @@ export function AuthModalContent() {
     setLoading(true);
 
     try {
+      // Set cookie so callback redirects to the reset password page
+      document.cookie = "auth_redirect=/settings/reset-password;path=/;max-age=600;SameSite=Lax";
       await resetPassword(email);
       setResetSent(true);
     } catch (err) {

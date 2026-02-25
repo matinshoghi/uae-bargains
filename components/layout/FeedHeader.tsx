@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -15,10 +15,9 @@ const SORT_LABELS: Record<string, string> = {
   top: "Popular Deals",
 };
 
-export function FeedHeader() {
-  const searchParams = useSearchParams();
+export function FeedHeader({ sort }: { sort: string }) {
   const router = useRouter();
-  const currentSort = searchParams.get("sort") ?? "hot";
+  const currentSort = sort ?? "hot";
 
   function handleSort(sort: string) {
     if (sort === "hot") {

@@ -86,6 +86,16 @@ export async function createBanner(
     }
 
     const linkUrl = (formData.get("link_url") as string) || null;
+    const bannerType =
+      (formData.get("banner_type") as string) === "dynamic" ? "dynamic" : "image";
+    const title = (formData.get("title") as string) || null;
+    const subtitle = (formData.get("subtitle") as string) || null;
+    const buttonText = (formData.get("button_text") as string) || null;
+    const buttonUrl = (formData.get("button_url") as string) || null;
+
+    if (bannerType === "dynamic" && !title) {
+      return { error: "Title is required for dynamic banners" };
+    }
 
     const { data: maxOrder } = await supabase
       .from("hero_banners")
@@ -99,10 +109,92 @@ export async function createBanner(
     const { error } = await supabase.from("hero_banners").insert({
       desktop_image_url: desktopUrl,
       mobile_image_url: mobileUrl,
-      link_url: linkUrl,
+      link_url: bannerType === "image" ? linkUrl : null,
+      banner_type: bannerType,
+      title,
+      subtitle,
+      button_text: buttonText,
+      button_url: buttonUrl,
       is_active: true,
       sort_order: nextOrder,
     });
+
+    if (error) return { error: error.message };
+
+    revalidatePath("/");
+    revalidatePath("/admin/banners");
+    return { success: true };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function updateBanner(
+  _prev: BannerFormState,
+  formData: FormData
+): Promise<BannerFormState> {
+  try {
+    const { supabase } = await requireAdmin();
+
+    const bannerId = formData.get("banner_id") as string;
+    if (!bannerId) return { error: "Banner ID is required" };
+
+    const { data: existing } = await supabase
+      .from("hero_banners")
+      .select("desktop_image_url, mobile_image_url")
+      .eq("id", bannerId)
+      .single();
+
+    if (!existing) return { error: "Banner not found" };
+
+    // Upload new desktop image if provided, otherwise keep existing
+    let desktopUrl = existing.desktop_image_url;
+    const desktopFile = formData.get("desktop_image") as File | null;
+    if (desktopFile && desktopFile.size > 0) {
+      desktopUrl = await uploadBannerImage(supabase, desktopFile, "desktop");
+      // Remove old desktop image
+      const oldPath = extractStoragePath(existing.desktop_image_url);
+      if (oldPath) await supabase.storage.from("hero-banners").remove([oldPath]);
+    }
+
+    // Upload new mobile image if provided, otherwise keep existing
+    let mobileUrl = existing.mobile_image_url;
+    const mobileFile = formData.get("mobile_image") as File | null;
+    if (mobileFile && mobileFile.size > 0) {
+      mobileUrl = await uploadBannerImage(supabase, mobileFile, "mobile");
+      // Remove old mobile image
+      if (existing.mobile_image_url) {
+        const oldPath = extractStoragePath(existing.mobile_image_url);
+        if (oldPath) await supabase.storage.from("hero-banners").remove([oldPath]);
+      }
+    }
+
+    const bannerType =
+      (formData.get("banner_type") as string) === "dynamic" ? "dynamic" : "image";
+    const title = (formData.get("title") as string) || null;
+    const subtitle = (formData.get("subtitle") as string) || null;
+    const buttonText = (formData.get("button_text") as string) || null;
+    const buttonUrl = (formData.get("button_url") as string) || null;
+    const linkUrl = (formData.get("link_url") as string) || null;
+
+    if (bannerType === "dynamic" && !title) {
+      return { error: "Title is required for dynamic banners" };
+    }
+
+    const { error } = await supabase
+      .from("hero_banners")
+      .update({
+        desktop_image_url: desktopUrl,
+        mobile_image_url: mobileUrl,
+        link_url: bannerType === "image" ? linkUrl : null,
+        banner_type: bannerType,
+        title,
+        subtitle,
+        button_text: buttonText,
+        button_url: buttonUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", bannerId);
 
     if (error) return { error: error.message };
 
