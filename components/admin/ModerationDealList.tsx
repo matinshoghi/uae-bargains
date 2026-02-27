@@ -4,7 +4,7 @@ import { useState, useTransition, useMemo } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { Search, Pencil, Trash2, RotateCcw, ExternalLink } from "lucide-react";
+import { Search, Pencil, Trash2, RotateCcw, ExternalLink, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -156,7 +156,8 @@ export function ModerationDealList({ deals }: { deals: DealWithRelations[] }) {
                     {formatDistanceToNow(new Date(deal.created_at), {
                       addSuffix: true,
                     })}{" "}
-                    &middot; ▲{deal.upvote_count} ▼{deal.downvote_count}
+                    &middot; ▲{deal.upvote_count} ▼{deal.downvote_count}{" "}
+                    &middot; {deal.comment_count} comment{deal.comment_count !== 1 ? "s" : ""}
                   </p>
                   {deal.removal_reason && (
                     <p className="mt-0.5 text-xs text-red-500">
@@ -172,6 +173,13 @@ export function ModerationDealList({ deals }: { deals: DealWithRelations[] }) {
                     title="View deal"
                   >
                     <ExternalLink className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={`/admin/deals/${deal.id}/comments`}
+                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    title="Manage comments"
+                  >
+                    <MessageSquare className="h-4 w-4" />
                   </Link>
                   <Link
                     href={`/admin/moderation/${deal.id}/edit`}

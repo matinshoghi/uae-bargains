@@ -66,33 +66,36 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
   };
 
   return (
-    <div className="rounded-sm border-2 border-foreground">
-    <div
-      className="grain-overlay relative select-none overflow-hidden rounded-sm"
-      onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
-      onTouchMove={(e) => onDragMove(e.touches[0].clientX)}
-      onTouchEnd={onDragEnd}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        onDragStart(e.clientX);
-      }}
-      onMouseMove={(e) => onDragMove(e.clientX)}
-      onMouseUp={onDragEnd}
-      onMouseLeave={() => {
-        if (isDragging.current) onDragEnd();
-      }}
-    >
-      <div
-        className="flex transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${active * 100}%)` }}
-      >
-        {banners.map((banner) => (
-          <BannerSlide key={banner.id} banner={banner} />
-        ))}
+    <div>
+      <div className="rounded-sm border-2 border-foreground">
+        <div
+          className="grain-overlay relative select-none overflow-hidden rounded-sm"
+          onTouchStart={(e) => onDragStart(e.touches[0].clientX)}
+          onTouchMove={(e) => onDragMove(e.touches[0].clientX)}
+          onTouchEnd={onDragEnd}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            onDragStart(e.clientX);
+          }}
+          onMouseMove={(e) => onDragMove(e.clientX)}
+          onMouseUp={onDragEnd}
+          onMouseLeave={() => {
+            if (isDragging.current) onDragEnd();
+          }}
+        >
+          <div
+            className="flex transition-transform duration-500 ease-in-out"
+            style={{ transform: `translateX(-${active * 100}%)` }}
+          >
+            {banners.map((banner) => (
+              <BannerSlide key={banner.id} banner={banner} />
+            ))}
+          </div>
+        </div>
       </div>
 
       {count > 1 && (
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
+        <div className="flex justify-center gap-2 pt-3">
           {banners.map((_, i) => (
             <button
               key={i}
@@ -107,7 +110,6 @@ export function HeroBannerCarousel({ banners }: { banners: HeroBanner[] }) {
           ))}
         </div>
       )}
-    </div>
     </div>
   );
 }
@@ -179,6 +181,7 @@ function DynamicBannerSlide({ banner }: { banner: HeroBanner }) {
             </a>
           )}
         </div>
+        <div className="absolute inset-y-0 left-1/2 z-10 w-0.5 bg-foreground" />
         <div className="relative w-1/2">
           <Image
             src={banner.desktop_image_url}

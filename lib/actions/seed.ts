@@ -388,6 +388,7 @@ export async function commentAsSeedUser(
     const dealIdRaw = formData.get("deal_id") as string;
     const content = (formData.get("content") as string)?.trim();
     const parentId = (formData.get("parent_id") as string)?.trim() || null;
+    const createdAt = (formData.get("created_at") as string)?.trim() || null;
 
     if (!userId) return { error: "Select a seed user" };
     if (!dealIdRaw) return { error: "Deal ID is required" };
@@ -425,17 +426,81 @@ export async function commentAsSeedUser(
       depth = parent ? Math.min(parent.depth + 1, 1) : 0;
     }
 
-    const { error } = await admin.from("comments").insert({
+    const insertData = {
       deal_id: dealId,
       user_id: userId,
       parent_id: parentId,
       content,
       depth,
-    });
+      ...(createdAt && {
+        created_at: new Date(createdAt).toISOString(),
+        updated_at: new Date(createdAt).toISOString(),
+      }),
+    };
+
+    const { error } = await admin.from("comments").insert(insertData);
 
     if (error) return { error: error.message };
 
     revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/admin/deals/${dealId}/comments`);
+    return { success: true };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function voteCommentAsSeedUsers(
+  commentId: string,
+  userIds: string[]
+): Promise<SeedFormState> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    if (!commentId) return { error: "Comment ID is required" };
+    if (!userIds.length) return { error: "Select at least one seed user" };
+
+    // Verify all users are seed accounts
+    const { data: seedAccounts } = await admin
+      .from("seed_accounts")
+      .select("user_id")
+      .in("user_id", userIds);
+
+    if (!seedAccounts || seedAccounts.length !== userIds.length) {
+      return { error: "One or more users are not seed accounts" };
+    }
+
+    // Verify comment exists and get deal_id
+    const { data: comment } = await admin
+      .from("comments")
+      .select("id, deal_id")
+      .eq("id", commentId)
+      .single();
+
+    if (!comment) return { error: "Comment not found" };
+
+    // Check for existing votes and only insert new ones
+    const { data: existingVotes } = await admin
+      .from("votes")
+      .select("user_id")
+      .eq("comment_id", commentId)
+      .in("user_id", userIds);
+
+    const existingUserIds = new Set(existingVotes?.map((v) => v.user_id) ?? []);
+    const newVotes = userIds
+      .filter((id) => !existingUserIds.has(id))
+      .map((id) => ({ user_id: id, comment_id: commentId, vote_type: 1 }));
+
+    if (newVotes.length === 0) {
+      return { error: "All selected users have already voted on this comment" };
+    }
+
+    const { error } = await admin.from("votes").insert(newVotes);
+    if (error) return { error: error.message };
+
+    revalidatePath(`/deals/${comment.deal_id}`);
+    revalidatePath(`/admin/deals/${comment.deal_id}/comments`);
     return { success: true };
   } catch (e) {
     return { error: (e as Error).message };
