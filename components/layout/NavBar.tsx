@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { AuthButton } from "@/components/auth/AuthButton";
-import { Plus } from "lucide-react";
+import { PostDealButton } from "@/components/layout/PostDealButton";
 
 type ServerProfile = {
   username: string;
@@ -16,7 +16,7 @@ const SCROLL_THRESHOLD_RATIO = 0.8;
 const TRANSITION_MS = 800;
 const EASING = "cubic-bezier(0.28, 0.11, 0.32, 1)";
 
-function CompactNav({ visible, serverProfile }: { visible: boolean; serverProfile: ServerProfile | null }) {
+function CompactNav({ visible, serverProfile, isLoggedIn }: { visible: boolean; serverProfile: ServerProfile | null; isLoggedIn: boolean }) {
   return (
     <nav
       className="fixed left-1/2 z-50 w-[calc(100%-24px)] max-w-[980px] -translate-x-1/2 rounded-sm border-2 border-foreground bg-background"
@@ -39,14 +39,7 @@ function CompactNav({ visible, serverProfile }: { visible: boolean; serverProfil
         </Link>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <Link
-            href="/deals/new"
-            className="font-display inline-flex items-center justify-center whitespace-nowrap rounded-sm border-2 border-foreground bg-primary px-2.5 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground transition-all duration-200 hover:brightness-95 md:px-4 md:py-2 md:text-[12px]"
-          >
-            <Plus className="mr-1 h-3 w-3 md:h-3.5 md:w-3.5" />
-            <span className="hidden sm:inline">Post Deal</span>
-            <span className="sm:hidden">Post</span>
-          </Link>
+          <PostDealButton isLoggedIn={isLoggedIn} variant="compact" />
           <AuthButton variant="link" initialProfile={serverProfile} />
         </div>
       </div>
@@ -101,13 +94,7 @@ export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null 
           </Link>
 
           <div className="flex items-center gap-3 md:gap-6">
-            <Link
-              href="/deals/new"
-              className="font-display inline-flex items-center justify-center rounded-sm border-2 border-foreground bg-primary px-3 py-2 text-xs font-semibold uppercase tracking-wide text-primary-foreground transition-all duration-200 hover:brightness-95 md:px-5 md:py-2.5 md:text-sm"
-            >
-              <Plus className="mr-1.5 h-4 w-4" />
-              Post Deal
-            </Link>
+            <PostDealButton isLoggedIn={serverProfile !== null} />
             <AuthButton variant="link" initialProfile={serverProfile} />
           </div>
         </div>
@@ -116,7 +103,7 @@ export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null 
       {mounted &&
         compactReady &&
         createPortal(
-          <CompactNav visible={compactVisible} serverProfile={serverProfile} />,
+          <CompactNav visible={compactVisible} serverProfile={serverProfile} isLoggedIn={serverProfile !== null} />,
           document.body
         )}
     </>

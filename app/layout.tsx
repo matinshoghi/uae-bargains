@@ -72,7 +72,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
-          <MobileNav />
+          <MobileNav isLoggedIn={!!user} />
           <Toaster />
         </AuthModalProvider>
         <Analytics />
