@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -27,6 +28,35 @@ export async function GET(request: Request) {
     const { error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
     if (!exchangeError) {
+      // Detect new signups (created_at within the last 30 seconds)
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const isNewUser =
+          Date.now() - new Date(user.created_at).getTime() < 30_000;
+
+        if (isNewUser) {
+          const notifyGroupId = process.env.TELEGRAM_NOTIFY_GROUP_ID;
+          if (notifyGroupId) {
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("username")
+              .eq("id", user.id)
+              .single();
+
+            const provider = user.app_metadata?.provider ?? "email";
+            const username = profile?.username ?? user.email ?? "unknown";
+
+            await sendTelegramMessage(
+              notifyGroupId,
+              `👋 <b>New signup on HalaSaves!</b>\n\n👤 ${username}\n🔗 via ${provider}`
+            );
+          }
+        }
+      }
+
       const response = NextResponse.redirect(`${origin}${next}`);
       // Clear the redirect cookie
       response.cookies.set("auth_redirect", "", { maxAge: 0, path: "/" });

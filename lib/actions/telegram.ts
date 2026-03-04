@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendTelegramMessage } from "@/lib/telegram";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -77,13 +78,11 @@ export async function pushDealToTelegram(dealId: string): Promise<PushResult> {
 
     text += `\n👉 See the deal, upvote it & grab it before it's gone:\n${dealUrl}`;
 
-    const response = await fetch(
+    const tgResponse = await fetch(
       `https://api.telegram.org/bot${token}/sendMessage`,
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           chat_id: chatId,
           text,
@@ -93,11 +92,11 @@ export async function pushDealToTelegram(dealId: string): Promise<PushResult> {
       }
     );
 
-    if (!response.ok) {
+    if (!tgResponse.ok) {
       return { error: "Failed to send message to Telegram" };
     }
 
-    const data = (await response.json()) as {
+    const data = (await tgResponse.json()) as {
       ok: boolean;
       result?: { message_id: number };
       description?: string;
