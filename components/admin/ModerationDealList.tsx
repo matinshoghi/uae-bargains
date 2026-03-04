@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { removeDeal, restoreDeal } from "@/lib/actions/admin";
 import type { DealWithRelations } from "@/lib/types";
+import { TelegramPushButton } from "@/components/admin/TelegramPushButton";
 
 type StatusFilter = "all" | "active" | "expired" | "removed";
 
@@ -49,7 +50,12 @@ function getEffectiveStatus(deal: DealWithRelations): StatusFilter {
   return "active";
 }
 
-export function ModerationDealList({ deals }: { deals: DealWithRelations[] }) {
+interface ModerationDealListProps {
+  deals: DealWithRelations[];
+  pushMap?: Record<string, string | null>;
+}
+
+export function ModerationDealList({ deals, pushMap }: ModerationDealListProps) {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [search, setSearch] = useState("");
   const [removeTarget, setRemoveTarget] = useState<string | null>(null);
@@ -138,6 +144,7 @@ export function ModerationDealList({ deals }: { deals: DealWithRelations[] }) {
         <ul className="divide-y divide-border rounded-xl border border-border">
           {filtered.map((deal) => {
             const status = getEffectiveStatus(deal);
+            const lastPushedAt = pushMap?.[deal.id] ?? null;
             return (
               <li key={deal.id} className="flex items-center gap-3 px-4 py-3">
                 <div className="min-w-0 flex-1">
@@ -206,6 +213,13 @@ export function ModerationDealList({ deals }: { deals: DealWithRelations[] }) {
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
+                  )}
+                  {status === "active" && (
+                    <TelegramPushButton
+                      dealId={deal.id}
+                      dealTitle={deal.title}
+                      lastPushedAt={lastPushedAt}
+                    />
                   )}
                 </div>
               </li>

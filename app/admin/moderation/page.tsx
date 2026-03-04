@@ -16,6 +16,19 @@ export default async function AdminModerationPage() {
 
   const deals = (data as DealWithRelations[]) ?? [];
 
+  const { data: pushRows } = await supabase
+    .from("telegram_pushes")
+    .select("deal_id, created_at")
+    .order("created_at", { ascending: false });
+
+  const pushMap =
+    pushRows?.reduce<Record<string, string | null>>((acc, row) => {
+      if (!acc[row.deal_id]) {
+        acc[row.deal_id] = row.created_at;
+      }
+      return acc;
+    }, {}) ?? {};
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Moderation</h1>
@@ -24,7 +37,7 @@ export default async function AdminModerationPage() {
       </p>
 
       <div className="mt-8">
-        <ModerationDealList deals={deals} />
+        <ModerationDealList deals={deals} pushMap={pushMap} />
       </div>
     </div>
   );

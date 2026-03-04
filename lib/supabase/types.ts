@@ -343,6 +343,44 @@ export interface Database {
           },
         ];
       };
+      telegram_pushes: {
+        Row: {
+          id: string;
+          deal_id: string;
+          pushed_by: string;
+          telegram_message_id: number | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          deal_id: string;
+          pushed_by: string;
+          telegram_message_id?: number | null;
+          created_at?: string;
+        };
+        Update: {
+          deal_id?: string;
+          pushed_by?: string;
+          telegram_message_id?: number | null;
+          created_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "telegram_pushes_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "telegram_pushes_pushed_by_fkey";
+            columns: ["pushed_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
