@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import { AdminDealForm } from "@/components/admin/AdminDealForm";
+import { DeleteDealButton } from "@/components/admin/DeleteDealButton";
 import Link from "next/link";
 import type { Database } from "@/lib/supabase/types";
 
@@ -71,6 +72,12 @@ export default async function AdminEditDealPage({ params }: Props) {
               is_seed: seedUserIds.has(p.id),
             }))
           }
+        />
+
+        <DeleteDealButton
+          dealId={deal.id}
+          dealTitle={deal.title}
+          commentCount={deal.comment_count}
         />
       </div>
     </div>

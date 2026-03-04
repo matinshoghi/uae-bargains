@@ -30,6 +30,12 @@ export function shortTimeAgo(dateString: string): string {
 /** Strip markdown syntax for plain-text previews (e.g. feed cards). */
 export function stripMarkdown(md: string): string {
   return md
+    // fenced code blocks – strip ``` markers but keep content
+    .replace(/```/g, "")
+    // blockquotes
+    .replace(/^>\s?/gm, "")
+    // horizontal rules
+    .replace(/^(?:-{3,}|\*{3,}|_{3,})\s*$/gm, "")
     .replace(/[*_~`]+/g, "")          // bold, italic, strikethrough, code
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // [text](url) → text
     .replace(/^#{1,6}\s+/gm, "")      // headings

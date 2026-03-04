@@ -191,6 +191,19 @@ export function SeedDealForm({
         </div>
 
         <div>
+          <label htmlFor="deal_promo_code" className="block text-sm font-medium">
+            Promo Code
+          </label>
+          <input
+            id="deal_promo_code"
+            name="promo_code"
+            type="text"
+            placeholder="e.g. SAVE20"
+            className="mt-1.5 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none"
+          />
+        </div>
+
+        <div>
           <label htmlFor="deal_location" className="block text-sm font-medium">
             Location
           </label>

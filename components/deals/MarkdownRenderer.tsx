@@ -14,6 +14,9 @@ const allowedElements = new Set([
   "h3",
   "code",
   "br",
+  "blockquote",
+  "hr",
+  "pre",
 ]);
 
 const components: Components = {
@@ -53,20 +56,27 @@ const components: Components = {
     <h3 className="mt-4 mb-2 text-lg font-semibold">{children}</h3>
   ),
   p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-  ul: ({ children }) => (
-    <ul className="mb-2 ml-5 list-disc space-y-0.5">{children}</ul>
-  ),
-  ol: ({ children }) => (
-    <ol className="mb-2 ml-5 list-decimal space-y-0.5">{children}</ol>
-  ),
+  ul: ({ children }) => <ul className="mb-2 ml-5 list-disc space-y-0.5">{children}</ul>,
+  ol: ({ children }) => <ol className="mb-2 ml-5 list-decimal space-y-0.5">{children}</ol>,
   li: ({ children }) => <li className="leading-relaxed">{children}</li>,
   code: ({ children }) => (
     <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">
       {children}
     </code>
   ),
-  // Block unsupported elements
-  pre: ({ children }) => <>{children}</>,
+  // Block-level elements
+  blockquote: ({ children }) => (
+    <blockquote className="mb-3 border-l-4 border-muted-foreground/30 pl-3 text-sm italic text-muted-foreground">
+      {children}
+    </blockquote>
+  ),
+  hr: () => <hr className="my-3 border-t border-border" />,
+  pre: ({ children }) => (
+    <pre className="mb-3 overflow-x-auto rounded-md bg-muted px-3 py-2 text-sm">
+      <code className="font-mono">{children}</code>
+    </pre>
+  ),
+  // Unsupported elements
   img: () => null,
   table: () => null,
   thead: () => null,
@@ -74,8 +84,6 @@ const components: Components = {
   tr: () => null,
   th: () => null,
   td: () => null,
-  blockquote: ({ children }) => <>{children}</>,
-  hr: () => null,
 };
 
 interface MarkdownRendererProps {

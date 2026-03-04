@@ -226,6 +226,7 @@ export async function postDealAsSeedUser(
     const categoryId = formData.get("category_id") as string;
     const priceRaw = formData.get("price") as string;
     const originalPriceRaw = formData.get("original_price") as string;
+    const promoCodeRaw = (formData.get("promo_code") as string)?.trim() || null;
     const url = (formData.get("url") as string)?.trim() || null;
     const location = (formData.get("location") as string)?.trim() || null;
     const expiresAt = (formData.get("expires_at") as string)?.trim() || null;
@@ -288,6 +289,7 @@ export async function postDealAsSeedUser(
       price,
       original_price: originalPrice,
       url,
+      promo_code: promoCodeRaw,
       location,
       image_url: imageUrl,
       expires_at: expiresAtValue,

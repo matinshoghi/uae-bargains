@@ -9,6 +9,7 @@ import { ShareButtons } from "@/components/shared/ShareButtons";
 import { DealActions } from "@/components/deals/DealActions";
 import { AdminDealActions } from "@/components/deals/AdminDealActions";
 import { MarkdownRenderer } from "@/components/deals/MarkdownRenderer";
+import { PromoCodeBadge } from "@/components/deals/PromoCodeBadge";
 import { formatPrice } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
 
@@ -116,6 +117,11 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             <Badge variant="outline">-{deal.discount_percentage}%</Badge>
           )}
         </div>
+      )}
+
+      {/* Promo code */}
+      {deal.promo_code && (
+        <PromoCodeBadge code={deal.promo_code} />
       )}
 
       {/* Description */}

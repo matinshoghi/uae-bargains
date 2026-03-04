@@ -30,6 +30,7 @@ type InitialData = {
   price: number | null;
   original_price: number | null;
   url: string | null;
+  promo_code: string | null;
   location: string | null;
   category_id: string;
   expires_at: string | null;
@@ -253,6 +254,21 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         />
         {state?.errors?.url && (
           <p className="text-sm text-red-500">{state.errors.url[0]}</p>
+        )}
+      </div>
+
+      {/* Promo code */}
+      <div className="space-y-2">
+        <Label htmlFor="promo_code" className="section-label">Promo Code</Label>
+        <Input
+          id="promo_code"
+          name="promo_code"
+          type="text"
+          placeholder="e.g. SAVE20"
+          defaultValue={v.promo_code ?? initialData?.promo_code ?? ""}
+        />
+        {state?.errors?.promo_code && (
+          <p className="text-sm text-red-500">{state.errors.promo_code[0]}</p>
         )}
       </div>
 

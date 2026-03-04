@@ -40,6 +40,11 @@ const sharedFields = {
     .optional()
     .transform((val) => val ?? "")
     .pipe(z.string().max(200, "Location must be under 200 characters")),
+  promo_code: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => (val ?? "").trim())
+    .pipe(z.string().max(50, "Promo code must be under 50 characters")),
   category_id: z.string().uuid("Select a category"),
   expires_at: z
     .union([z.string(), z.null()])

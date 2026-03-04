@@ -27,7 +27,7 @@ export default async function EditDealPage({ params }: Props) {
   // Fetch deal
   const { data: deal } = await supabase
     .from("deals")
-    .select("id, user_id, title, description, price, original_price, url, location, category_id, expires_at, image_url, status")
+    .select("id, user_id, title, description, price, original_price, url, promo_code, location, category_id, expires_at, image_url, status")
     .eq("id", id)
     .single();
 
@@ -63,6 +63,7 @@ export default async function EditDealPage({ params }: Props) {
           price: deal.price,
           original_price: deal.original_price,
           url: deal.url,
+          promo_code: deal.promo_code,
           location: deal.location,
           category_id: deal.category_id,
           expires_at: deal.expires_at,

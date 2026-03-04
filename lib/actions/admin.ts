@@ -111,6 +111,7 @@ export async function adminEditDeal(
     price?: number | null;
     original_price?: number | null;
     url?: string | null;
+    promo_code?: string | null;
     location?: string | null;
     expires_at?: string | null;
     user_id?: string | null;
@@ -364,6 +365,73 @@ export async function adminEditComment(
 
     revalidatePath(`/deals/${comment.deal_id}`);
     revalidatePath("/admin/comments");
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function permanentlyDeleteDeal(
+  dealId: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    // Fetch the deal first to confirm it exists and get the image URL
+    const { data: deal, error: fetchError } = await admin
+      .from("deals")
+      .select("id, image_url")
+      .eq("id", dealId)
+      .single();
+
+    if (fetchError || !deal) return { error: "Deal not found" };
+
+    // 1. Collect all comment IDs so we can wipe their votes
+    const { data: comments } = await admin
+      .from("comments")
+      .select("id")
+      .eq("deal_id", dealId);
+
+    const commentIds = (comments ?? []).map((c) => c.id);
+
+    // 2. Delete votes cast on any of this deal's comments
+    if (commentIds.length > 0) {
+      await admin.from("votes").delete().in("comment_id", commentIds);
+    }
+
+    // 3. Delete votes cast directly on the deal
+    await admin.from("votes").delete().eq("deal_id", dealId);
+
+    // 4. Delete all comments for the deal
+    //    (self-referential parent_id FK is safe — Postgres resolves the
+    //     single-statement bulk delete within one transaction)
+    await admin.from("comments").delete().eq("deal_id", dealId);
+
+    // 5. Delete telegram push records (ON DELETE CASCADE would also handle
+    //    this, but explicit deletion keeps the operation self-documenting)
+    await admin.from("telegram_pushes").delete().eq("deal_id", dealId);
+
+    // 6. Delete the deal row itself
+    const { error: deleteError } = await admin
+      .from("deals")
+      .delete()
+      .eq("id", dealId);
+
+    if (deleteError) return { error: deleteError.message };
+
+    // 7. Remove the deal image from Storage if one was attached
+    if (deal.image_url) {
+      const marker = "/deal-images/";
+      const idx = deal.image_url.indexOf(marker);
+      if (idx !== -1) {
+        const imagePath = deal.image_url.slice(idx + marker.length);
+        await admin.storage.from("deal-images").remove([imagePath]);
+      }
+    }
+
+    revalidatePath("/");
+    revalidatePath("/admin/moderation");
     return {};
   } catch (e) {
     return { error: (e as Error).message };

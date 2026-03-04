@@ -78,6 +78,7 @@ export interface Database {
           original_price: number | null;
           discount_percentage: number | null;
           url: string | null;
+          promo_code: string | null;
           location: string | null;
           image_url: string | null;
           expires_at: string | null;
@@ -101,6 +102,7 @@ export interface Database {
           price?: number | null;
           original_price?: number | null;
           url?: string | null;
+          promo_code?: string | null;
           location?: string | null;
           image_url?: string | null;
           expires_at?: string | null;
@@ -117,6 +119,7 @@ export interface Database {
           price?: number | null;
           original_price?: number | null;
           url?: string | null;
+          promo_code?: string | null;
           location?: string | null;
           image_url?: string | null;
           expires_at?: string | null;

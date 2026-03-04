@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ModerationDealList } from "@/components/admin/ModerationDealList";
 import type { DealWithRelations } from "@/lib/types";
 
 export default async function AdminModerationPage() {
   const supabase = await createClient();
+  const adminClient = createAdminClient();
 
   const { data, error } = await supabase
     .from("deals")
@@ -16,7 +18,7 @@ export default async function AdminModerationPage() {
 
   const deals = (data as DealWithRelations[]) ?? [];
 
-  const { data: pushRows } = await supabase
+  const { data: pushRows } = await adminClient
     .from("telegram_pushes")
     .select("deal_id, created_at")
     .order("created_at", { ascending: false });

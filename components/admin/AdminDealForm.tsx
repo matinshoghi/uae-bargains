@@ -56,6 +56,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
     deal.original_price != null ? String(deal.original_price) : ""
   );
   const [url, setUrl] = useState(deal.url ?? "");
+  const [promoCode, setPromoCode] = useState(deal.promo_code ?? "");
   const [location, setLocation] = useState(deal.location ?? "");
   const [expiresAt, setExpiresAt] = useState(
     deal.expires_at ? deal.expires_at.split("T")[0] : ""
@@ -119,6 +120,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
         price: isFree ? 0 : (price ? Number(price) : null),
         original_price: isFree ? null : (originalPrice ? Number(originalPrice) : null),
         url: url || null,
+        promo_code: promoCode.trim() || null,
         location: location || null,
         expires_at: expiresAt ? `${expiresAt}T23:59:59` : null,
         user_id: userId || null,
@@ -279,6 +281,18 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
           placeholder="https://example.com/deal"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
+        />
+      </div>
+
+      {/* Promo code */}
+      <div className="space-y-2">
+        <Label htmlFor="admin-promo-code" className="section-label">Promo Code</Label>
+        <Input
+          id="admin-promo-code"
+          type="text"
+          placeholder="e.g. SAVE20"
+          value={promoCode}
+          onChange={(e) => setPromoCode(e.target.value)}
         />
       </div>
 
