@@ -26,6 +26,8 @@ export default async function AdminEditDealPage({ params }: Props) {
 
   if (!deal) notFound();
 
+  const typedDeal = deal as DealRow;
+
   // Fetch categories
   const { data: categories } = await supabase
     .from("categories")
@@ -63,7 +65,7 @@ export default async function AdminEditDealPage({ params }: Props) {
 
       <div className="mt-8 max-w-2xl">
         <AdminDealForm
-          deal={deal as DealRow}
+          deal={typedDeal}
           categories={categories ?? []}
           profiles={
             (profiles ?? []).map((p) => ({
@@ -75,9 +77,9 @@ export default async function AdminEditDealPage({ params }: Props) {
         />
 
         <DeleteDealButton
-          dealId={deal.id}
-          dealTitle={deal.title}
-          commentCount={deal.comment_count}
+          dealId={typedDeal.id}
+          dealTitle={typedDeal.title}
+          commentCount={typedDeal.comment_count}
         />
       </div>
     </div>
