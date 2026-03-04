@@ -30,7 +30,7 @@ export default async function AdminEditDealPage({ params }: Props) {
   const { data: categories } = await supabase
     .from("categories")
     .select("id, label, slug")
-    .order("sort_order", { ascending: true });
+    .order("label", { ascending: true });
 
   // Fetch all profiles for the author dropdown
   const { data: profiles } = await admin

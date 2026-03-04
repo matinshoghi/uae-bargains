@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { adminEditDeal, adminUploadDealImage, adminRemoveDealImage } from "@/lib/actions/admin";
+import { CategoryPicker } from "@/components/deals/CategoryPicker";
 import type { Database } from "@/lib/supabase/types";
 
 type DealRow = Database["public"]["Tables"]["deals"]["Row"];
@@ -258,18 +259,11 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
       {/* Category */}
       <div className="space-y-2">
         <Label className="section-label">Category</Label>
-        <Select value={categoryId} onValueChange={setCategoryId} required>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
-                {cat.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <CategoryPicker
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+        />
       </div>
 
       {/* URL */}

@@ -21,7 +21,7 @@ export default async function NewDealPage() {
   const { data: categories } = await supabase
     .from("categories")
     .select()
-    .order("sort_order")
+    .order("label")
     .returns<{ id: string; label: string; slug: string }[]>();
 
   return (

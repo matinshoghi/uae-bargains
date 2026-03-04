@@ -9,7 +9,7 @@ async function fetchCategories() {
   const { data } = await admin
     .from("categories")
     .select("id, label")
-    .order("sort_order", { ascending: true });
+    .order("label", { ascending: true });
   return data ?? [];
 }
 

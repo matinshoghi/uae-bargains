@@ -6,16 +6,10 @@ import { Input } from "@/components/ui/input";
 import { MarkdownEditor } from "@/components/deals/MarkdownEditor";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 import { ImagePlus, X } from "lucide-react";
 import Image from "next/image";
+import { CategoryPicker } from "@/components/deals/CategoryPicker";
 
 type Category = {
   id: string;
@@ -225,18 +219,11 @@ export function DealForm({ categories, initialData }: DealFormProps) {
       <div className="space-y-2">
         <Label className="section-label">Category *</Label>
         <input type="hidden" name="category_id" value={categoryId} />
-        <Select value={categoryId} onValueChange={setCategoryId} required>
-          <SelectTrigger>
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
-                {cat.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <CategoryPicker
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+        />
         {state?.errors?.category_id && (
           <p className="text-sm text-red-500">{state.errors.category_id[0]}</p>
         )}

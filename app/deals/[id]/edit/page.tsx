@@ -49,7 +49,7 @@ export default async function EditDealPage({ params }: Props) {
   const { data: categories } = await supabase
     .from("categories")
     .select("id, label, slug")
-    .order("sort_order");
+    .order("label");
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
