@@ -1,10 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
+import { format } from "date-fns";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchSeedUsers } from "@/lib/queries/seed";
 import { buildCommentTree } from "@/lib/queries/comments";
 import { DealCommentManager } from "@/components/admin/DealCommentManager";
+import { DealSeedVoter } from "@/components/admin/DealSeedVoter";
 import type { CommentWithProfile } from "@/lib/types";
 
 export default async function AdminDealCommentsPage({
@@ -18,7 +20,7 @@ export default async function AdminDealCommentsPage({
   // Fetch deal info
   const { data: deal } = await admin
     .from("deals")
-    .select("id, title")
+    .select("id, title, created_at, upvote_count, downvote_count")
     .eq("id", dealId)
     .single();
 
@@ -37,12 +39,25 @@ export default async function AdminDealCommentsPage({
   // Fetch seed users for the user picker
   const seedUsers = await fetchSeedUsers();
 
+  // Fetch seed user votes on this deal
+  const seedUserIds = seedUsers.map((u) => u.user_id);
+  let dealSeedVoterIds: string[] = [];
+
+  if (seedUserIds.length > 0) {
+    const { data: dealVotes } = await admin
+      .from("votes")
+      .select("user_id")
+      .eq("deal_id", dealId)
+      .in("user_id", seedUserIds);
+
+    dealSeedVoterIds = dealVotes?.map((v) => v.user_id) ?? [];
+  }
+
   // Fetch vote counts per comment (how many votes each comment has from seed users)
   const commentIds = comments.map((c) => c.id);
   let votedMap: Record<string, string[]> = {};
 
   if (commentIds.length > 0) {
-    const seedUserIds = seedUsers.map((u) => u.user_id);
     if (seedUserIds.length > 0) {
       const { data: votes } = await admin
         .from("votes")
@@ -61,6 +76,8 @@ export default async function AdminDealCommentsPage({
     }
   }
 
+  const netVotes = deal.upvote_count - deal.downvote_count;
+
   return (
     <div>
       <div className="flex items-center gap-3">
@@ -77,6 +94,25 @@ export default async function AdminDealCommentsPage({
       <p className="mt-1 text-muted-foreground">
         {deal.title}
       </p>
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
+        <span>
+          Posted {format(new Date(deal.created_at), "MMM d, yyyy 'at' h:mm a")}
+        </span>
+        <span>
+          {netVotes} upvote{netVotes !== 1 ? "s" : ""}{" "}
+          <span className="text-xs">
+            (+{deal.upvote_count} / -{deal.downvote_count})
+          </span>
+        </span>
+      </div>
+
+      <div className="mt-6">
+        <DealSeedVoter
+          dealId={dealId}
+          seedUsers={seedUsers}
+          alreadyVotedIds={dealSeedVoterIds}
+        />
+      </div>
 
       <div className="mt-8">
         <DealCommentManager
