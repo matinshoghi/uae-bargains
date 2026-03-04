@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { sendTelegramMessage } from "@/lib/telegram";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -87,14 +86,10 @@ export async function pushDealToTelegram(dealId: string): Promise<PushResult> {
           chat_id: chatId,
           text,
           parse_mode: "HTML",
-          disable_web_page_preview: false,
+          link_preview_options: { is_disabled: false },
         }),
       }
     );
-
-    if (!tgResponse.ok) {
-      return { error: "Failed to send message to Telegram" };
-    }
 
     const data = (await tgResponse.json()) as {
       ok: boolean;
