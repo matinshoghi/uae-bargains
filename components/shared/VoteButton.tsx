@@ -99,7 +99,7 @@ export function VoteButton({
         const result = await voteDealAnonymous(entityId, voteType);
 
         if (result.rateLimited) {
-          toast.error("You've reached the daily vote limit. Sign up for unlimited votes!", {
+          toast.error("Daily vote limit reached. Sign up for unlimited votes!", {
             action: {
               label: "Sign Up",
               onClick: () => openAuthModal({ message: "Create an account for unlimited voting" }),
@@ -107,6 +107,9 @@ export function VoteButton({
           });
           return;
         }
+
+        // No nudge on toggle-off — the user is removing their vote
+        if (result.action === "removed") return;
 
         // Nudge: show modal every Nth vote, otherwise toast
         const count = incrementAnonVoteCount();

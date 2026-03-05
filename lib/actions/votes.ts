@@ -99,16 +99,36 @@ async function getClientIp(): Promise<string> {
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
 }
 
+type AnonVoteResult = {
+  rateLimited?: boolean;
+  action?: "added" | "removed" | "switched";
+};
+
 export async function voteDealAnonymous(
   dealId: string,
   voteType: 1 | -1
-): Promise<{ rateLimited?: boolean }> {
+): Promise<AnonVoteResult> {
   const supabase = await createClient();
   const cookieStore = await cookies();
   const anonId = getAnonId(cookieStore);
   const ip = await getClientIp();
 
-  // Rate limit: max votes per IP per day
+  // Check for existing vote FIRST so toggle-off is always allowed
+  const { data: existing } = await supabase
+    .from("anonymous_votes")
+    .select("id, vote_type")
+    .eq("anon_id", anonId)
+    .eq("deal_id", dealId)
+    .maybeSingle();
+
+  // Toggle off — always allowed, even when rate limited
+  if (existing && existing.vote_type === voteType) {
+    await supabase.from("anonymous_votes").delete().eq("id", existing.id);
+    revalidatePath("/");
+    return { action: "removed" };
+  }
+
+  // Rate limit only applies to new votes and vote switches
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
   const { count } = await supabase
     .from("anonymous_votes")
@@ -120,37 +140,26 @@ export async function voteDealAnonymous(
     return { rateLimited: true };
   }
 
-  // Check for existing vote
-  const { data: existing } = await supabase
-    .from("anonymous_votes")
-    .select("id, vote_type")
-    .eq("anon_id", anonId)
-    .eq("deal_id", dealId)
-    .maybeSingle();
-
   if (existing) {
-    if (existing.vote_type === voteType) {
-      // Toggle off
-      await supabase.from("anonymous_votes").delete().eq("id", existing.id);
-    } else {
-      // Switch direction
-      await supabase
-        .from("anonymous_votes")
-        .update({ vote_type: voteType })
-        .eq("id", existing.id);
-    }
-  } else {
-    // New vote
-    await supabase.from("anonymous_votes").insert({
-      anon_id: anonId,
-      deal_id: dealId,
-      vote_type: voteType,
-      ip_address: ip,
-    });
+    // Switch direction
+    await supabase
+      .from("anonymous_votes")
+      .update({ vote_type: voteType })
+      .eq("id", existing.id);
+    revalidatePath("/");
+    return { action: "switched" };
   }
 
+  // New vote
+  await supabase.from("anonymous_votes").insert({
+    anon_id: anonId,
+    deal_id: dealId,
+    vote_type: voteType,
+    ip_address: ip,
+  });
+
   revalidatePath("/");
-  return {};
+  return { action: "added" };
 }
 
 /**
