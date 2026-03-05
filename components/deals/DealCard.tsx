@@ -103,7 +103,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
         </div>
 
         {/* Description + Price + Meta — left column */}
-        <div className="col-start-1 space-y-2">
+        <div className="col-start-1 min-w-0 space-y-2">
           {/* Description */}
           {deal.description && (
             <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
@@ -113,7 +113,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
           {/* Price row */}
           {(deal.price != null || deal.original_price != null) && (
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-baseline gap-2">
               {deal.price != null && deal.price === 0 ? (
                 <Badge className="text-[18px] px-1.5 py-0.5">Free</Badge>
               ) : deal.price != null ? (
