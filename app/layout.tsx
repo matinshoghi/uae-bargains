@@ -67,17 +67,16 @@ export default async function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <PostHogProvider>
-          <AuthModalProvider>
-            <NavBar serverProfile={serverProfile} />
-            <main className="mx-auto min-h-screen max-w-7xl">
-              {children}
-            </main>
-            <Footer />
-            <MobileNav isLoggedIn={!!user} />
-            <Toaster />
-          </AuthModalProvider>
-        </PostHogProvider>
+        <AuthModalProvider>
+          <NavBar serverProfile={serverProfile} />
+          <main className="mx-auto min-h-screen max-w-7xl">
+            {children}
+          </main>
+          <Footer />
+          <MobileNav isLoggedIn={!!user} />
+          <Toaster />
+        </AuthModalProvider>
+        <PostHogProvider />
         <Analytics />
         <SpeedInsights />
       </body>

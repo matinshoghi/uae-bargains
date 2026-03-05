@@ -68,10 +68,10 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
     <article
       className={`relative border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
     >
-      {/* Outer layout: text left, image right — image top-aligns with category row */}
-      <div className="flex items-start gap-4">
-        <div className="min-w-0 flex-1 space-y-2">
-          {/* Top row: category badge + staff pick (share moved to bottom) */}
+      <div className="grid grid-cols-[1fr_auto] items-start gap-x-4 gap-y-2">
+        {/* Badges + Title — full width on mobile, left column on sm+ */}
+        <div className="col-span-2 space-y-2 sm:col-span-1">
+          {/* Top row: category badge + staff pick */}
           <div className="flex items-center gap-1.5">
             {deal.categories && CategoryIcon ? (
               <Badge
@@ -100,7 +100,10 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
               {deal.title}
             </Link>
           </h3>
+        </div>
 
+        {/* Description + Price + Meta — left column */}
+        <div className="col-start-1 space-y-2">
           {/* Description */}
           {deal.description && (
             <p className="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
@@ -183,8 +186,8 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
           </div>
         </div>
 
-        {/* Thumbnail — top-aligned with category row */}
-        <div className="shrink-0">
+        {/* Thumbnail — beside description on mobile, top-aligned on sm+ */}
+        <div className="row-start-2 col-start-2 self-start sm:row-start-1 sm:row-span-2">
           {deal.image_url ? (
             <div className="relative h-28 w-28 overflow-hidden rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
               <Image
