@@ -7,6 +7,7 @@ import { NavBar } from "@/components/layout/NavBar";
 import { MobileNav } from "@/components/layout/MobileNav";
 import { Footer } from "@/components/layout/Footer";
 import { AuthModalProvider } from "@/components/auth/AuthModalProvider";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { createClient } from "@/lib/supabase/server";
 import "./globals.css";
 
@@ -66,15 +67,17 @@ export default async function RootLayout({
       <body
         className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
       >
-        <AuthModalProvider>
-          <NavBar serverProfile={serverProfile} />
-          <main className="mx-auto min-h-screen max-w-7xl">
-            {children}
-          </main>
-          <Footer />
-          <MobileNav isLoggedIn={!!user} />
-          <Toaster />
-        </AuthModalProvider>
+        <PostHogProvider>
+          <AuthModalProvider>
+            <NavBar serverProfile={serverProfile} />
+            <main className="mx-auto min-h-screen max-w-7xl">
+              {children}
+            </main>
+            <Footer />
+            <MobileNav isLoggedIn={!!user} />
+            <Toaster />
+          </AuthModalProvider>
+        </PostHogProvider>
         <Analytics />
         <SpeedInsights />
       </body>
