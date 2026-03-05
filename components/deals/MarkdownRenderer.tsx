@@ -1,5 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import type { Components } from "react-markdown";
 
 const allowedElements = new Set([
@@ -17,6 +18,7 @@ const allowedElements = new Set([
   "blockquote",
   "hr",
   "pre",
+  "u",
 ]);
 
 const components: Components = {
@@ -24,6 +26,7 @@ const components: Components = {
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
   del: ({ children }) => <del className="line-through">{children}</del>,
+  u: ({ children }) => <u className="underline underline-offset-2">{children}</u>,
   // Open links in new tab
   a: ({ children, href, ...props }) => (
     <a
@@ -96,8 +99,9 @@ export function MarkdownRenderer({ content, className }: MarkdownRendererProps) 
     <div className={`leading-relaxed ${className ?? ""}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
+        rehypePlugins={[rehypeRaw]}
         components={components}
-        allowedElements={[...allowedElements, "h1", "h2", "h4", "h5", "h6", "pre", "img", "table", "thead", "tbody", "tr", "th", "td", "blockquote", "hr"]}
+        allowedElements={[...allowedElements, "h1", "h2", "h4", "h5", "h6", "pre", "img", "table", "thead", "tbody", "tr", "th", "td", "blockquote", "hr", "u"]}
       >
         {content}
       </ReactMarkdown>
