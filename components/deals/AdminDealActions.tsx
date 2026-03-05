@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, RotateCcw, Shield, PenOff } from "lucide-react";
+import { Pencil, Trash2, RotateCcw, Shield, PenOff, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -94,6 +94,12 @@ export function AdminDealActions({ dealId, isRemoved, isEdited }: AdminDealActio
           >
             <Pencil className="mr-2 h-4 w-4" />
             Admin Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => router.push(`/admin/deals/${dealId}/comments`)}
+          >
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Moderate Comments
           </DropdownMenuItem>
           {isEdited && (
             <DropdownMenuItem onClick={handleResetEdited} disabled={isPending}>
