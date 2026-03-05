@@ -4,6 +4,7 @@ import { DealFeed } from "@/components/deals/DealFeed";
 import { HeroBannerCarousel } from "@/components/home/HeroBanner";
 import { fetchDeals, getUserDealVotes } from "@/lib/queries/deals";
 import { fetchActiveBanners } from "@/lib/queries/banners";
+import { getAnonymousVotes } from "@/lib/actions/votes";
 import { DEALS_PER_PAGE } from "@/lib/constants";
 
 export default async function HomePage({
@@ -18,6 +19,9 @@ export default async function HomePage({
     getUserDealVotes(),
     fetchActiveBanners(),
   ]);
+
+  // For anonymous users, fetch their anonymous votes from cookie
+  const effectiveVotes = isLoggedIn ? userVotes : await getAnonymousVotes();
 
   return (
     <div className="px-4 pb-6 sm:px-6 lg:px-8">
@@ -34,7 +38,7 @@ export default async function HomePage({
           <DealFeed
             initialDeals={deals}
             sort={sort}
-            userVotes={userVotes}
+            userVotes={effectiveVotes}
             isLoggedIn={isLoggedIn}
           />
         </div>

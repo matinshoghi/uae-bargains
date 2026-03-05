@@ -1,12 +1,74 @@
 import Link from "next/link";
+import { createAdminClient } from "@/lib/supabase/admin";
 
-export default function AdminDashboard() {
+async function getVoteStats() {
+  const admin = createAdminClient();
+
+  const [{ count: anonTotal }, { count: authTotal }, { count: anonToday }] =
+    await Promise.all([
+      admin
+        .from("anonymous_votes")
+        .select("id", { count: "exact", head: true }),
+      admin.from("votes").select("id", { count: "exact", head: true }),
+      admin
+        .from("anonymous_votes")
+        .select("id", { count: "exact", head: true })
+        .gte(
+          "created_at",
+          new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+        ),
+    ]);
+
+  // Unique anonymous voters (distinct anon_ids)
+  const { data: uniqueVoters } = await admin
+    .from("anonymous_votes")
+    .select("anon_id")
+    .limit(10000);
+
+  const uniqueCount = new Set(uniqueVoters?.map((v) => v.anon_id)).size;
+
+  return {
+    anonTotal: anonTotal ?? 0,
+    authTotal: authTotal ?? 0,
+    anonToday: anonToday ?? 0,
+    uniqueAnonVoters: uniqueCount,
+  };
+}
+
+export default async function AdminDashboard() {
+  const stats = await getVoteStats();
+
   return (
     <div>
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <p className="mt-2 text-muted-foreground">
         Manage your site content from here.
       </p>
+
+      {/* Vote stats */}
+      <div className="mt-6 rounded-xl border border-border p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Vote Overview
+        </h2>
+        <div className="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div>
+            <p className="text-2xl font-bold">{stats.authTotal}</p>
+            <p className="text-xs text-muted-foreground">Authenticated votes</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold">{stats.anonTotal}</p>
+            <p className="text-xs text-muted-foreground">Anonymous votes</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold">{stats.anonToday}</p>
+            <p className="text-xs text-muted-foreground">Anon votes (24h)</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold">{stats.uniqueAnonVoters}</p>
+            <p className="text-xs text-muted-foreground">Unique anon voters</p>
+          </div>
+        </div>
+      </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <Link

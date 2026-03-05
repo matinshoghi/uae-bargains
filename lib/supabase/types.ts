@@ -346,6 +346,36 @@ export interface Database {
           },
         ];
       };
+      anonymous_votes: {
+        Row: {
+          id: string;
+          anon_id: string;
+          deal_id: string;
+          vote_type: number;
+          ip_address: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          anon_id: string;
+          deal_id: string;
+          vote_type: number;
+          ip_address?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          vote_type?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "anonymous_votes_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       telegram_pushes: {
         Row: {
           id: string;

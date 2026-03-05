@@ -96,6 +96,11 @@ export default async function DealPage({ params }: Props) {
       .maybeSingle<{ vote_type: number }>();
 
     if (vote) userVote = vote.vote_type as 1 | -1;
+  } else {
+    // Check for anonymous vote
+    const { getAnonymousVotes } = await import("@/lib/actions/votes");
+    const anonVotes = await getAnonymousVotes();
+    if (anonVotes[deal.id]) userVote = anonVotes[deal.id] as 1 | -1;
   }
 
   return (

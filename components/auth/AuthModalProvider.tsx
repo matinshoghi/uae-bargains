@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { mergeAnonymousVotes } from "@/lib/actions/votes";
 import {
   Dialog,
   DialogContent,
@@ -42,10 +43,17 @@ export function AuthModalProvider({ children }: { children: React.ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" && wasOpenRef.current) {
-        setOpen(false);
-        router.refresh();
+    } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === "SIGNED_IN") {
+        // Merge any anonymous votes into the new user's account
+        mergeAnonymousVotes().catch(() => {});
+        // Clear the anonymous vote counter from localStorage
+        localStorage.removeItem("anon_vote_count");
+
+        if (wasOpenRef.current) {
+          setOpen(false);
+          router.refresh();
+        }
       }
     });
 

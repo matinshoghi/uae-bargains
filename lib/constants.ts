@@ -2,6 +2,9 @@ export const SORT_OPTIONS = ["hot", "new", "top"] as const;
 export type SortOption = (typeof SORT_OPTIONS)[number];
 
 export const DEALS_PER_PAGE = 15;
+export const ALLOW_ANONYMOUS_VOTES = true;
+export const ANON_VOTE_MODAL_INTERVAL = 5;
+export const ANON_VOTE_DAILY_LIMIT = 30;
 
 export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   electronics: "Phones, TVs, headphones, smart home, gadgets",

@@ -2,9 +2,14 @@
 
 import { useOptimistic, useTransition } from "react";
 import { ChevronUp, ChevronDown } from "lucide-react";
-import { voteDeal, voteComment } from "@/lib/actions/votes";
+import { voteDeal, voteComment, voteDealAnonymous } from "@/lib/actions/votes";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import {
+  ALLOW_ANONYMOUS_VOTES,
+  ANON_VOTE_MODAL_INTERVAL,
+} from "@/lib/constants";
 
 interface VoteButtonProps {
   entityType: "deal" | "comment";
@@ -19,6 +24,18 @@ interface VoteState {
   upvoteCount: number;
   downvoteCount: number;
   userVote: 1 | -1 | null;
+}
+
+// localStorage helpers for anonymous vote tracking
+function getAnonVoteCount(): number {
+  if (typeof window === "undefined") return 0;
+  return parseInt(localStorage.getItem("anon_vote_count") ?? "0", 10);
+}
+
+function incrementAnonVoteCount(): number {
+  const count = getAnonVoteCount() + 1;
+  localStorage.setItem("anon_vote_count", String(count));
+  return count;
 }
 
 export function VoteButton({
@@ -64,8 +81,47 @@ export function VoteButton({
     e.preventDefault();
     e.stopPropagation();
 
-    if (!isLoggedIn) {
-      openAuthModal({ message: "Sign in to vote on this deal" });
+    // Comment votes always require auth
+    if (!isLoggedIn && entityType === "comment") {
+      openAuthModal({ message: "Sign in to vote on comments" });
+      return;
+    }
+
+    // Deal votes: allow anonymous if feature flag is on
+    if (!isLoggedIn && entityType === "deal") {
+      if (!ALLOW_ANONYMOUS_VOTES) {
+        openAuthModal({ message: "Sign in to vote on this deal" });
+        return;
+      }
+
+      startTransition(async () => {
+        setOptimistic(voteType);
+        const result = await voteDealAnonymous(entityId, voteType);
+
+        if (result.rateLimited) {
+          toast.error("You've reached the daily vote limit. Sign up for unlimited votes!", {
+            action: {
+              label: "Sign Up",
+              onClick: () => openAuthModal({ message: "Create an account for unlimited voting" }),
+            },
+          });
+          return;
+        }
+
+        // Nudge: show modal every Nth vote, otherwise toast
+        const count = incrementAnonVoteCount();
+        if (count % ANON_VOTE_MODAL_INTERVAL === 0) {
+          openAuthModal({ message: "You're on a roll! Sign up to save your votes and unlock all features." });
+        } else {
+          toast("Vote saved!", {
+            description: "Sign up to keep your votes forever.",
+            action: {
+              label: "Sign Up",
+              onClick: () => openAuthModal(),
+            },
+          });
+        }
+      });
       return;
     }
 
