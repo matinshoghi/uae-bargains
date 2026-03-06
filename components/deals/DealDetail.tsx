@@ -156,7 +156,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             </Button>
           ) : (
             <Button asChild>
-              <a href={deal.url} target="_blank" rel="noopener noreferrer">
+              <a href={deal.url} target="_blank" rel="noopener noreferrer" aria-label={`Go to deal: ${deal.title}`}>
                 Go to Deal <ExternalLink className="ml-2 h-4 w-4" />
               </a>
             </Button>

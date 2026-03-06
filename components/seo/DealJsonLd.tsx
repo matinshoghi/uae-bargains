@@ -1,6 +1,6 @@
 import type { DealWithRelations } from "@/lib/types";
 import { BASE_URL, getDealUrl } from "@/lib/site";
-import { getUrlHostname } from "@/lib/utils";
+import { getUrlHostname, stripMarkdown, truncateText } from "@/lib/utils";
 
 export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
   const canonicalUrl = getDealUrl(deal.id);
@@ -29,6 +29,7 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
             name: merchantName,
           },
         }),
+        ...(deal.promo_code && { discount: deal.promo_code }),
       }
     : null;
 
@@ -36,7 +37,7 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: deal.title,
-    description: deal.description.slice(0, 500),
+    description: truncateText(stripMarkdown(deal.description), 500),
     ...(deal.image_url && { image: deal.image_url }),
     url: canonicalUrl,
     category: categoryLabel,

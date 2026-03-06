@@ -275,36 +275,61 @@ After deployment:
 - 403/401 responses for AI/search bots
 - top crawled deal URLs
 - `robots.txt` hits
-## Notes
-This document intentionally avoids overconfident GEO claims. The strongest current levers are still:
-- clean crawl access
-- clear and visible structured data
-- fresh, well-linked source pages
-- stable machine-readable summaries
-- measurement
+## Research notes (March 2026)
+Based on latest GEO (Generative Engine Optimization) research and best practices as of Q1 2026.
+### Key findings
+- About 61% of AI-cited pages use three or more schema types. Pages with 3+ schema types have a 13% higher likelihood of being cited.
+- Pages not updated quarterly are 3x more likely to lose citations.
+- About 48% of AI citations come from community platforms (Reddit, YouTube, etc.), and 85% of brand mentions originate from third-party pages rather than owned domains.
+- Sites listed on four or more platforms are 2.8x more likely to appear in ChatGPT responses.
+- Roughly 60% of AI Overview citations come from URLs not ranking in the top 20 organic results. Traditional ranking does not equal AI citation.
+- AI crawlers (GPTBot, OAI-SearchBot, ChatGPT-User) cannot render JavaScript. They only see what is present in the initial HTML. SSR via Next.js already handles this.
+- OpenAI updated its crawler docs in December 2025: `ChatGPT-User` no longer commits to honoring robots.txt. `OAI-SearchBot` is no longer used to feed navigational links directly. Both `OAI-SearchBot` and `GPTBot` can share crawl results.
+- ChatGPT automatically appends `utm_source=chatgpt.com` to referral URLs. Our PostHog tracking should already capture this.
+- Cloudflare changed its default configuration to block AI bots. If we use Cloudflare, bot traffic may have been shut off automatically without explicit action.
+- Semrush tested `llms.txt` on Search Engine Land and found zero visits from GPTBot, PerplexityBot, ClaudeBot, or Google-Extended to the file. LLM traffic grew but due to other factors. `llms.txt` remains low-cost and worth keeping but should not receive further investment.
+- ChatGPT Atlas uses ARIA tags (the same labels and roles that support screen readers) to interpret page structure and interactive elements.
+- Brand search volume is the single strongest predictor of AI citations (0.334 correlation coefficient).
+### Implications for our plan
+- No visible frontend changes are planned in the next slices. All improvements are backend, schema, infrastructure, or off-site.
+- Landing pages (category, merchant, roundup) are deferred to a future phase when frontend work is in scope.
+- `ChatGPT-User` should be added to `robots.ts` for explicit signaling even though it may not honor the directive.
+- `Offer` schema should be added to deal pages. It is a natural fit and requires no visible changes.
+- Off-site brand signals (social profiles, community presence, directory listings) are more impactful for AI citation than most on-site markup additions.
 ## Recommended next phase / slices
+All slices below require no visible frontend changes.
 ### Slice 1: crawler access verification
 Goal:
 - make sure AI/search crawlers can actually reach production
 
 Tasks:
+- add `ChatGPT-User` to the bot list in `app/robots.ts` and `lib/site.ts`
 - verify CDN / WAF / bot protection is not blocking:
   - `OAI-SearchBot`
   - `GPTBot`
+  - `ChatGPT-User`
   - `ClaudeBot`
   - `Claude-SearchBot`
   - `PerplexityBot`
-- inspect logs for:
-  - 200 responses
-  - 403 / 401 responses
-  - crawler frequency
+  - `Applebot-Extended`
+- if using Cloudflare: check that the AI bot blocking default has not been enabled
+- inspect server logs for:
+  - 200 responses from AI bots
+  - 403 / 401 responses from AI bots
+  - crawler frequency and which bots are actually visiting
 - verify `robots.txt` is reachable publicly
+- verify `ChatGPT-User` referral traffic is being captured by PostHog (via `utm_source=chatgpt.com`)
+- audit ARIA attributes on key interactive elements (deal cards, vote buttons, checkout links) for ChatGPT Atlas compatibility
 
 Why:
 - markup improvements do not help if the crawlers are blocked upstream
-### Slice 2: structured data consistency audit
+- Cloudflare's default AI bot blocking is a common silent killer
+- `ChatGPT-User` is a separate bot that serves user-initiated requests and is the source of direct referral traffic
+### Slice 2: structured data expansion and consistency audit
 Goal:
-- make sure key deal facts are consistent everywhere
+- make sure key deal facts are consistent everywhere and expand schema coverage
+
+Part A — consistency audit:
 
 Audit these fields:
 - title
@@ -321,69 +346,116 @@ Compare across:
 - metadata description
 - `llms-full.txt`
 
+Part B — schema expansion (no visible frontend changes):
+
+- add `Offer` schema to `DealJsonLd.tsx` with:
+  - `priceCurrency: "AED"`
+  - `price`
+  - `validThrough` (expiry date)
+  - `availability` (in stock / expired)
+  - `url` (deal outbound link)
+- add `promo_code` to structured data via `Offer.discount` or a custom property when present
+- ensure deal pages use at least 3 schema types (Product + Offer + BreadcrumbList already gets us there)
+- review whether `aggregateRating` scale accurately represents community vote sentiment
+
 Why:
 - consistency is one of the strongest quality signals we can control
-### Slice 3: stronger landing pages for citation
+- pages with 3+ schema types have a 13% higher citation likelihood
+- `Offer` with `validThrough` and `priceCurrency` is the most natural schema addition for a deals site and helps AI systems extract pricing data
+### Slice 3: brand / entity strengthening + off-site signals
 Goal:
-- create better pages for AI systems to cite
+- help AI systems understand HalaSaves as a distinct brand entity
+- build off-site citation signals
+- keep the current user-facing UI exactly as-is (no visible text, layout, or component changes)
 
-Best candidates:
-- category landing pages
-- merchant pages
-- editorial roundup pages
+On-site tasks (no visible UI changes):
+- populate `sameAs` in `Organization` schema with real social profiles once available
+- ensure brand naming is consistent across metadata, JSON-LD, and `<head>` tags only (do not modify visible on-page copy)
+- keep `Organization` schema `name`, `url`, and `logo` accurate
+- limit on-site work in this slice to JSON-LD and metadata updates only
 
-Examples:
-- electronics deals in UAE
-- grocery deals in UAE
-- dining deals in UAE
-- Amazon UAE deals
-- Noon deals
-- best deals this week in UAE
+Off-site tasks:
+- establish presence on at least 4 platforms (social profiles, directories, community sites)
+- ensure consistent NAP (Name, Address, Phone) information across all listings
+- engage on Reddit and community platforms about UAE deals where appropriate
+- create or claim Google Business Profile if applicable
+- consider press mentions or content placements on UAE-focused publications
 
 Why:
-- useful source pages are likely more valuable than adding obscure markup
-### Slice 4: brand / entity strengthening
+- 85% of brand mentions in AI results originate from third-party pages, not owned domains
+- sites on 4+ platforms are 2.8x more likely to appear in ChatGPT responses
+- brand search volume is the single strongest predictor of AI citations
+- entity clarity helps AI systems connect brand mentions to site identity
+### Slice 4: AI citation measurement and reporting
 Goal:
-- help search systems understand HalaSaves as a distinct brand
-
-Tasks:
-- populate `sameAs` in `Organization` schema with real profiles
-- strengthen About page clarity
-- keep brand naming consistent across metadata and on-page copy
-
-Why:
-- entity clarity helps engines connect brand mentions and site identity
-### Slice 5: AI referral measurement and reporting
-Goal:
-- know whether the optimization work is creating results
+- know whether the optimization work is creating results across all AI platforms
 
 Tasks:
 - build PostHog dashboards for:
-  - AI referrals by source
-  - top landing pages from AI
+  - AI referrals by source (ChatGPT, Perplexity, Gemini, Copilot, Claude)
+  - top landing pages from AI referrals
   - conversion from AI traffic
   - repeat visits from AI traffic
+- set up manual AI citation testing:
+  - weekly queries to ChatGPT, Perplexity, and Gemini for target terms ("best deals in UAE", "grocery deals Dubai", "electronics deals UAE", etc.)
+  - track whether HalaSaves appears in responses
+  - track sentiment accuracy (is the brand described correctly?)
+- consider automated monitoring via tools like Otterly.AI (free tier available) or similar
+- track AI Citation Share: frequency of brand presence in AI search results
+- monitor Search Console for FAQ-style queries with high impressions but low CTR (may indicate content is being summarized in AI answers)
 
 Why:
 - without measurement, we are guessing
-### Slice 6: freshness content system
+- AI citation monitoring is still immature as of Q1 2026 and requires combining multiple data sources
+- sentiment accuracy matters — incorrect AI descriptions of the brand can reduce trust
+### Slice 5: freshness signals + IndexNow
 Goal:
-- increase freshness and recrawl value for a deals site
+- increase freshness and recrawl value, and notify search engines of updates in real time
 
-Ideas:
-- weekly roundup pages
-- category highlights
-- expiring-soon sections
-- top today / top this week pages
+Tasks:
+- implement IndexNow support to ping Bing/Yandex when deals are created, updated, or expire
+- add `dateModified` / last-updated timestamps to all structured data where applicable
+- ensure `llms-full.txt` hourly cache is working correctly and deals are rotating
+- review whether sitemap `lastmod` values are being updated when deal data changes
 
 Why:
-- freshness is a natural advantage for this product category
+- AI engines weigh recency when selecting sources
+- pages not updated quarterly are 3x more likely to lose citations
+- IndexNow provides real-time indexing for Bing and Copilot, which is increasingly important for AI citation capture
+- freshness is a natural competitive advantage for a deals site
+### Slice 6 (deferred): stronger landing pages for citation
+Goal:
+- create better pages for AI systems to cite
+
+Deferred because:
+- requires visible frontend changes which are out of scope for now
+
+When ready, best candidates:
+- category landing pages with concise 2-4 sentence summaries at the top (AI systems weight content at the top of pages most heavily)
+- merchant pages
+- "best deals this week" editorial roundup pages
+- titles formatted as "Best [Category] Deals in UAE — [Month] [Year]" (perform well in AI answer generation, especially on ChatGPT)
+- each page should include a visible "Last updated" timestamp
+- structure content in modular, answer-focused sections of 75-300 words each
+
+Why:
+- AI systems pull individual passages, not entire pages
+- focused niche sites outperform larger brands when expertise is clearer and better structured
+- useful source pages are more valuable than obscure markup
+## Notes
+This document intentionally avoids overconfident GEO claims. The strongest current levers are still:
+- clean crawl access
+- clear and visible structured data
+- fresh, well-linked source pages
+- stable machine-readable summaries
+- off-site brand signals and entity clarity
+- measurement
 ## Recommended order
-1. crawler access verification
-2. structured data consistency audit
-3. category / merchant / roundup landing pages
-4. AI referral dashboards
-5. brand / entity strengthening
-6. freshness content system
+1. crawler access verification (Slice 1)
+2. structured data expansion and consistency audit (Slice 2)
+3. brand / entity strengthening + off-site signals (Slice 3)
+4. AI citation measurement and reporting (Slice 4)
+5. freshness signals + IndexNow (Slice 5)
+6. landing pages for citation (Slice 6 — deferred until frontend work is in scope)
 ## Best immediate next action
-- verify that AI/search crawlers are reaching production and are not being blocked
+- add `ChatGPT-User` to `robots.ts` and verify that AI/search crawlers are reaching production and are not being blocked by CDN/WAF (especially Cloudflare defaults)

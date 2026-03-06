@@ -28,6 +28,7 @@ export function PromoCodeBadge({ code }: PromoCodeBadgeProps) {
     <button
       type="button"
       onClick={handleCopy}
+      aria-label={`Copy promo code ${code.trim()}`}
       className="group relative flex w-full items-center justify-between rounded-sm border-2 border-dashed border-foreground/30 bg-muted/40 px-4 py-3 text-left transition-colors hover:border-foreground/60 hover:bg-muted"
     >
       <div className="flex flex-col gap-0.5">

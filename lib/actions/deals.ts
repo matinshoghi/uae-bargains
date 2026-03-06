@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createDealSchema, updateDealSchema } from "@/lib/validations/deal";
 import { captureImageForDeal } from "@/lib/og";
 import { optimizeImage } from "@/lib/images";
+import { notifyDealChange } from "@/lib/indexnow";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -155,6 +156,9 @@ export async function createDeal(
     });
   }
 
+  // Notify IndexNow about the new deal
+  after(() => notifyDealChange(deal.id));
+
   redirect(`/deals/${deal.id}`);
 }
 
@@ -295,6 +299,9 @@ export async function updateDeal(
     return { message: error.message, values };
   }
 
+  // Notify IndexNow about the updated deal
+  after(() => notifyDealChange(dealId));
+
   revalidatePath(`/deals/${dealId}`);
   redirect(`/deals/${dealId}`);
 }
@@ -329,6 +336,9 @@ export async function deleteDeal(dealId: string): Promise<{ error?: string }> {
   if (error) {
     return { error: error.message };
   }
+
+  // Notify IndexNow about the removal
+  after(() => notifyDealChange(dealId));
 
   revalidatePath("/");
   redirect("/");

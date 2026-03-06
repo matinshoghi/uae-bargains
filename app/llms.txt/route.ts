@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { CATEGORY_DESCRIPTIONS } from "@/lib/constants";
 import { BASE_URL } from "@/lib/site";
+import { BRAND } from "@/lib/brand";
 
 function getCategoryLine() {
   return Object.entries(CATEGORY_DESCRIPTIONS)
@@ -10,18 +11,18 @@ function getCategoryLine() {
 }
 
 export function GET() {
-  const content = `# HalaSaves
+  const content = `# ${BRAND.name}
 
-> Community-driven deals and bargains platform for shoppers in the United Arab Emirates.
+> ${BRAND.description}
 
 ## About
 
-HalaSaves is a community deals platform focused on the UAE. Users submit deals, promo codes, discounts, and sale finds, and the community votes and comments to surface the most useful offers.
+${BRAND.name} is a community deals platform focused on the UAE. Users submit deals, promo codes, discounts, and sale finds, and the community votes and comments to surface the most useful offers.
 
 ## Region and pricing
 
-- Region: United Arab Emirates
-- Currency: AED
+- Region: ${BRAND.region}
+- Currency: ${BRAND.currency}
 - Focus: current deals, discounts, promo codes, freebies, and limited-time offers
 
 ## Categories

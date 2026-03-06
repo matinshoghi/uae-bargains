@@ -5,6 +5,7 @@ import { CommentSection } from "@/components/comments/CommentSection";
 import type { Metadata } from "next";
 import type { DealWithRelations } from "@/lib/types";
 import { DealJsonLd } from "@/components/seo/DealJsonLd";
+import { buildDealMetaDescription } from "@/lib/seo";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -39,17 +40,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Deal Not Found", robots: { index: false, follow: false } };
   }
 
-  // Build a rich description with price/discount/category info
-  const parts: string[] = [];
-  if (deal.price != null) {
-    parts.push(`AED ${deal.price}`);
-    if (deal.original_price != null && deal.discount_percentage != null) {
-      parts.push(`(${deal.discount_percentage}% off)`);
-    }
-  }
-  if (deal.categories?.label) parts.push(`in ${deal.categories.label}`);
-  const pricePrefix = parts.length > 0 ? `${parts.join(" ")} — ` : "";
-  const description = `${pricePrefix}${deal.description.slice(0, 160 - pricePrefix.length)}`;
+  const description = buildDealMetaDescription(deal);
 
   const canonicalUrl = `https://halasaves.com/deals/${deal.id}`;
 

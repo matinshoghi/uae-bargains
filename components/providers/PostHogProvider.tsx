@@ -38,6 +38,7 @@ const AI_UTM_SOURCES: Record<string, string> = {
 };
 
 const AI_REFERRAL_SESSION_KEY = "hs_ai_ref_tracked";
+const AI_SESSION_SOURCE_KEY = "hs_ai_source";
 
 function getAiReferralSource(referrer: string, utmSource: string | null): string | null {
   if (utmSource) {
@@ -53,6 +54,30 @@ function getAiReferralSource(referrer: string, utmSource: string | null): string
   } catch {
     return null;
   }
+}
+
+function getLandingPageType(pathname: string): string {
+  if (pathname === "/") return "homepage";
+  if (pathname.startsWith("/deals/")) return "deal";
+  if (pathname === "/about") return "about";
+  if (pathname === "/contact") return "contact";
+  return "other";
+}
+
+/**
+ * Capture an AI conversion event. Called from client-side interaction handlers
+ * (e.g. vote, deal click, comment) when the session originated from an AI referral.
+ */
+export function captureAiConversion(action: string, metadata?: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  const aiSource = sessionStorage.getItem(AI_SESSION_SOURCE_KEY);
+  if (!aiSource) return;
+
+  posthog.capture("ai_conversion", {
+    ai_source: aiSource,
+    conversion_action: action,
+    ...metadata,
+  });
 }
 
 function PostHogPageView() {
@@ -75,11 +100,13 @@ function PostHogPageView() {
           ai_source: aiSource,
           referrer_url: document.referrer || undefined,
           landing_path: pathname,
+          landing_page_type: getLandingPageType(pathname),
         });
         posthogInstance.register_once({
           first_ai_source: aiSource,
         });
         sessionStorage.setItem(AI_REFERRAL_SESSION_KEY, "1");
+        sessionStorage.setItem(AI_SESSION_SOURCE_KEY, aiSource);
       }
     }
   }, [pathname, searchParams, posthogInstance]);

@@ -1,19 +1,19 @@
 import type { DealWithRelations } from "@/lib/types";
-import { BASE_URL, getDealUrl } from "@/lib/site";
+import { getDealUrl } from "@/lib/site";
+import { BRAND } from "@/lib/brand";
 
 export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "HalaSaves",
-    url: BASE_URL,
-    description:
-      "Discover and share the best deals in UAE. Community-driven bargains on electronics, dining, fashion, groceries, and travel.",
+    name: BRAND.name,
+    url: BRAND.url,
+    description: BRAND.description,
     potentialAction: {
       "@type": "SearchAction",
       target: {
         "@type": "EntryPoint",
-        urlTemplate: `${BASE_URL}/?q={search_term_string}`,
+        urlTemplate: `${BRAND.url}/?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
     },
@@ -22,17 +22,18 @@ export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "HalaSaves",
-    url: BASE_URL,
-    logo: `${BASE_URL}/icon.png`,
-    sameAs: [],
+    name: BRAND.name,
+    url: BRAND.url,
+    logo: BRAND.logo,
+    sameAs: [...BRAND.sameAs],
   };
 
   const itemListSchema = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Top deals in UAE",
-    description: "Community-voted current deals on HalaSaves",
+    description: `Community-voted current deals on ${BRAND.name}`,
+    dateModified: new Date().toISOString(),
     numberOfItems: Math.min(deals.length, 10),
     itemListElement: deals.slice(0, 10).map((deal, index) => ({
       "@type": "ListItem",

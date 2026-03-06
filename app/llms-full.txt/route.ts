@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { BASE_URL, getDealUrl } from "@/lib/site";
-import { formatPriceShort, getUrlHostname, stripMarkdown, wrapText } from "@/lib/utils";
+import { getUrlHostname, stripMarkdown, wrapText } from "@/lib/utils";
+import { buildDealPriceText } from "@/lib/seo";
 
 const DEAL_LIMIT = 50;
 
@@ -59,17 +60,9 @@ export async function GET() {
     lines.push(`## ${deal.title}`);
     lines.push(`- URL: ${detailUrl}`);
 
-    if (deal.price != null) {
-      let priceLine = `- Price: ${formatPriceShort(deal.price)}`;
-      if (deal.original_price != null) {
-        priceLine += ` (was ${formatPriceShort(deal.original_price)})`;
-      }
-      if (deal.discount_percentage != null && deal.discount_percentage > 0) {
-        priceLine += `, ${deal.discount_percentage}% off`;
-      }
-      lines.push(priceLine);
-    } else if (deal.original_price != null) {
-      lines.push(`- Original price: ${formatPriceShort(deal.original_price)}`);
+    const priceText = buildDealPriceText(deal);
+    if (priceText) {
+      lines.push(`- Price: ${priceText}`);
     }
 
     if (deal.categories?.label) {

@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/Footer";
 import { AuthModalProvider } from "@/components/auth/AuthModalProvider";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { createClient } from "@/lib/supabase/server";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -24,20 +25,19 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://halasaves.com"),
+  metadataBase: new URL(BRAND.url),
   title: {
-    default: "HalaSaves — Community Deals for UAE",
-    template: "%s — HalaSaves",
+    default: `${BRAND.name} — Community Deals for UAE`,
+    template: `%s — ${BRAND.name}`,
   },
-  description:
-    "Discover and share the best deals in UAE. Community-driven bargains on electronics, dining, fashion, groceries, and travel.",
+  description: BRAND.description,
   openGraph: {
     type: "website",
-    locale: "en_AE",
-    siteName: "HalaSaves",
+    locale: BRAND.locale,
+    siteName: BRAND.name,
   },
   alternates: {
-    canonical: "https://halasaves.com",
+    canonical: BRAND.url,
   },
 };
 
