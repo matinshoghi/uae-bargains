@@ -4,6 +4,7 @@ import { DealDetail } from "@/components/deals/DealDetail";
 import { CommentSection } from "@/components/comments/CommentSection";
 import type { Metadata } from "next";
 import type { DealWithRelations } from "@/lib/types";
+import { DealJsonLd } from "@/components/seo/DealJsonLd";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -30,17 +31,42 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const deal = await getDeal(id);
 
-  if (!deal || deal.status === "removed") {
+  if (!deal) {
     return { title: "Deal Not Found" };
   }
 
+  if (deal.status === "removed") {
+    return { title: "Deal Not Found", robots: { index: false, follow: false } };
+  }
+
+  // Build a rich description with price/discount/category info
+  const parts: string[] = [];
+  if (deal.price != null) {
+    parts.push(`AED ${deal.price}`);
+    if (deal.original_price != null && deal.discount_percentage != null) {
+      parts.push(`(${deal.discount_percentage}% off)`);
+    }
+  }
+  if (deal.categories?.label) parts.push(`in ${deal.categories.label}`);
+  const pricePrefix = parts.length > 0 ? `${parts.join(" ")} — ` : "";
+  const description = `${pricePrefix}${deal.description.slice(0, 160 - pricePrefix.length)}`;
+
+  const canonicalUrl = `https://halasaves.com/deals/${deal.id}`;
+
   return {
     title: deal.title,
-    description: deal.description.slice(0, 160),
+    description,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
       title: deal.title,
-      description: deal.description.slice(0, 160),
-      images: deal.image_url ? [deal.image_url] : [],
+      description,
+      url: canonicalUrl,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: deal.title,
+      description,
     },
   };
 }
@@ -105,6 +131,7 @@ export default async function DealPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
+      <DealJsonLd deal={deal} />
       <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
 
       <div className="mt-10 border-t-2 border-foreground pt-8">

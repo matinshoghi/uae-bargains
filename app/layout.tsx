@@ -24,6 +24,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://halasaves.com"),
   title: {
     default: "HalaSaves — Community Deals for UAE",
     template: "%s — HalaSaves",
@@ -34,6 +35,9 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_AE",
     siteName: "HalaSaves",
+  },
+  alternates: {
+    canonical: "https://halasaves.com",
   },
 };
 

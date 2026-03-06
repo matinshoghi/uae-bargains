@@ -6,16 +6,20 @@ import { fetchDeals, getUserDealVotes } from "@/lib/queries/deals";
 import { fetchActiveBanners } from "@/lib/queries/banners";
 import { getAnonymousVotes } from "@/lib/actions/votes";
 import { DEALS_PER_PAGE } from "@/lib/constants";
+import { HomeJsonLd } from "@/components/seo/HomeJsonLd";
 
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ sort?: string }>;
+  searchParams: Promise<{ sort?: string; page?: string }>;
 }) {
-  const { sort = "hot" } = await searchParams;
+  const { sort = "hot", page } = await searchParams;
+  const pageNum = Math.max(1, parseInt(page ?? "1", 10) || 1);
+  // For crawlers: if ?page=N, load N pages worth of deals so all are in the HTML
+  const limit = pageNum * DEALS_PER_PAGE + 1;
 
   const [deals, { userVotes, isLoggedIn }, banners] = await Promise.all([
-    fetchDeals({ sort, limit: DEALS_PER_PAGE + 1, offset: 0 }),
+    fetchDeals({ sort, limit, offset: 0 }),
     getUserDealVotes(),
     fetchActiveBanners(),
   ]);
@@ -25,6 +29,7 @@ export default async function HomePage({
 
   return (
     <div className="px-4 pb-6 sm:px-6 lg:px-8">
+      <HomeJsonLd />
       {banners.length > 0 && (
         <div className="mb-6">
           <HeroBannerCarousel banners={banners} />
@@ -38,6 +43,7 @@ export default async function HomePage({
           <DealFeed
             initialDeals={deals}
             sort={sort}
+            currentPage={pageNum}
             userVotes={effectiveVotes}
             isLoggedIn={isLoggedIn}
           />
