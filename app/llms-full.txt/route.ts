@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { BASE_URL, getDealUrl } from "@/lib/site";
-import { formatPriceShort, getUrlHostname, stripMarkdown, truncateText } from "@/lib/utils";
+import { formatPriceShort, getUrlHostname, stripMarkdown } from "@/lib/utils";
 
 const DEAL_LIMIT = 50;
 
@@ -51,7 +51,7 @@ export async function GET() {
   ];
 
   for (const deal of deals ?? []) {
-    const description = truncateText(stripMarkdown(deal.description), 220);
+    const description = stripMarkdown(deal.description);
     const merchant = deal.url ? getUrlHostname(deal.url) : null;
     const detailUrl = getDealUrl(deal.id);
 
@@ -88,7 +88,9 @@ export async function GET() {
     }
 
     lines.push(`- Community votes: +${deal.upvote_count} / -${deal.downvote_count}`);
-    lines.push(`- Summary: ${description}`);
+    if (description) {
+      lines.push(`- Summary: ${description}`);
+    }
     lines.push("");
   }
 

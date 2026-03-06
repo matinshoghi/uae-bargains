@@ -11,6 +11,26 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
   const ratingValue = totalVotes > 0
     ? Math.round((deal.upvote_count / totalVotes) * 5 * 10) / 10
     : null;
+  const offerSchema = deal.price != null
+    ? {
+        "@type": "Offer",
+        priceCurrency: "AED",
+        price: deal.price,
+        availability:
+          deal.status === "active"
+            ? "https://schema.org/InStock"
+            : "https://schema.org/Discontinued",
+        ...(deal.url && { url: deal.url }),
+        ...(deal.expires_at && { validThrough: deal.expires_at }),
+        ...(deal.expires_at && { priceValidUntil: deal.expires_at.split("T")[0] }),
+        ...(merchantName && {
+          seller: {
+            "@type": "Organization",
+            name: merchantName,
+          },
+        }),
+      }
+    : null;
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -22,24 +42,7 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
     category: categoryLabel,
     datePublished: deal.created_at,
     dateModified: deal.updated_at,
-    offers: {
-      "@type": "Offer",
-      priceCurrency: "AED",
-      ...(deal.price != null && { price: deal.price }),
-      availability:
-        deal.status === "active"
-          ? "https://schema.org/InStock"
-          : "https://schema.org/Discontinued",
-      ...(deal.url && { url: deal.url }),
-      ...(deal.expires_at && { validThrough: deal.expires_at }),
-      ...(deal.expires_at && { priceValidUntil: deal.expires_at.split("T")[0] }),
-      ...(merchantName && {
-        seller: {
-          "@type": "Organization",
-          name: merchantName,
-        },
-      }),
-    },
+    ...(offerSchema && { offers: offerSchema }),
     ...(ratingValue != null && {
       aggregateRating: {
         "@type": "AggregateRating",
