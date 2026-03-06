@@ -46,41 +46,46 @@ function FacebookIcon({ className }: { className?: string }) {
 }
 
 export function ShareButtons({ url, title }: ShareButtonsProps) {
-  // Resolve relative URLs to absolute (needed for share APIs)
   function getAbsoluteUrl() {
     if (url.startsWith("http")) return url;
     return window.location.origin + url;
   }
 
+  function appendUtm(absoluteUrl: string, source: string): string {
+    const u = new URL(absoluteUrl);
+    u.searchParams.set("utm_source", source);
+    u.searchParams.set("utm_medium", "share");
+    return u.toString();
+  }
+
   function shareOnWhatsApp() {
-    const absoluteUrl = getAbsoluteUrl();
+    const shareUrl = appendUtm(getAbsoluteUrl(), "whatsapp");
     window.open(
-      `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + absoluteUrl)}`,
+      `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + shareUrl)}`,
       "_blank"
     );
   }
 
   function shareOnFacebook() {
-    const absoluteUrl = getAbsoluteUrl();
+    const shareUrl = appendUtm(getAbsoluteUrl(), "facebook");
     window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(absoluteUrl)}&quote=${encodeURIComponent(title)}`,
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(title)}`,
       "_blank"
     );
   }
 
   function copyLink() {
-    const absoluteUrl = getAbsoluteUrl();
-    navigator.clipboard.writeText(absoluteUrl);
+    const shareUrl = appendUtm(getAbsoluteUrl(), "copy_link");
+    navigator.clipboard.writeText(shareUrl);
     toast.success("Link copied to clipboard!");
   }
 
   async function nativeShare() {
-    const absoluteUrl = getAbsoluteUrl();
+    const shareUrl = appendUtm(getAbsoluteUrl(), "native_share");
     if (navigator.share) {
       try {
-        await navigator.share({ title, text: title, url: absoluteUrl });
+        await navigator.share({ title, text: title, url: shareUrl });
       } catch (e) {
-        // User cancelled the share sheet — not an error
         if (e instanceof Error && e.name === "AbortError") return;
         copyLink();
       }

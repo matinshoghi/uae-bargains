@@ -188,21 +188,27 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
 
         {/* Thumbnail — beside description on mobile, top-aligned on sm+ */}
         <div className="row-start-2 col-start-2 self-start sm:row-start-1 sm:row-span-2">
-          {deal.image_url ? (
-            <div className="relative h-28 w-28 overflow-hidden rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
-              <Image
-                src={deal.image_url}
-                alt={deal.title}
-                fill
-                className="object-contain"
-                sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 180px"
-              />
-            </div>
-          ) : (
-            <div className="flex h-28 w-28 items-center justify-center rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
-              <ImageIcon className="h-8 w-8 text-muted-foreground" />
-            </div>
-          )}
+          <Link
+            href={`/deals/${deal.id}`}
+            aria-label={`View details for ${deal.title}`}
+            className="relative z-10 block"
+          >
+            {deal.image_url ? (
+              <div className="relative h-28 w-28 overflow-hidden rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
+                <Image
+                  src={deal.image_url}
+                  alt={deal.title}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 640px) 112px, (max-width: 768px) 144px, 180px"
+                />
+              </div>
+            ) : (
+              <div className="flex h-28 w-28 items-center justify-center rounded-sm bg-black/5 sm:h-36 sm:w-36 md:h-[180px] md:w-[180px]">
+                <ImageIcon className="h-8 w-8 text-muted-foreground" />
+              </div>
+            )}
+          </Link>
         </div>
       </div>
     </article>

@@ -16,23 +16,31 @@ export function ShareIconButton({ url, title, className }: ShareIconButtonProps)
     return window.location.origin + url;
   }
 
+  function appendUtm(absoluteUrl: string, source: string): string {
+    const u = new URL(absoluteUrl);
+    u.searchParams.set("utm_source", source);
+    u.searchParams.set("utm_medium", "share");
+    return u.toString();
+  }
+
   async function handleShare() {
-    const absoluteUrl = getAbsoluteUrl();
+    const shareUrl = appendUtm(getAbsoluteUrl(), "native_share");
 
     if (navigator.share) {
       try {
-        await navigator.share({ title, text: title, url: absoluteUrl });
+        await navigator.share({ title, text: title, url: shareUrl });
       } catch (e) {
         if (e instanceof Error && e.name === "AbortError") return;
-        fallbackCopy(absoluteUrl);
+        fallbackCopy();
       }
     } else {
-      fallbackCopy(absoluteUrl);
+      fallbackCopy();
     }
   }
 
-  function fallbackCopy(absoluteUrl: string) {
-    navigator.clipboard.writeText(absoluteUrl);
+  function fallbackCopy() {
+    const shareUrl = appendUtm(getAbsoluteUrl(), "copy_link");
+    navigator.clipboard.writeText(shareUrl);
     toast.success("Link copied to clipboard!");
   }
 

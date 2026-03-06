@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import { formatDistanceToNow, format } from "date-fns";
 import { ExternalLink, MapPin, Calendar, Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -82,16 +81,37 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
 
       {/* Image */}
       {deal.image_url && (
-        <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-2 border-foreground/10 bg-background">
-          <Image
-            src={deal.image_url}
-            alt={deal.title}
-            fill
-            className="object-contain"
-            sizes="(max-width: 768px) 100vw, 768px"
-            priority
-          />
-        </div>
+        deal.url ? (
+          <a
+            href={deal.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Open ${deal.title} deal link in a new tab`}
+            className="group block"
+          >
+            <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-2 border-foreground/10 bg-background transition-opacity group-hover:opacity-95">
+              <Image
+                src={deal.image_url}
+                alt={deal.title}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 768px"
+                priority
+              />
+            </div>
+          </a>
+        ) : (
+          <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-2 border-foreground/10 bg-background">
+            <Image
+              src={deal.image_url}
+              alt={deal.title}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 768px"
+              priority
+            />
+          </div>
+        )
       )}
 
       {/* Price block */}
