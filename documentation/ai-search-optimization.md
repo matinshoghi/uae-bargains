@@ -282,3 +282,108 @@ This document intentionally avoids overconfident GEO claims. The strongest curre
 - fresh, well-linked source pages
 - stable machine-readable summaries
 - measurement
+## Recommended next phase / slices
+### Slice 1: crawler access verification
+Goal:
+- make sure AI/search crawlers can actually reach production
+
+Tasks:
+- verify CDN / WAF / bot protection is not blocking:
+  - `OAI-SearchBot`
+  - `GPTBot`
+  - `ClaudeBot`
+  - `Claude-SearchBot`
+  - `PerplexityBot`
+- inspect logs for:
+  - 200 responses
+  - 403 / 401 responses
+  - crawler frequency
+- verify `robots.txt` is reachable publicly
+
+Why:
+- markup improvements do not help if the crawlers are blocked upstream
+### Slice 2: structured data consistency audit
+Goal:
+- make sure key deal facts are consistent everywhere
+
+Audit these fields:
+- title
+- price
+- original price
+- discount
+- expiry
+- merchant
+- category
+
+Compare across:
+- visible HTML
+- JSON-LD
+- metadata description
+- `llms-full.txt`
+
+Why:
+- consistency is one of the strongest quality signals we can control
+### Slice 3: stronger landing pages for citation
+Goal:
+- create better pages for AI systems to cite
+
+Best candidates:
+- category landing pages
+- merchant pages
+- editorial roundup pages
+
+Examples:
+- electronics deals in UAE
+- grocery deals in UAE
+- dining deals in UAE
+- Amazon UAE deals
+- Noon deals
+- best deals this week in UAE
+
+Why:
+- useful source pages are likely more valuable than adding obscure markup
+### Slice 4: brand / entity strengthening
+Goal:
+- help search systems understand HalaSaves as a distinct brand
+
+Tasks:
+- populate `sameAs` in `Organization` schema with real profiles
+- strengthen About page clarity
+- keep brand naming consistent across metadata and on-page copy
+
+Why:
+- entity clarity helps engines connect brand mentions and site identity
+### Slice 5: AI referral measurement and reporting
+Goal:
+- know whether the optimization work is creating results
+
+Tasks:
+- build PostHog dashboards for:
+  - AI referrals by source
+  - top landing pages from AI
+  - conversion from AI traffic
+  - repeat visits from AI traffic
+
+Why:
+- without measurement, we are guessing
+### Slice 6: freshness content system
+Goal:
+- increase freshness and recrawl value for a deals site
+
+Ideas:
+- weekly roundup pages
+- category highlights
+- expiring-soon sections
+- top today / top this week pages
+
+Why:
+- freshness is a natural advantage for this product category
+## Recommended order
+1. crawler access verification
+2. structured data consistency audit
+3. category / merchant / roundup landing pages
+4. AI referral dashboards
+5. brand / entity strengthening
+6. freshness content system
+## Best immediate next action
+- verify that AI/search crawlers are reaching production and are not being blocked
