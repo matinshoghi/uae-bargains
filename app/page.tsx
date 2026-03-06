@@ -29,7 +29,7 @@ export default async function HomePage({
 
   return (
     <div className="px-4 pb-6 sm:px-6 lg:px-8">
-      <HomeJsonLd />
+      <HomeJsonLd deals={deals.slice(0, DEALS_PER_PAGE)} />
       {banners.length > 0 && (
         <div className="mb-6">
           <HeroBannerCarousel banners={banners} />

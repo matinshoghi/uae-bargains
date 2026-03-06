@@ -13,6 +13,19 @@ export function formatPriceShort(amount: number): string {
   return `AED ${Number.isInteger(amount) ? amount : amount.toFixed(2)}`;
 }
 
+export function getUrlHostname(url: string): string | null {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return null;
+  }
+}
+
+export function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return `${text.slice(0, Math.max(0, maxLength - 3)).trimEnd()}...`;
+}
+
 export function shortTimeAgo(dateString: string): string {
   const seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
   if (seconds < 60) return `${Math.max(seconds, 0)}s`;

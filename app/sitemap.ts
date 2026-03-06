@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { createClient } from "@/lib/supabase/server";
-
-const BASE_URL = "https://halasaves.com";
+import { BASE_URL } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
@@ -45,6 +44,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${BASE_URL}/privacy`,
       changeFrequency: "monthly",
+      priority: 0.3,
+    },
+    {
+      url: `${BASE_URL}/llms.txt`,
+      changeFrequency: "weekly",
       priority: 0.3,
     },
   ];

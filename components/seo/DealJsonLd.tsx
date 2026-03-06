@@ -1,9 +1,16 @@
 import type { DealWithRelations } from "@/lib/types";
+import { BASE_URL, getDealUrl } from "@/lib/site";
+import { getUrlHostname } from "@/lib/utils";
 
 export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
-  const canonicalUrl = `https://halasaves.com/deals/${deal.id}`;
+  const canonicalUrl = getDealUrl(deal.id);
   const categoryLabel = deal.categories?.label ?? "Deals";
   const categorySlug = deal.categories?.slug ?? "other";
+  const merchantName = deal.url ? getUrlHostname(deal.url) : null;
+  const totalVotes = deal.upvote_count + deal.downvote_count;
+  const ratingValue = totalVotes > 0
+    ? Math.round((deal.upvote_count / totalVotes) * 5 * 10) / 10
+    : null;
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -13,6 +20,8 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
     ...(deal.image_url && { image: deal.image_url }),
     url: canonicalUrl,
     category: categoryLabel,
+    datePublished: deal.created_at,
+    dateModified: deal.updated_at,
     offers: {
       "@type": "Offer",
       priceCurrency: "AED",
@@ -24,7 +33,23 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
       ...(deal.url && { url: deal.url }),
       ...(deal.expires_at && { validThrough: deal.expires_at }),
       ...(deal.expires_at && { priceValidUntil: deal.expires_at.split("T")[0] }),
+      ...(merchantName && {
+        seller: {
+          "@type": "Organization",
+          name: merchantName,
+        },
+      }),
     },
+    ...(ratingValue != null && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue,
+        bestRating: 5,
+        worstRating: 0,
+        ratingCount: totalVotes,
+        reviewCount: totalVotes,
+      },
+    }),
   };
 
   const breadcrumbSchema = {
@@ -35,13 +60,13 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://halasaves.com",
+        item: BASE_URL,
       },
       {
         "@type": "ListItem",
         position: 2,
         name: categoryLabel,
-        item: `https://halasaves.com/?category=${categorySlug}`,
+        item: `${BASE_URL}/?category=${categorySlug}`,
       },
       {
         "@type": "ListItem",
