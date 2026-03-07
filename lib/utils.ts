@@ -71,6 +71,8 @@ export function shortTimeAgo(dateString: string): string {
 /** Strip markdown syntax for plain-text previews (e.g. feed cards). */
 export function stripMarkdown(md: string): string {
   return md
+    // HTML tags
+    .replace(/<[^>]+>/g, "")
     // fenced code blocks – strip ``` markers but keep content
     .replace(/```/g, "")
     // blockquotes
