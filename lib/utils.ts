@@ -84,6 +84,7 @@ export function stripMarkdown(md: string): string {
     .replace(/^#{1,6}\s+/gm, "")      // headings
     .replace(/^[-*+]\s+/gm, "")       // unordered list markers
     .replace(/^\d+\.\s+/gm, "")       // ordered list markers
+    .replace(/\\/g, "")                // backslashes
     .replace(/\n{2,}/g, " ")          // collapse multiple newlines
     .trim();
 }
