@@ -11,25 +11,29 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
   const ratingValue = totalVotes > 0
     ? Math.round((deal.upvote_count / totalVotes) * 5 * 10) / 10
     : null;
-  const offerSchema = {
-    "@type": "Offer",
-    priceCurrency: "AED",
-    ...(deal.price != null && { price: deal.price }),
-    availability:
-      deal.status === "active"
-        ? "https://schema.org/InStock"
-        : "https://schema.org/Discontinued",
-    ...(deal.url && { url: deal.url }),
-    ...(deal.expires_at && { validThrough: deal.expires_at }),
-    ...(deal.expires_at && { priceValidUntil: deal.expires_at.split("T")[0] }),
-    ...(merchantName && {
-      seller: {
-        "@type": "Organization",
-        name: merchantName,
-      },
-    }),
-    ...(deal.promo_code && { discount: deal.promo_code }),
-  };
+  // Only output Offer when we have a price — Google requires price for
+  // Merchant listings / Product snippets validation.
+  const offerSchema = deal.price != null
+    ? {
+        "@type": "Offer",
+        priceCurrency: "AED",
+        price: deal.price,
+        availability:
+          deal.status === "active"
+            ? "https://schema.org/InStock"
+            : "https://schema.org/Discontinued",
+        ...(deal.url && { url: deal.url }),
+        ...(deal.expires_at && { validThrough: deal.expires_at }),
+        ...(deal.expires_at && { priceValidUntil: deal.expires_at.split("T")[0] }),
+        ...(merchantName && {
+          seller: {
+            "@type": "Organization",
+            name: merchantName,
+          },
+        }),
+        ...(deal.promo_code && { discount: deal.promo_code }),
+      }
+    : null;
 
   const productSchema = {
     "@context": "https://schema.org",
@@ -41,7 +45,7 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
     category: categoryLabel,
     datePublished: deal.created_at,
     dateModified: deal.updated_at,
-    offers: offerSchema,
+    ...(offerSchema && { offers: offerSchema }),
     ...(ratingValue != null && {
       aggregateRating: {
         "@type": "AggregateRating",
