@@ -1,6 +1,7 @@
 import type { DealWithRelations } from "@/lib/types";
 import { getDealUrl } from "@/lib/site";
 import { BRAND } from "@/lib/brand";
+import { stripMarkdown, truncateText } from "@/lib/utils";
 
 export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
   const websiteSchema = {
@@ -40,18 +41,22 @@ export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
       position: index + 1,
       url: getDealUrl(deal.id),
       name: deal.title,
-      ...(deal.price != null && {
-        item: {
-          "@type": "Product",
-          name: deal.title,
-          url: getDealUrl(deal.id),
-          offers: {
-            "@type": "Offer",
-            priceCurrency: "AED",
-            price: deal.price,
-          },
+      item: {
+        "@type": "Product",
+        name: deal.title,
+        url: getDealUrl(deal.id),
+        description: truncateText(stripMarkdown(deal.description), 200),
+        image: deal.image_url || `${BRAND.url}/icon.png`,
+        offers: {
+          "@type": "Offer",
+          priceCurrency: "AED",
+          ...(deal.price != null && { price: deal.price }),
+          availability:
+            deal.status === "active"
+              ? "https://schema.org/InStock"
+              : "https://schema.org/Discontinued",
         },
-      }),
+      },
     })),
   };
 
