@@ -58,6 +58,18 @@ export default async function AdminLayout({
             >
               Seed Actions
             </Link>
+            <Link
+              href="/admin/stores"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              Stores
+            </Link>
+            <Link
+              href="/admin/coupons"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              Coupons
+            </Link>
           </nav>
         </aside>
         <main className="min-w-0 flex-1">{children}</main>

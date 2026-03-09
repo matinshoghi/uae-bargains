@@ -39,6 +39,12 @@ function CompactNav({ visible, serverProfile, isLoggedIn }: { visible: boolean; 
         </Link>
 
         <div className="flex items-center gap-3 md:gap-6">
+          <Link
+            href="/coupons"
+            className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:block"
+          >
+            Coupons
+          </Link>
           <PostDealButton isLoggedIn={isLoggedIn} variant="compact" />
           <AuthButton variant="link" initialProfile={serverProfile} />
         </div>
@@ -94,6 +100,12 @@ export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null 
           </Link>
 
           <div className="flex items-center gap-3 md:gap-6">
+            <Link
+              href="/coupons"
+              className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:block"
+            >
+              Coupons
+            </Link>
             <PostDealButton isLoggedIn={serverProfile !== null} />
             <AuthButton variant="link" initialProfile={serverProfile} />
           </div>

@@ -414,9 +414,116 @@ export interface Database {
           },
         ];
       };
+      stores: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          logo_url: string | null;
+          website_url: string | null;
+          affiliate_network: string | null;
+          description: string | null;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          logo_url?: string | null;
+          website_url?: string | null;
+          affiliate_network?: string | null;
+          description?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          slug?: string;
+          logo_url?: string | null;
+          website_url?: string | null;
+          affiliate_network?: string | null;
+          description?: string | null;
+          is_active?: boolean;
+          sort_order?: number;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      coupons: {
+        Row: {
+          id: string;
+          store_id: string;
+          code: string | null;
+          title: string;
+          description: string | null;
+          discount_type: "percentage" | "flat" | "bogo" | "free_shipping" | "other";
+          discount_value: string | null;
+          min_purchase: string | null;
+          url: string | null;
+          affiliate_url: string | null;
+          expires_at: string | null;
+          is_verified: boolean;
+          is_featured: boolean;
+          click_count: number;
+          status: "active" | "expired";
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          store_id: string;
+          code?: string | null;
+          title: string;
+          description?: string | null;
+          discount_type: "percentage" | "flat" | "bogo" | "free_shipping" | "other";
+          discount_value?: string | null;
+          min_purchase?: string | null;
+          url?: string | null;
+          affiliate_url?: string | null;
+          expires_at?: string | null;
+          is_verified?: boolean;
+          is_featured?: boolean;
+          status?: "active" | "expired";
+        };
+        Update: {
+          store_id?: string;
+          code?: string | null;
+          title?: string;
+          description?: string | null;
+          discount_type?: "percentage" | "flat" | "bogo" | "free_shipping" | "other";
+          discount_value?: string | null;
+          min_purchase?: string | null;
+          url?: string | null;
+          affiliate_url?: string | null;
+          expires_at?: string | null;
+          is_verified?: boolean;
+          is_featured?: boolean;
+          status?: "active" | "expired";
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "coupons_store_id_fkey";
+            columns: ["store_id"];
+            isOneToOne: false;
+            referencedRelation: "stores";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      increment_coupon_click: {
+        Args: { coupon_id: string };
+        Returns: undefined;
+      };
+    };
     Enums: Record<string, never>;
   };
 }

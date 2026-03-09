@@ -19,6 +19,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
+  // Fetch active stores for coupon pages
+  const { data: stores } = await supabase
+    .from("stores")
+    .select("slug, updated_at")
+    .eq("is_active", true);
+
+  const couponEntries: MetadataRoute.Sitemap = [
+    {
+      url: `${BASE_URL}/coupons`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
+    ...(stores ?? []).map((store) => ({
+      url: `${BASE_URL}/coupons/${store.slug}`,
+      lastModified: store.updated_at,
+      changeFrequency: "daily" as const,
+      priority: 0.7,
+    })),
+  ];
+
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
@@ -53,5 +74,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  return [...staticPages, ...dealEntries];
+  return [...staticPages, ...dealEntries, ...couponEntries];
 }

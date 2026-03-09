@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Settings } from "lucide-react";
+import { Home, Ticket, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PostDealButton } from "@/components/layout/PostDealButton";
 
@@ -37,6 +37,29 @@ export function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
           </div>
           <span className="font-display text-[9px] font-semibold uppercase tracking-wider">
             Home
+          </span>
+        </Link>
+
+        {/* Coupons link */}
+        <Link
+          href="/coupons"
+          className={cn(
+            "flex flex-col items-center gap-0.5 transition-colors",
+            pathname === "/coupons" || pathname.startsWith("/coupons/")
+              ? "text-primary-foreground"
+              : "text-muted-foreground"
+          )}
+        >
+          <div
+            className={cn(
+              "flex h-8 w-8 items-center justify-center rounded-sm transition-colors",
+              (pathname === "/coupons" || pathname.startsWith("/coupons/")) && "bg-primary"
+            )}
+          >
+            <Ticket className="h-4 w-4" />
+          </div>
+          <span className="font-display text-[9px] font-semibold uppercase tracking-wider">
+            Coupons
           </span>
         </Link>
 
