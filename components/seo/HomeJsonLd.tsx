@@ -47,15 +47,17 @@ export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
         url: getDealUrl(deal.id),
         description: truncateText(stripMarkdown(deal.description), 200),
         image: deal.image_url || `${BRAND.url}/icon.png`,
-        offers: {
-          "@type": "Offer",
-          priceCurrency: "AED",
-          ...(deal.price != null && { price: deal.price }),
-          availability:
-            deal.status === "active"
-              ? "https://schema.org/InStock"
-              : "https://schema.org/Discontinued",
-        },
+        ...(deal.price != null && {
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "AED",
+            price: deal.price,
+            availability:
+              deal.status === "active"
+                ? "https://schema.org/InStock"
+                : "https://schema.org/Discontinued",
+          },
+        }),
       },
     })),
   };
