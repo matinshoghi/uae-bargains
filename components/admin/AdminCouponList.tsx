@@ -76,12 +76,23 @@ export function AdminCouponList({
                       Verified
                     </span>
                   )}
+                  {coupon.moderation_status === "pending" && (
+                    <span className="rounded bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-800">
+                      Pending
+                    </span>
+                  )}
+                  {coupon.moderation_status === "rejected" && (
+                    <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-800">
+                      Rejected
+                    </span>
+                  )}
                 </div>
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {coupon.stores?.name ?? "Unknown store"} ·{" "}
                   {coupon.click_count} clicks
                   {coupon.expires_at &&
                     ` · Expires ${new Date(coupon.expires_at).toLocaleDateString()}`}
+                  {coupon.submitted_by && " · User submitted"}
                 </p>
               </div>
 

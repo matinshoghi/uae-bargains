@@ -29,10 +29,18 @@ ${BRAND.name} is a community deals platform focused on the UAE. Users submit dea
 
 ${getCategoryLine()}
 
+## Coupons
+
+${BRAND.name} maintains a curated directory of verified coupon codes and promo codes for popular UAE retailers such as Amazon.ae, Noon, Namshi, and more. Each store has a dedicated page with currently active codes that shoppers can copy and use at checkout.
+
+- Coupon hub: ${BASE_URL}/coupons
+- Individual store pages follow the pattern: ${BASE_URL}/coupons/{store-slug}
+
 ## Key URLs
 
 - Home: ${BASE_URL}
 - About: ${BASE_URL}/about
+- Coupons: ${BASE_URL}/coupons
 - Sitemap: ${BASE_URL}/sitemap.xml
 - Current deals feed: ${BASE_URL}/llms-full.txt
 `;

@@ -20,15 +20,20 @@ export function AdminCouponForm({
   stores,
   coupon,
   onCancel,
+  submitAction,
+  submitLabel,
 }: {
   stores: StoreRow[];
   coupon?: CouponRow;
   onCancel?: () => void;
+  submitAction?: (prev: CouponFormState, data: FormData) => Promise<CouponFormState>;
+  submitLabel?: string;
 }) {
   const isEdit = !!coupon;
+  const formAction = submitAction ?? (isEdit ? updateCoupon : createCoupon);
 
   const [state, action, isPending] = useActionState<CouponFormState, FormData>(
-    isEdit ? updateCoupon : createCoupon,
+    formAction,
     null
   );
 
@@ -253,12 +258,12 @@ export function AdminCouponForm({
           className="rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {isPending
-            ? isEdit
-              ? "Saving..."
-              : "Creating..."
-            : isEdit
-              ? "Save Changes"
-              : "Create Coupon"}
+            ? "Saving..."
+            : submitLabel
+              ? submitLabel
+              : isEdit
+                ? "Save Changes"
+                : "Create Coupon"}
         </button>
         {isEdit && onCancel && (
           <button

@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
-import { fetchStoreBySlug, fetchCouponsByStore } from "@/lib/queries/coupons";
+import { ChevronLeft, Plus } from "lucide-react";
+import { fetchStoreBySlug, fetchCouponsByStore, fetchExpiredCouponsByStore } from "@/lib/queries/coupons";
+import { getCouponFeedbackMap } from "@/lib/actions/coupons";
 import { CouponGrid } from "@/components/coupons/CouponGrid";
+import { CouponCard } from "@/components/coupons/CouponCard";
 import { CouponJsonLd } from "@/components/seo/CouponJsonLd";
+import { BASE_URL } from "@/lib/site";
+import { BRAND } from "@/lib/brand";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -18,9 +22,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     year: "numeric",
   });
 
+  const title = `Best ${store.name} Coupon Codes UAE ${month} | HalaSaves`;
+  const description = `${store.name} coupon codes and promo codes for ${month}. Verified discounts for UAE shoppers. Copy a code and save on your next order.`;
+  const url = `${BASE_URL}/coupons/${store.slug}`;
+
   return {
-    title: `Best ${store.name} Coupon Codes UAE ${month} | HalaSaves`,
-    description: `${store.name} coupon codes and promo codes for ${month}. Verified discounts for UAE shoppers. Copy a code and save on your next order.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: BRAND.name,
+      locale: BRAND.locale,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+    alternates: {
+      canonical: url,
+    },
   };
 }
 
@@ -29,7 +53,11 @@ export default async function StoreCouponsPage({ params }: Props) {
   const store = await fetchStoreBySlug(slug);
   if (!store) notFound();
 
-  const coupons = await fetchCouponsByStore(store.id);
+  const [coupons, expiredCoupons, feedbackMap] = await Promise.all([
+    fetchCouponsByStore(store.id),
+    fetchExpiredCouponsByStore(store.id),
+    getCouponFeedbackMap(),
+  ]);
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -68,9 +96,40 @@ export default async function StoreCouponsPage({ params }: Props) {
         </div>
       </div>
 
-      <div className="mt-8">
-        <CouponGrid coupons={coupons} storeSlug={store.slug} />
+      <div className="mt-6 flex items-center justify-between">
+        <h2 className="text-lg font-semibold">
+          {coupons.length} {coupons.length === 1 ? "coupon" : "coupons"} available
+        </h2>
+        <Link
+          href={`/coupons/submit?store=${store.slug}`}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-2 text-sm font-medium transition-colors hover:bg-accent"
+        >
+          <Plus className="h-4 w-4" />
+          Submit a Code
+        </Link>
       </div>
+
+      <div className="mt-4">
+        <CouponGrid coupons={coupons} storeSlug={store.slug} feedbackMap={feedbackMap} />
+      </div>
+
+      {expiredCoupons.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-lg font-semibold text-muted-foreground">
+            Recently Expired
+          </h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {expiredCoupons.map((coupon) => (
+              <CouponCard
+                key={coupon.id}
+                coupon={coupon}
+                storeSlug={store.slug}
+                expired
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -96,5 +96,31 @@ export const createCouponSchema = z.object({
     .transform((val) => val === "on"),
 });
 
+export const submitCouponSchema = z.object({
+  store_id: z.string().uuid("Select a store"),
+  code: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => (val ?? "").trim())
+    .pipe(z.string().max(50, "Code must be under 50 characters")),
+  title: z
+    .string()
+    .min(3, "Title must be at least 3 characters")
+    .max(200, "Title must be under 200 characters"),
+  discount_type: z.enum(["percentage", "flat", "bogo", "free_shipping", "other"], {
+    error: "Select a discount type",
+  }),
+  description: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => (val ?? "").trim()),
+  url: optionalUrl,
+  expires_at: z
+    .union([z.string(), z.null()])
+    .optional()
+    .transform((val) => val ?? ""),
+});
+
 export type CreateStoreInput = z.infer<typeof createStoreSchema>;
 export type CreateCouponInput = z.infer<typeof createCouponSchema>;
+export type SubmitCouponInput = z.infer<typeof submitCouponSchema>;

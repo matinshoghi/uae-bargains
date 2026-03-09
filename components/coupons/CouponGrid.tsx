@@ -4,9 +4,11 @@ import type { CouponRow } from "@/lib/types";
 export function CouponGrid({
   coupons,
   storeSlug,
+  feedbackMap = {},
 }: {
   coupons: CouponRow[];
   storeSlug: string;
+  feedbackMap?: Record<string, boolean>;
 }) {
   if (coupons.length === 0) {
     return (
@@ -19,7 +21,12 @@ export function CouponGrid({
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {coupons.map((coupon) => (
-        <CouponCard key={coupon.id} coupon={coupon} storeSlug={storeSlug} />
+        <CouponCard
+          key={coupon.id}
+          coupon={coupon}
+          storeSlug={storeSlug}
+          userFeedback={feedbackMap[coupon.id] ?? null}
+        />
       ))}
     </div>
   );

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BadgeCheck, Clock, ExternalLink } from "lucide-react";
 import { CopyCodeButton } from "@/components/coupons/CopyCodeButton";
+import { CouponFeedback } from "@/components/coupons/CouponFeedback";
 import type { CouponRow } from "@/lib/types";
 
 function formatExpiry(expiresAt: string | null): string | null {
@@ -45,25 +46,34 @@ function DiscountBadge({ type, value }: { type: string; value: string | null }) 
 export function CouponCard({
   coupon,
   storeSlug,
+  userFeedback,
+  expired = false,
 }: {
   coupon: CouponRow;
   storeSlug: string;
+  userFeedback?: boolean | null;
+  expired?: boolean;
 }) {
   const expiryText = formatExpiry(coupon.expires_at);
   const hasLink = !!(coupon.affiliate_url || coupon.url);
 
   return (
-    <div className="flex flex-col gap-3 rounded-xl border-2 border-border p-4 transition-colors hover:border-foreground/20">
+    <div className={`flex flex-col gap-3 rounded-xl border-2 border-border p-4 transition-colors ${expired ? "opacity-60" : "hover:border-foreground/20"}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <DiscountBadge type={coupon.discount_type} value={coupon.discount_value} />
-          {coupon.is_verified && (
+          {expired && (
+            <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-800">
+              Expired
+            </span>
+          )}
+          {!expired && coupon.is_verified && (
             <span className="flex items-center gap-0.5 text-xs text-green-600">
               <BadgeCheck className="h-3.5 w-3.5" />
               Verified
             </span>
           )}
-          {coupon.is_featured && (
+          {!expired && coupon.is_featured && (
             <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-800">
               Featured
             </span>
@@ -105,11 +115,20 @@ export function CouponCard({
         )}
       </div>
 
-      {expiryText && (
+      {!expired && expiryText && (
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <Clock className="h-3 w-3" />
           {expiryText}
         </div>
+      )}
+
+      {!expired && (
+        <CouponFeedback
+          couponId={coupon.id}
+          successCount={coupon.success_count}
+          failCount={coupon.fail_count}
+          userFeedback={userFeedback ?? null}
+        />
       )}
     </div>
   );

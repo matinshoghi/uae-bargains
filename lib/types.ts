@@ -7,10 +7,16 @@ type CommentRow = Database["public"]["Tables"]["comments"]["Row"];
 
 export type StoreRow = Database["public"]["Tables"]["stores"]["Row"];
 export type CouponRow = Database["public"]["Tables"]["coupons"]["Row"];
+export type CouponFeedbackRow = Database["public"]["Tables"]["coupon_feedback"]["Row"];
 
 export type StoreWithCouponCount = StoreRow & { coupon_count: number };
 export type CouponWithStore = CouponRow & {
   stores: Pick<StoreRow, "name" | "slug" | "logo_url"> | null;
+};
+
+export type PendingCoupon = CouponRow & {
+  stores: Pick<StoreRow, "name" | "slug"> | null;
+  profiles: Pick<ProfileRow, "username"> | null;
 };
 
 export type DealWithRelations = DealRow & {

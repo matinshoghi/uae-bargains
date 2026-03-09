@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { StoreRow, StoreWithCouponCount, CouponWithStore, CouponRow } from "@/lib/types";
+import type { StoreRow, StoreWithCouponCount, CouponWithStore, CouponRow, PendingCoupon } from "@/lib/types";
 
 export async function fetchActiveStores(): Promise<StoreWithCouponCount[]> {
   const supabase = await createClient();
@@ -15,11 +15,12 @@ export async function fetchActiveStores(): Promise<StoreWithCouponCount[]> {
   if (error) throw error;
   if (!stores || stores.length === 0) return [];
 
-  // Count active coupons per store
+  // Count active, approved coupons per store
   const { data: coupons } = await supabase
     .from("coupons")
     .select("store_id")
     .eq("status", "active")
+    .eq("moderation_status", "approved")
     .or(`expires_at.gt.${new Date().toISOString()},expires_at.is.null`);
 
   const countMap: Record<string, number> = {};
@@ -55,9 +56,26 @@ export async function fetchCouponsByStore(storeId: string): Promise<CouponRow[]>
     .select("*")
     .eq("store_id", storeId)
     .eq("status", "active")
+    .eq("moderation_status", "approved")
     .or(`expires_at.gt.${new Date().toISOString()},expires_at.is.null`)
     .order("is_featured", { ascending: false })
     .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data as CouponRow[]) ?? [];
+}
+
+export async function fetchExpiredCouponsByStore(storeId: string): Promise<CouponRow[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("coupons")
+    .select("*")
+    .eq("store_id", storeId)
+    .eq("status", "expired")
+    .eq("moderation_status", "approved")
+    .order("updated_at", { ascending: false })
+    .limit(12);
 
   if (error) throw error;
   return (data as CouponRow[]) ?? [];
@@ -86,6 +104,19 @@ export async function fetchAllCouponsAdmin(): Promise<CouponWithStore[]> {
 
   if (error) throw error;
   return (data as CouponWithStore[]) ?? [];
+}
+
+export async function fetchPendingCoupons(): Promise<PendingCoupon[]> {
+  const admin = createAdminClient();
+
+  const { data, error } = await admin
+    .from("coupons")
+    .select("*, stores:store_id (name, slug), profiles:submitted_by (username)")
+    .eq("moderation_status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) throw error;
+  return (data as PendingCoupon[]) ?? [];
 }
 
 export async function fetchCouponById(id: string): Promise<CouponRow | null> {

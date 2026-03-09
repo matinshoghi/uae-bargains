@@ -70,6 +70,12 @@ export default async function AdminLayout({
             >
               Coupons
             </Link>
+            <Link
+              href="/admin/coupon-submissions"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              Submissions
+            </Link>
           </nav>
         </aside>
         <main className="min-w-0 flex-1">{children}</main>

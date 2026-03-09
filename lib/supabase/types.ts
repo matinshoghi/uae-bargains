@@ -471,6 +471,11 @@ export interface Database {
           is_featured: boolean;
           click_count: number;
           status: "active" | "expired";
+          submitted_by: string | null;
+          moderation_status: "pending" | "approved" | "rejected";
+          moderation_note: string | null;
+          success_count: number;
+          fail_count: number;
           created_at: string;
           updated_at: string;
         };
@@ -489,6 +494,9 @@ export interface Database {
           is_verified?: boolean;
           is_featured?: boolean;
           status?: "active" | "expired";
+          submitted_by?: string | null;
+          moderation_status?: "pending" | "approved" | "rejected";
+          moderation_note?: string | null;
         };
         Update: {
           store_id?: string;
@@ -504,6 +512,9 @@ export interface Database {
           is_verified?: boolean;
           is_featured?: boolean;
           status?: "active" | "expired";
+          submitted_by?: string | null;
+          moderation_status?: "pending" | "approved" | "rejected";
+          moderation_note?: string | null;
           updated_at?: string;
         };
         Relationships: [
@@ -512,6 +523,36 @@ export interface Database {
             columns: ["store_id"];
             isOneToOne: false;
             referencedRelation: "stores";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      coupon_feedback: {
+        Row: {
+          id: string;
+          coupon_id: string;
+          anon_id: string;
+          ip_address: string | null;
+          worked: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          coupon_id: string;
+          anon_id: string;
+          ip_address?: string | null;
+          worked: boolean;
+          created_at?: string;
+        };
+        Update: {
+          worked?: boolean;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "coupon_feedback_coupon_id_fkey";
+            columns: ["coupon_id"];
+            isOneToOne: false;
+            referencedRelation: "coupons";
             referencedColumns: ["id"];
           },
         ];

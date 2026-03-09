@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ExpireCouponsButton } from "@/components/admin/ExpireCouponsButton";
 
 async function getVoteStats() {
   const admin = createAdminClient();
@@ -67,6 +68,16 @@ export default async function AdminDashboard() {
             <p className="text-2xl font-bold">{stats.uniqueAnonVoters}</p>
             <p className="text-xs text-muted-foreground">Unique anon voters</p>
           </div>
+        </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className="mt-6 rounded-xl border border-border p-5">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+          Quick Actions
+        </h2>
+        <div className="mt-3">
+          <ExpireCouponsButton />
         </div>
       </div>
 
