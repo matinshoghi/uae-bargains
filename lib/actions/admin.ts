@@ -131,6 +131,21 @@ export async function adminEditDeal(
       payload.updated_at = fields.created_at;
     }
 
+    // If the expiry date was pushed to the future, reactivate an expired deal
+    if (fields.expires_at) {
+      const newExpiry = new Date(`${fields.expires_at}T23:59:59`);
+      if (newExpiry > new Date()) {
+        const { data: current } = await admin
+          .from("deals")
+          .select("status")
+          .eq("id", dealId)
+          .single();
+        if (current?.status === "expired") {
+          payload.status = "active";
+        }
+      }
+    }
+
     const { error } = await admin
       .from("deals")
       .update(payload)

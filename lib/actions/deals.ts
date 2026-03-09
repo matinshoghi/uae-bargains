@@ -181,7 +181,7 @@ export async function updateDeal(
   // Verify ownership
   const { data: existingDeal } = await supabase
     .from("deals")
-    .select("user_id, image_url")
+    .select("user_id, image_url, status")
     .eq("id", dealId)
     .single();
 
@@ -279,6 +279,12 @@ export async function updateDeal(
 
   const expiresAtValue = expires_at ? `${expires_at}T23:59:59` : null;
 
+  // If the expiry date was pushed to the future, reactivate an expired deal
+  const shouldReactivate =
+    existingDeal.status === "expired" &&
+    expiresAtValue &&
+    new Date(expiresAtValue) > new Date();
+
   const { error } = await supabase
     .from("deals")
     .update({
@@ -292,6 +298,7 @@ export async function updateDeal(
       image_url,
       expires_at: expiresAtValue,
       updated_at: new Date().toISOString(),
+      ...(shouldReactivate && { status: "active" as const }),
     })
     .eq("id", dealId);
 
