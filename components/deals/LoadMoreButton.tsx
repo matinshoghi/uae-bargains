@@ -14,6 +14,7 @@ interface LoadMoreButtonProps {
   categorySlug?: string;
   initialOffset: number;
   isLoggedIn?: boolean;
+  hideExpired?: boolean;
 }
 
 export function LoadMoreButton({
@@ -21,6 +22,7 @@ export function LoadMoreButton({
   categorySlug,
   initialOffset,
   isLoggedIn = false,
+  hideExpired = false,
 }: LoadMoreButtonProps) {
   const [deals, setDeals] = useState<DealWithRelations[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, number>>({});
@@ -30,7 +32,7 @@ export function LoadMoreButton({
 
   function loadMore() {
     startTransition(async () => {
-      const newDeals = await fetchMoreDeals({ sort, offset, categorySlug });
+      const newDeals = await fetchMoreDeals({ sort, offset, categorySlug, hideExpired });
 
       // Fetch user votes for the new deals
       if (isLoggedIn && newDeals.length > 0) {

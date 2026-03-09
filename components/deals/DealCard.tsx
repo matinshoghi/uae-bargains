@@ -149,6 +149,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
                 downvoteCount={deal.downvote_count}
                 userVote={userVote}
                 isLoggedIn={isLoggedIn}
+                disabled={expired}
               />
             </div>
 

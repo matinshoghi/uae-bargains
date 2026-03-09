@@ -192,6 +192,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             downvoteCount={deal.downvote_count}
             userVote={userVote}
             isLoggedIn={isLoggedIn}
+            disabled={expired}
           />
           <ShareButtons url={`/deals/${deal.id}`} title={deal.title} />
         </div>

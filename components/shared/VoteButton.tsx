@@ -18,6 +18,7 @@ interface VoteButtonProps {
   downvoteCount: number;
   userVote: 1 | -1 | null;
   isLoggedIn: boolean;
+  disabled?: boolean;
 }
 
 interface VoteState {
@@ -45,6 +46,7 @@ export function VoteButton({
   downvoteCount,
   userVote,
   isLoggedIn,
+  disabled = false,
 }: VoteButtonProps) {
   const { openAuthModal } = useAuthModal();
   const [isPending, startTransition] = useTransition();
@@ -144,10 +146,11 @@ export function VoteButton({
     <div className="flex items-center gap-1 rounded-sm border border-foreground">
       <button
         onClick={(e) => handleVote(e, 1)}
-        disabled={isPending}
+        disabled={disabled || isPending}
         aria-label="Upvote"
         className={cn(
           "rounded-sm p-1.5 transition-colors",
+          disabled && "cursor-not-allowed opacity-50",
           optimistic.userVote === 1
             ? "bg-primary text-primary-foreground"
             : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -169,10 +172,11 @@ export function VoteButton({
 
       <button
         onClick={(e) => handleVote(e, -1)}
-        disabled={isPending}
+        disabled={disabled || isPending}
         aria-label="Downvote"
         className={cn(
           "rounded-sm p-1.5 transition-colors",
+          disabled && "cursor-not-allowed opacity-50",
           optimistic.userVote === -1
             ? "bg-destructive/10 text-destructive"
             : "text-muted-foreground hover:bg-muted hover:text-foreground"

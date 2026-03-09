@@ -366,11 +366,13 @@ export async function fetchMoreDeals({
   sort,
   offset,
   categorySlug,
+  hideExpired,
 }: {
   sort: string;
   offset: number;
   categorySlug?: string;
+  hideExpired?: boolean;
 }) {
   const { fetchDeals } = await import("@/lib/queries/deals");
-  return fetchDeals({ sort, offset, categorySlug });
+  return fetchDeals({ sort, offset, categorySlug, hideExpired });
 }

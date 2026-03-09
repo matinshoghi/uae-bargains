@@ -11,6 +11,7 @@ interface DealFeedProps {
   currentPage?: number;
   userVotes?: Record<string, number>;
   isLoggedIn?: boolean;
+  hideExpired?: boolean;
 }
 
 export function DealFeed({
@@ -20,6 +21,7 @@ export function DealFeed({
   currentPage = 1,
   userVotes = {},
   isLoggedIn = false,
+  hideExpired = false,
 }: DealFeedProps) {
   if (initialDeals.length === 0) {
     return <EmptyState />;
@@ -47,6 +49,7 @@ export function DealFeed({
           categorySlug={categorySlug}
           initialOffset={totalVisible}
           isLoggedIn={isLoggedIn}
+          hideExpired={hideExpired}
         />
       )}
 

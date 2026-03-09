@@ -7,6 +7,7 @@ interface FetchDealsOptions {
   limit?: number;
   offset?: number;
   categorySlug?: string;
+  hideExpired?: boolean;
 }
 
 const DEAL_SELECT = `
@@ -20,14 +21,20 @@ export async function fetchDeals({
   limit = DEALS_PER_PAGE,
   offset = 0,
   categorySlug,
+  hideExpired = false,
 }: FetchDealsOptions): Promise<DealWithRelations[]> {
   const supabase = await createClient();
 
   let query = supabase
     .from("deals")
     .select(DEAL_SELECT)
-    .eq("status", "active")
     .range(offset, offset + limit - 1);
+
+  if (hideExpired) {
+    query = query.eq("status", "active");
+  } else {
+    query = query.in("status", ["active", "expired"]);
+  }
 
   // Filter by category — resolve slug to ID so the filter is on the deals table
   if (categorySlug) {
@@ -41,7 +48,6 @@ export async function fetchDeals({
     query = query.eq("category_id", category.id);
   }
 
-  // Sorting
   switch (sort) {
     case "new":
       query = query.order("created_at", { ascending: false });
