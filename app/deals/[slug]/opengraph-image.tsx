@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export const runtime = "nodejs";
 export const alt = "Deal on HalaSaves";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -103,9 +102,8 @@ export default async function OgImage({
               fontWeight: 700,
               lineHeight: 1.2,
               overflow: "hidden",
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
+              display: "flex",
+              lineClamp: 3,
               maxHeight: "220px",
             }}
           >
