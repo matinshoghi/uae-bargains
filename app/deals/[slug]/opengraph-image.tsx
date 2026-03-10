@@ -5,7 +5,7 @@ export const alt = "Deal on HalaSaves";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-function fallbackImage() {
+function fallback() {
   return new ImageResponse(
     (
       <div
@@ -21,7 +21,7 @@ function fallbackImage() {
           fontFamily: "sans-serif",
         }}
       >
-        HalaSaves — UAE Deals &amp; Offers
+        HalaSaves
       </div>
     ),
     { width: 1200, height: 630 }
@@ -38,14 +38,16 @@ export default async function OgImage({
     const supabase = createAdminClient();
     const { data: deal } = await supabase
       .from("deals")
-      .select("title, price, original_price, discount_percentage, status, categories:category_id (label)")
+      .select(
+        "title, price, original_price, discount_percentage, status, categories:category_id (label)"
+      )
       .eq("slug", slug)
       .single();
 
-    if (!deal) return fallbackImage();
+    if (!deal) return fallback();
 
-    const category = (deal.categories as { label: string } | null)?.label ?? "Deal";
-    const hasPrice = deal.price != null;
+    const category =
+      (deal.categories as { label: string } | null)?.label ?? "Deal";
     const hasDiscount =
       deal.original_price != null && deal.discount_percentage != null;
     const isExpired = deal.status === "expired";
@@ -66,9 +68,12 @@ export default async function OgImage({
           }}
         >
           {/* Top: Category + Expired badge */}
-          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div
+            style={{ display: "flex", alignItems: "center", gap: "16px" }}
+          >
             <div
               style={{
+                display: "flex",
                 backgroundColor: "#27272a",
                 color: "#a1a1aa",
                 padding: "8px 20px",
@@ -79,9 +84,10 @@ export default async function OgImage({
             >
               {category}
             </div>
-            {isExpired && (
+            {isExpired ? (
               <div
                 style={{
+                  display: "flex",
                   backgroundColor: "#7f1d1d",
                   color: "#fca5a5",
                   padding: "8px 20px",
@@ -92,18 +98,17 @@ export default async function OgImage({
               >
                 Expired
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Middle: Title */}
           <div
             style={{
+              display: "flex",
               fontSize: 56,
               fontWeight: 700,
               lineHeight: 1.2,
               overflow: "hidden",
-              display: "flex",
-              lineClamp: 3,
               maxHeight: "220px",
             }}
           >
@@ -118,17 +123,36 @@ export default async function OgImage({
               alignItems: "flex-end",
             }}
           >
-            {/* Price block */}
-            <div style={{ display: "flex", alignItems: "baseline", gap: "16px" }}>
-              {hasPrice && (
-                <div style={{ fontSize: 52, fontWeight: 700, color: "#22c55e" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "baseline",
+                gap: "16px",
+              }}
+            >
+              {deal.price != null ? (
+                <div
+                  style={{
+                    display: "flex",
+                    fontSize: 52,
+                    fontWeight: 700,
+                    color: "#22c55e",
+                  }}
+                >
                   AED {deal.price}
                 </div>
-              )}
-              {hasDiscount && (
-                <div style={{ display: "flex", alignItems: "baseline", gap: "12px" }}>
+              ) : null}
+              {hasDiscount ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: "12px",
+                  }}
+                >
                   <div
                     style={{
+                      display: "flex",
                       fontSize: 32,
                       color: "#71717a",
                       textDecoration: "line-through",
@@ -138,6 +162,7 @@ export default async function OgImage({
                   </div>
                   <div
                     style={{
+                      display: "flex",
                       backgroundColor: "#14532d",
                       color: "#22c55e",
                       padding: "6px 16px",
@@ -149,26 +174,18 @@ export default async function OgImage({
                     -{deal.discount_percentage}%
                   </div>
                 </div>
-              )}
+              ) : null}
             </div>
 
-            {/* Branding */}
             <div
               style={{
                 display: "flex",
-                alignItems: "center",
-                gap: "12px",
+                fontSize: 32,
+                fontWeight: 700,
+                color: "#a1a1aa",
               }}
             >
-              <div
-                style={{
-                  fontSize: 32,
-                  fontWeight: 700,
-                  color: "#a1a1aa",
-                }}
-              >
-                HalaSaves
-              </div>
+              HalaSaves
             </div>
           </div>
         </div>
@@ -176,6 +193,6 @@ export default async function OgImage({
       { ...size }
     );
   } catch {
-    return fallbackImage();
+    return fallback();
   }
 }
