@@ -12,6 +12,7 @@ export async function GET() {
     .from("deals")
     .select(`
       id,
+      slug,
       title,
       description,
       price,
@@ -55,7 +56,7 @@ export async function GET() {
     const description = stripMarkdown(deal.description);
     const summaryLines = wrapText(description, 96);
     const merchant = deal.url ? getUrlHostname(deal.url) : null;
-    const detailUrl = getDealUrl(deal.id);
+    const detailUrl = getDealUrl(deal.slug);
 
     lines.push(`## ${deal.title}`);
     lines.push(`- URL: ${detailUrl}`);

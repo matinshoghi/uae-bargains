@@ -6,11 +6,33 @@ import { createDealSchema, updateDealSchema } from "@/lib/validations/deal";
 import { captureImageForDeal } from "@/lib/og";
 import { optimizeImage } from "@/lib/images";
 import { notifyDealChange } from "@/lib/indexnow";
+import { slugify } from "@/lib/slugify";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10MB
+
+async function generateUniqueSlug(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  title: string
+): Promise<string> {
+  const base = slugify(title);
+  let candidate = base;
+  let suffix = 2;
+
+  while (true) {
+    const { data } = await supabase
+      .from("deals")
+      .select("id")
+      .eq("slug", candidate)
+      .maybeSingle();
+
+    if (!data) return candidate;
+    candidate = `${base}-${suffix}`;
+    suffix++;
+  }
+}
 
 export type DealFormState = {
   errors?: Record<string, string[]>;
@@ -115,6 +137,9 @@ export async function createDeal(
   // This prevents timezone offset showing the wrong date
   const expiresAtValue = expires_at ? `${expires_at}T23:59:59` : null;
 
+  // Generate unique slug from title
+  const slug = await generateUniqueSlug(supabase, title);
+
   // Insert deal
   const { data: deal, error } = await supabase
     .from("deals")
@@ -122,6 +147,7 @@ export async function createDeal(
       user_id: user.id,
       category_id,
       title,
+      slug,
       description,
       price: is_free ? 0 : (price ?? null),
       original_price: is_free ? null : (original_price ?? null),
@@ -132,7 +158,7 @@ export async function createDeal(
       expires_at: expiresAtValue,
     })
     .select()
-    .returns<{ id: string }[]>()
+    .returns<{ id: string; slug: string }[]>()
     .single();
 
   if (error) {
@@ -157,9 +183,9 @@ export async function createDeal(
   }
 
   // Notify IndexNow about the new deal
-  after(() => notifyDealChange(deal.id));
+  after(() => notifyDealChange(deal.slug));
 
-  redirect(`/deals/${deal.id}`);
+  redirect(`/deals/${deal.slug}`);
 }
 
 export async function updateDeal(
@@ -181,7 +207,7 @@ export async function updateDeal(
   // Verify ownership
   const { data: existingDeal } = await supabase
     .from("deals")
-    .select("user_id, image_url, status")
+    .select("user_id, image_url, status, slug")
     .eq("id", dealId)
     .single();
 
@@ -307,10 +333,10 @@ export async function updateDeal(
   }
 
   // Notify IndexNow about the updated deal
-  after(() => notifyDealChange(dealId));
+  after(() => notifyDealChange(existingDeal.slug));
 
-  revalidatePath(`/deals/${dealId}`);
-  redirect(`/deals/${dealId}`);
+  revalidatePath(`/deals/${existingDeal.slug}`);
+  redirect(`/deals/${existingDeal.slug}`);
 }
 
 export async function deleteDeal(dealId: string): Promise<{ error?: string }> {
@@ -326,7 +352,7 @@ export async function deleteDeal(dealId: string): Promise<{ error?: string }> {
   // Verify ownership
   const { data: deal } = await supabase
     .from("deals")
-    .select("user_id")
+    .select("user_id, slug")
     .eq("id", dealId)
     .single();
 
@@ -345,7 +371,7 @@ export async function deleteDeal(dealId: string): Promise<{ error?: string }> {
   }
 
   // Notify IndexNow about the removal
-  after(() => notifyDealChange(dealId));
+  after(() => notifyDealChange(deal.slug));
 
   revalidatePath("/");
   redirect("/");

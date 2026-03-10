@@ -411,7 +411,7 @@ export async function commentAsSeedUser(
     // Verify deal exists
     const { data: deal } = await admin
       .from("deals")
-      .select("id")
+      .select("id, slug")
       .eq("id", dealId)
       .single();
 
@@ -444,7 +444,7 @@ export async function commentAsSeedUser(
 
     if (error) return { error: error.message };
 
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${deal.slug}`);
     revalidatePath(`/admin/deals/${dealId}/comments`);
     return { success: true };
   } catch (e) {

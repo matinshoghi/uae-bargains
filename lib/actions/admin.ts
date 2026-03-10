@@ -5,6 +5,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { optimizeImage } from "@/lib/images";
 import { revalidatePath } from "next/cache";
 
+async function getDealSlug(admin: ReturnType<typeof createAdminClient>, dealId: string): Promise<string> {
+  const { data } = await admin.from("deals").select("slug").eq("id", dealId).single();
+  return data?.slug ?? dealId;
+}
+
 async function requireAdmin() {
   const supabase = await createClient();
   const {
@@ -55,6 +60,8 @@ export async function removeDeal(
     await requireAdmin();
     const admin = createAdminClient();
 
+    const slug = await getDealSlug(admin, dealId);
+
     const { error } = await admin
       .from("deals")
       .update({
@@ -68,7 +75,7 @@ export async function removeDeal(
 
     revalidatePath("/");
     revalidatePath("/admin/moderation");
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${slug}`);
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -81,6 +88,8 @@ export async function restoreDeal(
   try {
     await requireAdmin();
     const admin = createAdminClient();
+
+    const slug = await getDealSlug(admin, dealId);
 
     const { error } = await admin
       .from("deals")
@@ -95,7 +104,7 @@ export async function restoreDeal(
 
     revalidatePath("/");
     revalidatePath("/admin/moderation");
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${slug}`);
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -146,6 +155,8 @@ export async function adminEditDeal(
       }
     }
 
+    const slug = await getDealSlug(admin, dealId);
+
     const { error } = await admin
       .from("deals")
       .update(payload)
@@ -155,7 +166,7 @@ export async function adminEditDeal(
 
     revalidatePath("/");
     revalidatePath("/admin/moderation");
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${slug}`);
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -172,7 +183,7 @@ export async function resetEditedFlag(
     // Sync updated_at to created_at so the wasEdited() check returns false
     const { data: deal, error: fetchError } = await admin
       .from("deals")
-      .select("created_at")
+      .select("created_at, slug")
       .eq("id", dealId)
       .single();
 
@@ -185,7 +196,7 @@ export async function resetEditedFlag(
 
     if (error) return { error: error.message };
 
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${deal.slug}`);
     return {};
   } catch (e) {
     return { error: (e as Error).message };
@@ -217,7 +228,7 @@ export async function adminUploadDealImage(
     // Delete old image if exists
     const { data: deal } = await admin
       .from("deals")
-      .select("image_url")
+      .select("image_url, slug")
       .eq("id", dealId)
       .single();
 
@@ -249,7 +260,7 @@ export async function adminUploadDealImage(
       .update({ image_url: publicUrl.publicUrl })
       .eq("id", dealId);
 
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${deal?.slug ?? dealId}`);
     revalidatePath("/admin/moderation");
     revalidatePath("/");
     return { image_url: publicUrl.publicUrl };
@@ -267,7 +278,7 @@ export async function adminRemoveDealImage(
 
     const { data: deal } = await admin
       .from("deals")
-      .select("image_url")
+      .select("image_url, slug")
       .eq("id", dealId)
       .single();
 
@@ -285,7 +296,7 @@ export async function adminRemoveDealImage(
       .update({ image_url: null })
       .eq("id", dealId);
 
-    revalidatePath(`/deals/${dealId}`);
+    revalidatePath(`/deals/${deal?.slug ?? dealId}`);
     revalidatePath("/admin/moderation");
     revalidatePath("/");
     return {};
@@ -316,7 +327,8 @@ export async function adminHideComment(
 
     if (error) return { error: error.message };
 
-    revalidatePath(`/deals/${comment.deal_id}`);
+    const dealSlug = await getDealSlug(admin, comment.deal_id);
+    revalidatePath(`/deals/${dealSlug}`);
     revalidatePath("/admin/comments");
     return {};
   } catch (e) {
@@ -346,7 +358,8 @@ export async function adminUnhideComment(
 
     if (error) return { error: error.message };
 
-    revalidatePath(`/deals/${comment.deal_id}`);
+    const dealSlug = await getDealSlug(admin, comment.deal_id);
+    revalidatePath(`/deals/${dealSlug}`);
     revalidatePath("/admin/comments");
     return {};
   } catch (e) {
@@ -378,7 +391,8 @@ export async function adminEditComment(
 
     if (error) return { error: error.message };
 
-    revalidatePath(`/deals/${comment.deal_id}`);
+    const dealSlug = await getDealSlug(admin, comment.deal_id);
+    revalidatePath(`/deals/${dealSlug}`);
     revalidatePath("/admin/comments");
     return {};
   } catch (e) {
@@ -476,7 +490,8 @@ export async function adminDeleteComment(
 
     if (error) return { error: error.message };
 
-    revalidatePath(`/deals/${comment.deal_id}`);
+    const dealSlug = await getDealSlug(admin, comment.deal_id);
+    revalidatePath(`/deals/${dealSlug}`);
     return {};
   } catch (e) {
     return { error: (e as Error).message };

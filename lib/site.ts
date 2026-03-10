@@ -10,6 +10,6 @@ export const AI_BOT_USER_AGENTS = [
   "Applebot-Extended",
 ] as const;
 
-export function getDealUrl(dealId: string): string {
-  return `${BASE_URL}/deals/${dealId}`;
+export function getDealUrl(dealSlug: string): string {
+  return `${BASE_URL}/deals/${dealSlug}`;
 }

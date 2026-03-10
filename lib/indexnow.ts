@@ -45,9 +45,9 @@ export async function notifyIndexNow(urls: string[]): Promise<void> {
  * Convenience wrapper to notify IndexNow about a single deal URL.
  * Also pings the homepage since the deal feed may have changed.
  */
-export async function notifyDealChange(dealId: string): Promise<void> {
+export async function notifyDealChange(dealSlug: string): Promise<void> {
   await notifyIndexNow([
-    `${BASE_URL}/deals/${dealId}`,
+    `${BASE_URL}/deals/${dealSlug}`,
     BASE_URL,
   ]);
 }

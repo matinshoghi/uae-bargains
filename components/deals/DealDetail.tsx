@@ -71,7 +71,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             <AdminDealActions dealId={deal.id} isRemoved={isRemoved} isEdited={edited} />
           )}
           {isAuthor && !isRemoved && (
-            <DealActions dealId={deal.id} />
+            <DealActions dealId={deal.id} dealSlug={deal.slug} />
           )}
         </div>
       </div>
@@ -194,7 +194,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             isLoggedIn={isLoggedIn}
             disabled={expired}
           />
-          <ShareButtons url={`/deals/${deal.id}`} title={deal.title} />
+          <ShareButtons url={`/deals/${deal.slug}`} title={deal.title} />
         </div>
 
         {/* Posted by + Time */}

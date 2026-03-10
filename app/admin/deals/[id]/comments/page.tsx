@@ -20,7 +20,7 @@ export default async function AdminDealCommentsPage({
   // Fetch deal info
   const { data: deal } = await admin
     .from("deals")
-    .select("id, title, created_at, upvote_count, downvote_count")
+    .select("id, slug, title, created_at, upvote_count, downvote_count")
     .eq("id", dealId)
     .single();
 
@@ -83,7 +83,7 @@ export default async function AdminDealCommentsPage({
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-bold">Manage Comments</h1>
         <Link
-          href={`/deals/${dealId}`}
+          href={`/deals/${deal.slug}`}
           className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           title="View deal"
         >

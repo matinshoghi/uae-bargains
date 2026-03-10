@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { DealDetail } from "@/components/deals/DealDetail";
 import { CommentSection } from "@/components/comments/CommentSection";
 import type { Metadata } from "next";
@@ -7,11 +7,13 @@ import type { DealWithRelations } from "@/lib/types";
 import { DealJsonLd } from "@/components/seo/DealJsonLd";
 import { buildDealMetaDescription } from "@/lib/seo";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 type Props = {
-  params: Promise<{ id: string }>;
+  params: Promise<{ slug: string }>;
 };
 
-async function getDeal(id: string) {
+async function getDealBySlug(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("deals")
@@ -22,15 +24,32 @@ async function getDeal(id: string) {
       categories:category_id (label, slug)
     `
     )
-    .eq("id", id)
+    .eq("slug", slug)
     .single();
 
   return data as DealWithRelations | null;
 }
 
+async function getDealById(id: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("deals")
+    .select("slug")
+    .eq("id", id)
+    .single();
+
+  return data as { slug: string } | null;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
-  const deal = await getDeal(id);
+  const { slug } = await params;
+
+  // If UUID, don't generate metadata — the redirect will handle it
+  if (UUID_RE.test(slug)) {
+    return { title: "Redirecting..." };
+  }
+
+  const deal = await getDealBySlug(slug);
 
   if (!deal) {
     return { title: "Deal Not Found" };
@@ -41,8 +60,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const description = buildDealMetaDescription(deal);
-
-  const canonicalUrl = `https://halasaves.com/deals/${deal.id}`;
+  const canonicalUrl = `https://halasaves.com/deals/${deal.slug}`;
 
   return {
     title: deal.title,
@@ -63,8 +81,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function DealPage({ params }: Props) {
-  const { id } = await params;
-  const deal = await getDeal(id);
+  const { slug } = await params;
+
+  // Backwards compatibility: if param is a UUID, redirect to the slug URL
+  if (UUID_RE.test(slug)) {
+    const deal = await getDealById(slug);
+    if (!deal) notFound();
+    redirect(`/deals/${deal.slug}`);
+  }
+
+  const deal = await getDealBySlug(slug);
 
   if (!deal) {
     notFound();
@@ -126,7 +152,7 @@ export default async function DealPage({ params }: Props) {
       <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
 
       <div className="mt-10 border-t-2 border-foreground pt-8">
-        <CommentSection dealId={id} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
+        <CommentSection dealId={deal.id} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
       </div>
     </div>
   );

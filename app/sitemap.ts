@@ -8,12 +8,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all non-removed deals (active + expired)
   const { data: deals } = await supabase
     .from("deals")
-    .select("id, updated_at")
+    .select("slug, updated_at")
     .neq("status", "removed")
     .order("created_at", { ascending: false });
 
   const dealEntries: MetadataRoute.Sitemap = (deals ?? []).map((deal) => ({
-    url: `${BASE_URL}/deals/${deal.id}`,
+    url: `${BASE_URL}/deals/${deal.slug}`,
     lastModified: deal.updated_at,
     changeFrequency: "daily",
     priority: 0.8,

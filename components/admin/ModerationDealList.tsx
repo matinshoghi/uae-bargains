@@ -175,7 +175,7 @@ export function ModerationDealList({ deals, pushMap }: ModerationDealListProps) 
 
                 <div className="flex shrink-0 items-center gap-1">
                   <Link
-                    href={`/deals/${deal.id}`}
+                    href={`/deals/${deal.slug}`}
                     className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
                     title="View deal"
                   >

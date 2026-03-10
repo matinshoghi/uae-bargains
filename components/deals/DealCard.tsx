@@ -94,7 +94,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
           {/* Title */}
           <h3 className="font-display text-[22px] font-bold leading-snug tracking-tight">
             <Link
-              href={`/deals/${deal.id}`}
+              href={`/deals/${deal.slug}`}
               className="after:absolute after:inset-0"
             >
               {deal.title}
@@ -159,7 +159,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
             </div>
 
             <ShareIconButton
-              url={`/deals/${deal.id}`}
+              url={`/deals/${deal.slug}`}
               title={deal.title}
               className="relative z-10 text-muted-foreground transition-colors hover:text-foreground"
             />
@@ -190,7 +190,7 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCard
         {/* Thumbnail — beside description on mobile, top-aligned on sm+ */}
         <div className="row-start-2 col-start-2 self-start sm:row-start-1 sm:row-span-2">
           <Link
-            href={`/deals/${deal.id}`}
+            href={`/deals/${deal.slug}`}
             aria-label={`View details for ${deal.title}`}
             className="relative z-10 block"
           >

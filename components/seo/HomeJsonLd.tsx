@@ -39,12 +39,12 @@ export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
     itemListElement: deals.slice(0, 10).map((deal, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: getDealUrl(deal.id),
+      url: getDealUrl(deal.slug),
       name: deal.title,
       item: {
         "@type": "Product",
         name: deal.title,
-        url: getDealUrl(deal.id),
+        url: getDealUrl(deal.slug),
         description: truncateText(stripMarkdown(deal.description), 200),
         image: deal.image_url || `${BRAND.url}/icon.png`,
         ...(deal.price != null && {

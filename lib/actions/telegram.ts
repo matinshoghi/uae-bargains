@@ -38,7 +38,7 @@ export async function pushDealToTelegram(dealId: string): Promise<PushResult> {
 
     const { data: deal, error: dealError } = await admin
       .from("deals")
-      .select("id, title, price, original_price, discount_percentage")
+      .select("id, slug, title, price, original_price, discount_percentage")
       .eq("id", dealId)
       .single();
 
@@ -56,7 +56,7 @@ export async function pushDealToTelegram(dealId: string): Promise<PushResult> {
     const baseUrl =
       process.env.NEXT_PUBLIC_SITE_URL ?? "https://halasaves.com";
     const normalizedBaseUrl = baseUrl.replace(/\/$/, "");
-    const dealUrl = `${normalizedBaseUrl}/deals/${deal.id}?utm_source=telegram&utm_medium=channel&utm_campaign=deal_push`;
+    const dealUrl = `${normalizedBaseUrl}/deals/${deal.slug}?utm_source=telegram&utm_medium=channel&utm_campaign=deal_push`;
 
     const priceLine =
       deal.price != null

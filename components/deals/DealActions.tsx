@@ -25,9 +25,10 @@ import { toast } from "sonner";
 
 interface DealActionsProps {
   dealId: string;
+  dealSlug: string;
 }
 
-export function DealActions({ dealId }: DealActionsProps) {
+export function DealActions({ dealId, dealSlug }: DealActionsProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -53,7 +54,7 @@ export function DealActions({ dealId }: DealActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => router.push(`/deals/${dealId}/edit`)}>
+          <DropdownMenuItem onClick={() => router.push(`/deals/${dealSlug}/edit`)}>
             <Pencil className="mr-2 h-4 w-4" />
             Edit
           </DropdownMenuItem>

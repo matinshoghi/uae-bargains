@@ -87,6 +87,7 @@ export interface Database {
           comment_count: number;
           hot_score: number;
           is_featured: boolean;
+          slug: string;
           status: "active" | "expired" | "removed";
           removed_by: string | null;
           removal_reason: string | null;
@@ -98,6 +99,7 @@ export interface Database {
           user_id: string;
           category_id: string;
           title: string;
+          slug?: string;
           description: string;
           price?: number | null;
           original_price?: number | null;
@@ -115,6 +117,7 @@ export interface Database {
           user_id?: string | null;
           category_id?: string;
           title?: string;
+          slug?: string;
           description?: string;
           price?: number | null;
           original_price?: number | null;

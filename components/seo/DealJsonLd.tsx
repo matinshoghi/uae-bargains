@@ -3,7 +3,7 @@ import { BASE_URL, getDealUrl } from "@/lib/site";
 import { getUrlHostname, stripMarkdown, truncateText } from "@/lib/utils";
 
 export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
-  const canonicalUrl = getDealUrl(deal.id);
+  const canonicalUrl = getDealUrl(deal.slug);
   const categoryLabel = deal.categories?.label ?? "Deals";
   const categorySlug = deal.categories?.slug ?? "other";
   const merchantName = deal.url ? getUrlHostname(deal.url) : null;
