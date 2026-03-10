@@ -1,9 +1,26 @@
 import { ImageResponse } from "next/og";
-import { createAdminClient } from "@/lib/supabase/admin";
 
+export const runtime = "edge";
 export const alt = "Deal on HalaSaves";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+
+async function fetchDeal(slug: string) {
+  const url = `${SUPABASE_URL}/rest/v1/deals?slug=eq.${encodeURIComponent(slug)}&select=title,price,original_price,discount_percentage,status,categories:category_id(label)`;
+  const res = await fetch(url, {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      Accept: "application/vnd.pgrst.object+json",
+    },
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
 
 export default async function OgImage({
   params,
@@ -11,12 +28,7 @@ export default async function OgImage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const supabase = createAdminClient();
-  const { data: deal } = await supabase
-    .from("deals")
-    .select("title, price, original_price, discount_percentage, status, categories:category_id (label)")
-    .eq("slug", slug)
-    .single();
+  const deal = await fetchDeal(slug);
 
   if (!deal) {
     return new ImageResponse(
