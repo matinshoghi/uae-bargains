@@ -62,6 +62,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = buildDealMetaDescription(deal);
   const canonicalUrl = `https://halasaves.com/deals/${deal.slug}`;
 
+  const images = deal.image_url ? [{ url: deal.image_url }] : [];
+
   return {
     title: deal.title,
     description,
@@ -71,11 +73,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: canonicalUrl,
       type: "article",
+      ...(images.length > 0 && { images }),
     },
     twitter: {
-      card: "summary_large_image",
+      card: images.length > 0 ? "summary_large_image" : "summary",
       title: deal.title,
       description,
+      ...(images.length > 0 && { images }),
     },
   };
 }
