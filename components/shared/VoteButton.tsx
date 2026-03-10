@@ -19,6 +19,7 @@ interface VoteButtonProps {
   userVote: 1 | -1 | null;
   isLoggedIn: boolean;
   disabled?: boolean;
+  variant?: "horizontal" | "vertical";
 }
 
 interface VoteState {
@@ -47,6 +48,7 @@ export function VoteButton({
   userVote,
   isLoggedIn,
   disabled = false,
+  variant = "horizontal",
 }: VoteButtonProps) {
   const { openAuthModal } = useAuthModal();
   const [isPending, startTransition] = useTransition();
@@ -141,6 +143,51 @@ export function VoteButton({
   }
 
   const netScore = optimistic.upvoteCount - optimistic.downvoteCount;
+
+  if (variant === "vertical") {
+    return (
+      <div className="flex flex-col items-center gap-px">
+        <button
+          onClick={(e) => handleVote(e, 1)}
+          disabled={disabled || isPending}
+          aria-label="Upvote"
+          className={cn(
+            "p-0.5 text-sm transition-all",
+            disabled && "cursor-not-allowed opacity-50",
+            optimistic.userVote === 1
+              ? "scale-[1.15] text-[#7ab800]"
+              : "text-muted-foreground/60 hover:text-foreground"
+          )}
+        >
+          ▲
+        </button>
+        <span
+          className={cn(
+            "font-mono-display min-w-[28px] text-center text-base font-medium tabular-nums",
+            netScore > 0 && "text-[#7ab800]",
+            netScore < 0 && "text-destructive",
+            netScore === 0 && "text-foreground"
+          )}
+        >
+          {netScore}
+        </span>
+        <button
+          onClick={(e) => handleVote(e, -1)}
+          disabled={disabled || isPending}
+          aria-label="Downvote"
+          className={cn(
+            "p-0.5 text-sm transition-all",
+            disabled && "cursor-not-allowed opacity-50",
+            optimistic.userVote === -1
+              ? "text-destructive"
+              : "text-muted-foreground/60 hover:text-foreground"
+          )}
+        >
+          ▼
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center gap-1 rounded-sm border border-foreground">

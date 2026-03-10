@@ -68,7 +68,7 @@ export function AuthButton({
   }, []);
 
   if (loading) {
-    return <div className="h-8 w-8 animate-pulse rounded-sm bg-muted" />;
+    return <div className="h-8 w-8 animate-pulse rounded-sm bg-muted md:h-10 md:w-10" />;
   }
 
   if (!user) {
@@ -107,8 +107,8 @@ export function AuthButton({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-sm">
-          <Avatar className="h-8 w-8 rounded-sm border border-foreground">
+        <Button variant="ghost" className="size-9 rounded-sm md:size-11">
+          <Avatar className="h-8 w-8 rounded-sm border border-foreground md:h-10 md:w-10">
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className="rounded-sm text-xs">{initials}</AvatarFallback>
           </Avatar>

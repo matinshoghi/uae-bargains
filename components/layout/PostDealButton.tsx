@@ -42,7 +42,7 @@ export function PostDealButton({ isLoggedIn, variant = "default" }: PostDealButt
     <button
       onClick={handleClick}
       className={cn(
-        "font-display inline-flex items-center justify-center whitespace-nowrap rounded-sm border-2 border-foreground bg-primary font-semibold uppercase tracking-wide text-primary-foreground transition-all duration-200 hover:brightness-95",
+        "font-display inline-flex items-center justify-center whitespace-nowrap rounded-sm border-2 border-foreground bg-foreground font-semibold text-primary transition-all duration-150 hover:bg-primary hover:text-primary-foreground",
         variant === "compact"
           ? "px-2.5 py-1.5 text-[11px] md:px-4 md:py-2 md:text-[12px]"
           : "px-3 py-2 text-xs md:px-5 md:py-2.5 md:text-sm"

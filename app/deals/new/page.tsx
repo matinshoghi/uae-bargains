@@ -34,7 +34,7 @@ export default async function NewDealPage() {
       <div className="flex gap-8">
         {/* Form column */}
         <div className="min-w-0 flex-1">
-          <h1 className="mb-6 text-2xl font-bold">Post a Deal</h1>
+          <h1 className="mb-6 font-heading text-[22px] font-black tracking-tight sm:text-2xl">Post a Deal</h1>
           <DealForm categories={categories ?? []} />
         </div>
 

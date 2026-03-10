@@ -77,7 +77,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Title */}
-      <h1 className="font-display text-2xl font-bold tracking-tight md:text-4xl">{deal.title}</h1>
+      <h1 className="font-heading text-2xl font-black tracking-tight md:text-4xl">{deal.title}</h1>
 
       {/* Image */}
       {deal.image_url && (
@@ -89,7 +89,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             aria-label={`Open ${deal.title} deal link in a new tab`}
             className="group block"
           >
-            <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-2 border-foreground/10 bg-background transition-opacity group-hover:opacity-95">
+            <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-[#e4e3dd] bg-background transition-opacity group-hover:opacity-95">
               <Image
                 src={deal.image_url}
                 alt={deal.title}
@@ -101,7 +101,7 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
             </div>
           </a>
         ) : (
-          <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-2 border-foreground/10 bg-background">
+          <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-[#e4e3dd] bg-background">
             <Image
               src={deal.image_url}
               alt={deal.title}
@@ -164,14 +164,14 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         )}
 
         {deal.location && (
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 font-mono-display text-xs text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span>{deal.location}</span>
           </div>
         )}
 
         {deal.expires_at && (
-          <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 font-mono-display text-xs text-muted-foreground">
             <Calendar className="h-4 w-4" />
             <span>
               {expired
@@ -198,9 +198,9 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         </div>
 
         {/* Posted by + Time */}
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 font-mono-display text-xs text-muted-foreground">
           {deal.profiles ? (
-            <span className="font-display font-semibold text-foreground">
+            <span className="font-medium text-foreground">
               {deal.profiles.username}
             </span>
           ) : (

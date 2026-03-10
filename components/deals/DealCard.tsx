@@ -56,17 +56,155 @@ interface DealCardProps {
   deal: DealWithRelations;
   userVote?: 1 | -1 | null;
   isLoggedIn?: boolean;
+  isHero?: boolean;
 }
 
-export function DealCard({ deal, userVote = null, isLoggedIn = false }: DealCardProps) {
+export function DealCard({ deal, userVote = null, isLoggedIn = false, isHero = false }: DealCardProps) {
   const expired = isExpired(deal);
   const CategoryIcon = deal.categories
     ? CATEGORY_ICONS[deal.categories.slug] ?? Tag
     : null;
 
+  if (isHero) {
+    return (
+      <article
+        className={`relative mb-2.5 border-2 border-foreground bg-card p-4 transition-all duration-150 hover:-translate-x-px hover:-translate-y-px hover:border-primary hover:shadow-[3px_3px_0_var(--primary)] ${expired ? "opacity-60" : ""}`}
+      >
+        {/* Hero badge */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="bg-primary px-2 py-0.5 font-mono-display text-[11px] font-bold uppercase tracking-wider text-primary-foreground">
+            #1 Most Popular
+          </span>
+          {deal.categories && CategoryIcon ? (
+            <span className="inline-flex items-center gap-1 bg-[#f0efeb] px-2 py-0.5 font-mono-display text-[11px] text-muted-foreground">
+              <CategoryIcon className="h-3 w-3" />
+              {deal.categories.label}
+            </span>
+          ) : null}
+          {deal.is_featured && (
+            <span className="inline-flex items-center gap-1 bg-foreground px-2 py-0.5 font-mono-display text-[11px] text-primary">
+              <Award className="h-3 w-3" />
+              Staff Pick
+            </span>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto]">
+          {/* Image */}
+          <div className="order-first sm:order-last sm:self-start">
+            <Link
+              href={`/deals/${deal.slug}`}
+              aria-label={`View details for ${deal.title}`}
+              className="relative z-10 block"
+            >
+              {deal.image_url ? (
+                <div className="relative aspect-[16/9] w-full overflow-hidden bg-black/5 sm:aspect-square sm:h-52 sm:w-52">
+                  <Image
+                    src={deal.image_url}
+                    alt={deal.title}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 640px) 100vw, 208px"
+                    priority
+                  />
+                </div>
+              ) : (
+                <div className="flex aspect-[16/9] w-full items-center justify-center bg-black/5 sm:aspect-square sm:h-52 sm:w-52">
+                  <ImageIcon className="h-10 w-10 text-muted-foreground" />
+                </div>
+              )}
+            </Link>
+          </div>
+
+          {/* Content */}
+          <div className="min-w-0 space-y-3">
+            <h3 className="font-heading text-3xl font-bold leading-tight tracking-tight md:text-4xl">
+              <Link
+                href={`/deals/${deal.slug}`}
+                className="after:absolute after:inset-0 hover:text-[#5a8500]"
+              >
+                {deal.title}
+              </Link>
+            </h3>
+
+            {deal.description && (
+              <p className="line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
+                {stripMarkdown(deal.description)}
+              </p>
+            )}
+
+            {(deal.price != null || deal.original_price != null) && (
+              <div className="flex flex-wrap items-baseline gap-2">
+                {deal.price != null && deal.price === 0 ? (
+                  <span className="bg-primary px-2.5 py-0.5 font-mono-display text-xl font-bold text-primary-foreground">Free</span>
+                ) : deal.price != null ? (
+                  <span className="bg-primary px-2.5 py-0.5 font-mono-display text-xl font-bold text-primary-foreground">
+                    {formatPriceShort(deal.price)}
+                  </span>
+                ) : null}
+                {deal.original_price != null && (
+                  <span className="text-xl text-muted-foreground line-through">
+                    {formatPriceShort(deal.original_price)}
+                  </span>
+                )}
+                {deal.discount_percentage != null &&
+                  deal.discount_percentage > 0 && (
+                    <Badge variant="outline" className="border-destructive px-2 py-0.5 text-xl text-destructive">
+                      -{deal.discount_percentage}%
+                    </Badge>
+                  )}
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 pt-1 text-sm text-muted-foreground">
+              <div className="relative z-10">
+                <VoteButton
+                  entityType="deal"
+                  entityId={deal.id}
+                  upvoteCount={deal.upvote_count}
+                  downvoteCount={deal.downvote_count}
+                  userVote={userVote}
+                  isLoggedIn={isLoggedIn}
+                  disabled={expired}
+                />
+              </div>
+              <div className="flex items-center gap-1">
+                <MessageSquare className="h-4 w-4" />
+                <span>{deal.comment_count}</span>
+              </div>
+              <ShareIconButton
+                url={`/deals/${deal.slug}`}
+                title={deal.title}
+                className="relative z-10 text-muted-foreground transition-colors hover:text-foreground"
+              />
+              {expired && (
+                <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
+                  Expired
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <time dateTime={deal.created_at}>
+                {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
+              </time>
+              <span className="text-foreground/20">&middot;</span>
+              {deal.profiles ? (
+                <span>{deal.profiles.username}</span>
+              ) : (
+                <span>[deleted user]</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  // Regular deal card — original grid layout with border + hover effect
   return (
     <article
-      className={`relative border-b-2 border-foreground/15 px-1 py-6 last:border-b-0 ${expired ? "opacity-60" : ""}`}
+      className={`relative mb-2.5 border-[1.5px] border-[#e4e3dd] bg-card p-4 transition-all duration-150 hover:-translate-x-px hover:-translate-y-px hover:border-primary hover:shadow-[3px_3px_0_var(--primary)] ${expired ? "opacity-60" : ""}`}
     >
       <div className="grid grid-cols-[1fr_auto] items-start gap-x-4 gap-y-2">
         {/* Badges + Title — full width on mobile, left column on sm+ */}

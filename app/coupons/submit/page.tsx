@@ -42,8 +42,10 @@ export default async function SubmitCouponPage({ searchParams }: Props) {
         Back to Coupons
       </Link>
 
-      <h1 className="mt-4 text-2xl font-bold">Submit a Coupon Code</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      <div className="mt-4 mb-6 border-b-2 border-foreground pb-3">
+        <h1 className="font-heading text-[22px] font-black tracking-tight">Submit a Coupon Code</h1>
+      </div>
+      <p className="text-sm text-muted-foreground">
         Found a working coupon? Share it with the community. Your submission
         will be reviewed by our team before it goes live.
       </p>

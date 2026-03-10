@@ -87,7 +87,7 @@ export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null 
   return (
     <>
       <header className="relative z-40 border-b-2 border-foreground bg-background">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center">
             <Image
               src="/logo.svg"

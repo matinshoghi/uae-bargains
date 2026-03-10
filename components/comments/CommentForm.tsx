@@ -91,11 +91,12 @@ export function CommentForm({
       <textarea
         name="content"
         placeholder={parentId ? "Write a reply..." : "Share your thoughts on this deal..."}
-        rows={parentId ? 2 : 3}
+        rows={parentId ? 4 : 3}
         autoFocus={autoFocus}
         required
-        className="w-full resize-none rounded-sm border-2 border-foreground/20 px-3 py-2 text-sm
-                   focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30"
+        className={`w-full rounded-sm border-2 border-foreground/20 px-3 py-2 text-sm
+          focus:border-accent-neon focus:outline-none focus:ring-2 focus:ring-accent-neon/30
+          ${parentId ? "min-h-[6.5rem] max-h-48 resize-y" : "resize-none"}`}
       />
 
       {state?.error?.content && (

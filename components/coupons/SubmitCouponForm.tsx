@@ -33,7 +33,7 @@ export function SubmitCouponForm({
   }, [state]);
 
   const inputClass =
-    "mt-1.5 block w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none";
+    "mt-1.5 block w-full rounded-sm border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-foreground focus:outline-none";
 
   return (
     <form ref={formRef} action={action} className="space-y-4">
@@ -167,7 +167,7 @@ export function SubmitCouponForm({
       <button
         type="submit"
         disabled={isPending}
-        className="rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="font-display rounded-sm bg-foreground px-5 py-2.5 text-sm font-semibold uppercase tracking-wide text-background transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {isPending ? "Submitting..." : "Submit Coupon"}
       </button>

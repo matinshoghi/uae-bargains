@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Space_Grotesk } from "next/font/google";
+import { Plus_Jakarta_Sans, Space_Grotesk, Archivo, DM_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Toaster } from "@/components/ui/sonner";
@@ -22,6 +22,18 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const archivo = Archivo({
+  variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["700", "900"],
+});
+
+const dmMono = DM_Mono({
+  variable: "--font-mono-display",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -69,12 +81,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} antialiased`}
+        className={`${plusJakartaSans.variable} ${spaceGrotesk.variable} ${archivo.variable} ${dmMono.variable} antialiased`}
       >
         <PostHogProvider>
           <AuthModalProvider>
             <NavBar serverProfile={serverProfile} />
-            <main className="mx-auto min-h-screen max-w-7xl">
+            <main className="min-h-screen">
               {children}
             </main>
             <Footer />

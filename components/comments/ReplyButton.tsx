@@ -37,7 +37,7 @@ export function ReplyButton({
       </button>
 
       {showForm && (
-        <div className="mt-2">
+        <div className="mt-2 w-full min-w-0">
           <CommentForm
             dealId={dealId}
             parentId={parentId}

@@ -75,7 +75,7 @@ const components: Components = {
   ),
   hr: () => <hr className="my-3 border-t border-border" />,
   pre: ({ children }) => (
-    <pre className="mb-3 overflow-x-auto rounded-md bg-muted px-3 py-2 text-sm">
+    <pre className="mb-3 overflow-x-auto rounded-sm bg-muted px-3 py-2 text-sm">
       <code className="font-mono">{children}</code>
     </pre>
   ),

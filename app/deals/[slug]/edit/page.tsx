@@ -66,7 +66,7 @@ export default async function EditDealPage({ params }: Props) {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold">Edit Deal</h1>
+      <h1 className="mb-6 font-heading text-[22px] font-black tracking-tight sm:text-2xl">Edit Deal</h1>
       <DealForm
         categories={categories ?? []}
         initialData={{

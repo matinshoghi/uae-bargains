@@ -42,7 +42,7 @@ export function PromoCodeBadge({ code }: PromoCodeBadgeProps) {
           {copied ? "Saved to clipboard" : "Tap to copy and use at checkout"}
         </span>
       </div>
-      <div className="ml-4 flex h-9 w-9 items-center justify-center rounded-full border border-foreground/40 bg-background text-foreground shadow-sm group-hover:border-foreground">
+      <div className="ml-4 flex h-9 w-9 items-center justify-center rounded-sm border border-foreground/40 bg-background text-foreground shadow-sm group-hover:border-foreground">
         <Copy className="h-4 w-4" />
       </div>
     </button>

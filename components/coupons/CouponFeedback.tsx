@@ -34,7 +34,7 @@ export function CouponFeedback({
           type="button"
           disabled={isPending}
           onClick={() => handleFeedback(true)}
-          className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-50 ${
+          className={`inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs transition-colors disabled:opacity-50 ${
             userFeedback === true
               ? "bg-green-100 text-green-700"
               : "text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -48,7 +48,7 @@ export function CouponFeedback({
           type="button"
           disabled={isPending}
           onClick={() => handleFeedback(false)}
-          className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs transition-colors disabled:opacity-50 ${
+          className={`inline-flex items-center gap-1 rounded-sm px-2 py-1 text-xs transition-colors disabled:opacity-50 ${
             userFeedback === false
               ? "bg-red-100 text-red-700"
               : "text-muted-foreground hover:bg-accent hover:text-foreground"

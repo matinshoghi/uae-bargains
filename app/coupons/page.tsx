@@ -55,10 +55,12 @@ export default async function CouponsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <h1 className="text-2xl font-bold sm:text-3xl">
-        Coupon Codes &amp; Promo Codes UAE
-      </h1>
-      <p className="mt-2 text-muted-foreground">
+      <div className="mb-6 border-b-2 border-foreground pb-3">
+        <h1 className="font-heading text-[22px] font-black tracking-tight sm:text-3xl">
+          Coupon Codes &amp; Promo Codes UAE
+        </h1>
+      </div>
+      <p className="text-sm text-muted-foreground">
         Verified coupon codes for your favourite UAE stores. Tap a store to see
         all active codes.
       </p>

@@ -58,23 +58,23 @@ export function CouponCard({
   const hasLink = !!(coupon.affiliate_url || coupon.url);
 
   return (
-    <div className={`flex flex-col gap-3 rounded-xl border-2 border-border p-4 transition-colors ${expired ? "opacity-60" : "hover:border-foreground/20"}`}>
+    <div className={`flex flex-col gap-3 border-[1.5px] border-[#e4e3dd] bg-card p-4 transition-all duration-150 ${expired ? "opacity-60" : "hover:-translate-x-px hover:-translate-y-px hover:border-primary hover:shadow-[3px_3px_0_var(--primary)]"}`}>
       <div className="flex items-start justify-between gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <DiscountBadge type={coupon.discount_type} value={coupon.discount_value} />
           {expired && (
-            <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-800">
+            <span className="bg-destructive px-2 py-0.5 font-mono-display text-[10px] font-semibold uppercase tracking-wider text-white">
               Expired
             </span>
           )}
           {!expired && coupon.is_verified && (
-            <span className="flex items-center gap-0.5 text-xs text-green-600">
+            <span className="flex items-center gap-0.5 font-mono-display text-[10px] font-medium text-[#7ab800]">
               <BadgeCheck className="h-3.5 w-3.5" />
               Verified
             </span>
           )}
           {!expired && coupon.is_featured && (
-            <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-800">
+            <span className="bg-foreground px-2 py-0.5 font-mono-display text-[10px] font-semibold uppercase tracking-wider text-primary">
               Featured
             </span>
           )}
@@ -82,7 +82,7 @@ export function CouponCard({
       </div>
 
       <div>
-        <h3 className="font-semibold leading-tight">{coupon.title}</h3>
+        <h3 className="font-display font-semibold leading-tight">{coupon.title}</h3>
         {coupon.description && (
           <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
             {coupon.description}
@@ -105,8 +105,8 @@ export function CouponCard({
             target="_blank"
             rel="noopener noreferrer"
             className={coupon.code
-              ? "flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-              : "flex items-center gap-1.5 rounded-sm bg-foreground px-3 py-2 text-sm font-medium text-background transition-opacity hover:opacity-90"
+              ? "flex items-center gap-1 font-mono-display text-xs text-muted-foreground hover:text-foreground"
+              : "font-display flex items-center gap-1.5 rounded-sm bg-foreground px-3 py-2 text-sm font-semibold uppercase tracking-wide text-background transition-opacity hover:opacity-90"
             }
           >
             Get Deal
