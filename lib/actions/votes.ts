@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { cookies, headers } from "next/headers";
 import { ANON_VOTE_DAILY_LIMIT } from "@/lib/constants";
-import { notifyDealVoted, notifyCommentVoted } from "@/lib/notifications";
+import { notifyDealVoted, notifyCommentVoted, notifyAnonymousDealVoted } from "@/lib/notifications";
 
 export async function voteDeal(dealId: string, voteType: 1 | -1) {
   const supabase = await createClient();
@@ -152,6 +152,7 @@ export async function voteDealAnonymous(
       .from("anonymous_votes")
       .update({ vote_type: voteType })
       .eq("id", existing.id);
+    after(() => notifyAnonymousDealVoted(dealId, voteType));
     revalidatePath("/");
     return { action: "switched" };
   }
@@ -164,6 +165,7 @@ export async function voteDealAnonymous(
     ip_address: ip,
   });
 
+  after(() => notifyAnonymousDealVoted(dealId, voteType));
   revalidatePath("/");
   return { action: "added" };
 }

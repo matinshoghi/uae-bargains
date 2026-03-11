@@ -89,7 +89,7 @@ export function DealDetailSidebar({
 
         {/* Vote + Share row */}
         <div className="border-t border-[#e4e3dd] pt-4">
-          <div className="flex items-center justify-between">
+          <div className="flex justify-center">
             <VoteButton
               entityType="deal"
               entityId={deal.id}
@@ -98,7 +98,10 @@ export function DealDetailSidebar({
               userVote={userVote}
               isLoggedIn={isLoggedIn}
               disabled={expired}
+              variant="detail"
             />
+          </div>
+          <div className="mt-4 flex justify-center border-t border-[#e4e3dd] pt-4">
             <ShareButtons url={`/deals/${deal.slug}`} title={deal.title} />
           </div>
           {/* Community "Deal expired?" report link */}

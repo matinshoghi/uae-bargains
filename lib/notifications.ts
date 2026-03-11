@@ -94,6 +94,28 @@ export async function notifyDealVoted(
   );
 }
 
+export async function notifyAnonymousDealVoted(
+  dealId: string,
+  voteType: 1 | -1
+): Promise<void> {
+  const groupId = getNotifyGroupId();
+  if (!groupId) return;
+
+  const admin = createAdminClient();
+  const { data: deal } = await admin
+    .from("deals")
+    .select("title")
+    .eq("id", dealId)
+    .single();
+
+  const emoji = voteType === 1 ? "👍" : "👎";
+
+  await sendTelegramMessage(
+    groupId,
+    `${emoji} <b>Deal ${voteType === 1 ? "upvoted" : "downvoted"}</b>\n\n👤 Anonymous visitor\n🏷️ ${deal?.title ?? dealId}`
+  );
+}
+
 export async function notifyCommentVoted(
   userId: string,
   commentId: string,

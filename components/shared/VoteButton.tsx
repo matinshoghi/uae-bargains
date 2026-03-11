@@ -1,7 +1,6 @@
 "use client";
 
 import { useOptimistic, useTransition } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
 import { voteDeal, voteComment, voteDealAnonymous } from "@/lib/actions/votes";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { cn } from "@/lib/utils";
@@ -19,7 +18,7 @@ interface VoteButtonProps {
   userVote: 1 | -1 | null;
   isLoggedIn: boolean;
   disabled?: boolean;
-  variant?: "horizontal" | "vertical" | "inline";
+  variant?: "horizontal" | "detail" | "inline";
 }
 
 interface VoteState {
@@ -38,6 +37,24 @@ function incrementAnonVoteCount(): number {
   const count = getAnonVoteCount() + 1;
   localStorage.setItem("anon_vote_count", String(count));
   return count;
+}
+
+// ── Arrow Icons (filled) ────────────────────────────────────
+
+function ArrowUp({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 4l-8 9h5v7h6v-7h5z" />
+    </svg>
+  );
+}
+
+function ArrowDown({ size = 13 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 20l8-9h-5V4H9v7H4z" />
+    </svg>
+  );
 }
 
 export function VoteButton({
@@ -143,6 +160,9 @@ export function VoteButton({
   }
 
   const netScore = optimistic.upvoteCount - optimistic.downvoteCount;
+  const voteState = optimistic.userVote === 1 ? "up" : optimistic.userVote === -1 ? "down" : null;
+
+  // ── Inline variant (comments) ──────────────────────────────
 
   if (variant === "inline") {
     return (
@@ -189,93 +209,102 @@ export function VoteButton({
     );
   }
 
-  if (variant === "vertical") {
-    return (
-      <div className="flex flex-col items-center gap-px">
+  // ── Pill variants (horizontal = list card, detail = detail page) ──
+
+  const isDetail = variant === "detail";
+  const btnSize = isDetail ? "h-[46px] w-[46px]" : "h-[34px] w-[34px]";
+  const arrowSize = isDetail ? 18 : 13;
+  const scoreFontSize = isDetail ? "text-xl" : "text-[15px]";
+  const scoreMinWidth = isDetail ? "min-w-[56px]" : "min-w-[38px]";
+  const scoreHeight = isDetail ? "h-[46px]" : "h-[34px]";
+  const borderWidth = isDetail ? "border-2" : "border-[1.5px]";
+  const dividerWidth = isDetail ? "border-r-[1.5px]" : "border-r";
+  const dividerWidthLeft = isDetail ? "border-l-[1.5px]" : "border-l";
+  const labelSize = isDetail ? "text-[10px]" : "text-[9px]";
+  const gap = isDetail ? "gap-[5px]" : "gap-[3px]";
+
+  const borderColor =
+    voteState === "up" ? "border-[#a3e635]" :
+    voteState === "down" ? "border-[#ef4444]" :
+    "border-[#d4d4d4]";
+
+  const upDividerColor = voteState === "up" ? "border-r-[#84cc16]" : "border-r-[#e5e5e5]";
+  const downDividerColor = voteState === "down" ? "border-l-[#fca5a5]" : "border-l-[#e5e5e5]";
+
+  return (
+    <div className={cn("flex flex-col items-center", gap)}>
+      <div
+        className={cn(
+          "flex items-center overflow-hidden bg-white transition-[border-color] duration-150 ease-in-out",
+          borderWidth,
+          borderColor
+        )}
+      >
+        {/* Up arrow */}
         <button
           onClick={(e) => handleVote(e, 1)}
           disabled={disabled || isPending}
+          title="Good deal — vote up"
           aria-label="Upvote"
           className={cn(
-            "p-0.5 text-sm transition-all",
+            "flex items-center justify-center cursor-pointer border-none transition-all duration-[120ms] ease-in-out",
+            btnSize,
+            dividerWidth,
+            upDividerColor,
             disabled && "cursor-not-allowed opacity-50",
-            optimistic.userVote === 1
-              ? "scale-[1.15] text-[#7ab800]"
-              : "text-muted-foreground/60 hover:text-foreground"
+            voteState === "up"
+              ? "bg-[#a3e635] text-[#1a1a1a]"
+              : "bg-transparent text-[#a3a3a3] hover:bg-[#f5f5f5] hover:text-[#525252]"
           )}
         >
-          ▲
+          <ArrowUp size={arrowSize} />
         </button>
-        <span
+
+        {/* Score */}
+        <div
           className={cn(
-            "font-mono-display min-w-[28px] text-center text-base font-medium tabular-nums",
-            netScore > 0 && "text-[#7ab800]",
-            netScore < 0 && "text-destructive",
-            netScore === 0 && "text-foreground"
+            "flex items-center justify-center px-1 font-mono-display font-bold select-none tabular-nums transition-colors duration-150 ease-in-out",
+            scoreMinWidth,
+            scoreHeight,
+            scoreFontSize,
+            voteState === "up" ? "text-[#365314]" :
+            voteState === "down" ? "text-[#b91c1c]" :
+            "text-[#1a1a1a]"
           )}
         >
           {netScore}
-        </span>
+        </div>
+
+        {/* Down arrow */}
         <button
           onClick={(e) => handleVote(e, -1)}
           disabled={disabled || isPending}
+          title="Bad deal — vote down"
           aria-label="Downvote"
           className={cn(
-            "p-0.5 text-sm transition-all",
+            "flex items-center justify-center cursor-pointer border-none transition-all duration-[120ms] ease-in-out",
+            btnSize,
+            dividerWidthLeft,
+            downDividerColor,
             disabled && "cursor-not-allowed opacity-50",
-            optimistic.userVote === -1
-              ? "text-destructive"
-              : "text-muted-foreground/60 hover:text-foreground"
+            voteState === "down"
+              ? "bg-[#fecaca] text-[#b91c1c]"
+              : "bg-transparent text-[#a3a3a3] hover:bg-[#f5f5f5] hover:text-[#525252]"
           )}
         >
-          ▼
+          <ArrowDown size={arrowSize} />
         </button>
       </div>
-    );
-  }
 
-  return (
-    <div className="inline-flex items-center gap-1 rounded-sm border border-foreground">
-      <button
-        onClick={(e) => handleVote(e, 1)}
-        disabled={disabled || isPending}
-        aria-label="Upvote"
-        className={cn(
-          "rounded-sm p-1.5 transition-colors",
-          disabled && "cursor-not-allowed opacity-50",
-          optimistic.userVote === 1
-            ? "bg-primary text-primary-foreground"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-        )}
-      >
-        <ChevronUp className="h-5 w-5" />
-      </button>
-
+      {/* VOTES label */}
       <span
         className={cn(
-          "font-display min-w-[2ch] text-center text-sm font-bold tabular-nums",
-          netScore > 0 && "text-foreground",
-          netScore < 0 && "text-destructive",
-          netScore === 0 && "text-muted-foreground"
+          "font-mono-display font-bold uppercase tracking-[0.12em] text-[#a3a3a3]",
+          labelSize
         )}
       >
-        {netScore}
+        votes
       </span>
-
-      <button
-        onClick={(e) => handleVote(e, -1)}
-        disabled={disabled || isPending}
-        aria-label="Downvote"
-        className={cn(
-          "rounded-sm p-1.5 transition-colors",
-          disabled && "cursor-not-allowed opacity-50",
-          optimistic.userVote === -1
-            ? "bg-destructive/10 text-destructive"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-        )}
-      >
-        <ChevronDown className="h-5 w-5" />
-      </button>
     </div>
   );
 }
