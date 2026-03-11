@@ -3,8 +3,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { cookies, headers } from "next/headers";
 import { ANON_VOTE_DAILY_LIMIT } from "@/lib/constants";
+import { notifyDealVoted, notifyCommentVoted } from "@/lib/notifications";
 
 export async function voteDeal(dealId: string, voteType: 1 | -1) {
   const supabase = await createClient();
@@ -30,6 +32,7 @@ export async function voteDeal(dealId: string, voteType: 1 | -1) {
         .from("votes")
         .update({ vote_type: voteType })
         .eq("id", existing.id);
+      after(() => notifyDealVoted(user.id, dealId, voteType));
     }
   } else {
     // New vote
@@ -38,6 +41,7 @@ export async function voteDeal(dealId: string, voteType: 1 | -1) {
       deal_id: dealId,
       vote_type: voteType,
     });
+    after(() => notifyDealVoted(user.id, dealId, voteType));
   }
 
   revalidatePath("/");
@@ -65,6 +69,7 @@ export async function voteComment(commentId: string, voteType: 1 | -1) {
         .from("votes")
         .update({ vote_type: voteType })
         .eq("id", existing.id);
+      after(() => notifyCommentVoted(user.id, commentId, voteType));
     }
   } else {
     await supabase.from("votes").insert({
@@ -72,6 +77,7 @@ export async function voteComment(commentId: string, voteType: 1 | -1) {
       comment_id: commentId,
       vote_type: voteType,
     });
+    after(() => notifyCommentVoted(user.id, commentId, voteType));
   }
 
   revalidatePath("/");

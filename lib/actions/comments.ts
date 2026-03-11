@@ -2,7 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
+import { notifyCommentPosted } from "@/lib/notifications";
 
 const commentSchema = z.object({
   content: z.string().trim().min(1, "Comment cannot be empty").max(2000),
@@ -52,6 +54,8 @@ export async function createComment(formData: FormData) {
   if (error) {
     return { error: { form: [error.message] } };
   }
+
+  after(() => notifyCommentPosted(user.id, deal_id, content));
 
   revalidatePath(`/deals/${deal_id}`);
 }

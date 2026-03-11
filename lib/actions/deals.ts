@@ -6,6 +6,7 @@ import { createDealSchema, updateDealSchema } from "@/lib/validations/deal";
 import { captureImageForDeal } from "@/lib/og";
 import { optimizeImage } from "@/lib/images";
 import { notifyDealChange } from "@/lib/indexnow";
+import { notifyDealPosted } from "@/lib/notifications";
 import { slugify } from "@/lib/slugify";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
@@ -182,8 +183,9 @@ export async function createDeal(
     });
   }
 
-  // Notify IndexNow about the new deal
+  // Notify IndexNow and Telegram about the new deal
   after(() => notifyDealChange(deal.slug));
+  after(() => notifyDealPosted(user.id, title));
 
   redirect(`/deals/${deal.slug}`);
 }

@@ -4,8 +4,10 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { optimizeImage } from "@/lib/images";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createStoreSchema, createCouponSchema, submitCouponSchema } from "@/lib/validations/coupon";
 import { cookies, headers } from "next/headers";
+import { notifyCouponSubmitted } from "@/lib/notifications";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -387,6 +389,8 @@ export async function submitCoupon(
     });
 
     if (error) return { error: error.message };
+
+    after(() => notifyCouponSubmitted(user.id, parsed.data.title));
 
     revalidatePath("/coupons");
     revalidatePath("/admin/coupon-submissions");
