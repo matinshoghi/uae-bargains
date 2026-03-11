@@ -13,14 +13,12 @@ export function DealJsonLd({ deal }: { deal: DealWithRelations }) {
     : null;
   const offerSchema = {
     "@type": "Offer" as const,
+    priceCurrency: "AED",
+    price: deal.price ?? 0,
     availability:
       deal.status === "active"
         ? "https://schema.org/InStock"
         : "https://schema.org/Discontinued",
-    ...(deal.price != null && {
-      priceCurrency: "AED",
-      price: deal.price,
-    }),
     ...(deal.url && { url: deal.url }),
     ...(deal.expires_at && { validThrough: deal.expires_at }),
     ...(deal.expires_at && { priceValidUntil: deal.expires_at.split("T")[0] }),

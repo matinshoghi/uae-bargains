@@ -49,14 +49,12 @@ export function HomeJsonLd({ deals }: { deals: DealWithRelations[] }) {
         image: deal.image_url || `${BRAND.url}/icon.png`,
         offers: {
           "@type": "Offer",
+          priceCurrency: "AED",
+          price: deal.price ?? 0,
           availability:
             deal.status === "active"
               ? "https://schema.org/InStock"
               : "https://schema.org/Discontinued",
-          ...(deal.price != null && {
-            priceCurrency: "AED",
-            price: deal.price,
-          }),
         },
       },
     })),
