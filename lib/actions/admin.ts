@@ -91,12 +91,46 @@ export async function restoreDeal(
 
     const slug = await getDealSlug(admin, dealId);
 
+    // Clear all status-related fields when restoring
     const { error } = await admin
       .from("deals")
       .update({
         status: "active" as const,
         removed_by: null,
         removal_reason: null,
+        expired_reason: null,
+        expire_report_count: 0,
+      })
+      .eq("id", dealId);
+
+    if (error) return { error: error.message };
+
+    // Clear community expire reports
+    await admin.from("deal_expire_reports").delete().eq("deal_id", dealId);
+
+    revalidatePath("/");
+    revalidatePath("/admin/moderation");
+    revalidatePath(`/deals/${slug}`);
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
+export async function adminExpireDeal(
+  dealId: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    const slug = await getDealSlug(admin, dealId);
+
+    const { error } = await admin
+      .from("deals")
+      .update({
+        status: "expired" as const,
+        expired_reason: "admin",
       })
       .eq("id", dealId);
 
@@ -151,6 +185,8 @@ export async function adminEditDeal(
           .single();
         if (current?.status === "expired") {
           payload.status = "active";
+          payload.expired_reason = null;
+          payload.expire_report_count = 0;
         }
       }
     }

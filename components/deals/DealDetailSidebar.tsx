@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { VoteButton } from "@/components/shared/VoteButton";
 import { ShareButtons } from "@/components/shared/ShareButtons";
 import { PromoCodeBadge } from "@/components/deals/PromoCodeBadge";
+import { ReportExpiredButton } from "@/components/deals/ReportExpiredButton";
 import type { PlatformStats } from "@/lib/queries/platform-stats";
 import { formatPrice } from "@/lib/utils";
 import type { DealWithRelations } from "@/lib/types";
@@ -21,6 +22,8 @@ interface DealDetailSidebarProps {
   userVote: 1 | -1 | null;
   isLoggedIn: boolean;
   platformStats: PlatformStats;
+  currentUserId?: string | null;
+  hasReportedExpired?: boolean;
 }
 
 export function DealDetailSidebar({
@@ -28,6 +31,8 @@ export function DealDetailSidebar({
   userVote,
   isLoggedIn,
   platformStats,
+  currentUserId,
+  hasReportedExpired = false,
 }: DealDetailSidebarProps) {
   const expired = isExpired(deal);
   const primaryCtaHref = isLoggedIn ? "/deals/new" : "/login";
@@ -68,7 +73,7 @@ export function DealDetailSidebar({
         {deal.url && (
           expired ? (
             <Button disabled className="w-full">
-              This deal has expired
+              {deal.expired_reason === "out_of_stock" ? "This deal is out of stock" : "This deal has expired"}
             </Button>
           ) : (
             <Button asChild className="w-full">
@@ -96,6 +101,12 @@ export function DealDetailSidebar({
             />
             <ShareButtons url={`/deals/${deal.slug}`} title={deal.title} />
           </div>
+          {/* Community "Deal expired?" report link */}
+          {!expired && isLoggedIn && currentUserId && currentUserId !== deal.user_id && (
+            <div className="mt-3 flex justify-center">
+              <ReportExpiredButton dealId={deal.id} hasReported={hasReportedExpired} />
+            </div>
+          )}
         </div>
       </div>
 

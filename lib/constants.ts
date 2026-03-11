@@ -6,6 +6,7 @@ export const EXPIRED_DEAL_INTERVAL = 4; // 1 expired per 3 active in feed
 export const ALLOW_ANONYMOUS_VOTES = true;
 export const ANON_VOTE_MODAL_INTERVAL = 5;
 export const ANON_VOTE_DAILY_LIMIT = 30;
+export const EXPIRE_REPORT_THRESHOLD = 3;
 
 export const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   electronics: "Phones, TVs, headphones, smart home, gadgets",

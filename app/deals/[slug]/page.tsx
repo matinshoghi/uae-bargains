@@ -149,11 +149,24 @@ export default async function DealPage({ params }: Props) {
       .maybeSingle<{ vote_type: number }>();
 
     if (vote) userVote = vote.vote_type as 1 | -1;
+
   } else {
     // Check for anonymous vote
     const { getAnonymousVotes } = await import("@/lib/actions/votes");
     const anonVotes = await getAnonymousVotes();
     if (anonVotes[deal.id]) userVote = anonVotes[deal.id] as 1 | -1;
+  }
+
+  // Check if the current user has already reported this deal as expired
+  let hasReportedExpired = false;
+  if (user && deal.status === "active") {
+    const { data: report } = await supabase
+      .from("deal_expire_reports")
+      .select("id")
+      .eq("deal_id", deal.id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    hasReportedExpired = !!report;
   }
 
   return (
@@ -179,6 +192,8 @@ export default async function DealPage({ params }: Props) {
                 userVote={userVote}
                 isLoggedIn={!!user}
                 platformStats={platformStats}
+                currentUserId={user?.id ?? null}
+                hasReportedExpired={hasReportedExpired}
               />
             </div>
 
@@ -201,6 +216,8 @@ export default async function DealPage({ params }: Props) {
                 userVote={userVote}
                 isLoggedIn={!!user}
                 platformStats={platformStats}
+                currentUserId={user?.id ?? null}
+                hasReportedExpired={hasReportedExpired}
               />
             </div>
           </aside>

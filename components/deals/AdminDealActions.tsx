@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, RotateCcw, Shield, PenOff, MessageSquare } from "lucide-react";
+import { Pencil, Trash2, RotateCcw, Shield, PenOff, MessageSquare, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -29,16 +29,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { removeDeal, restoreDeal, resetEditedFlag } from "@/lib/actions/admin";
+import { removeDeal, restoreDeal, resetEditedFlag, adminExpireDeal } from "@/lib/actions/admin";
 import { toast } from "sonner";
 
 interface AdminDealActionsProps {
   dealId: string;
+  dealStatus: "active" | "expired" | "removed";
   isRemoved: boolean;
   isEdited: boolean;
 }
 
-export function AdminDealActions({ dealId, isRemoved, isEdited }: AdminDealActionsProps) {
+export function AdminDealActions({ dealId, dealStatus, isRemoved, isEdited }: AdminDealActionsProps) {
   const router = useRouter();
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [removeReason, setRemoveReason] = useState("");
@@ -64,6 +65,17 @@ export function AdminDealActions({ dealId, isRemoved, isEdited }: AdminDealActio
         toast.error(result.error);
       } else {
         toast.success("Deal restored");
+      }
+    });
+  }
+
+  function handleExpire() {
+    startTransition(async () => {
+      const result = await adminExpireDeal(dealId);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Deal expired");
       }
     });
   }
@@ -105,6 +117,12 @@ export function AdminDealActions({ dealId, isRemoved, isEdited }: AdminDealActio
             <DropdownMenuItem onClick={handleResetEdited} disabled={isPending}>
               <PenOff className="mr-2 h-4 w-4" />
               Clear Edited Flag
+            </DropdownMenuItem>
+          )}
+          {dealStatus === "active" && (
+            <DropdownMenuItem onClick={handleExpire} disabled={isPending}>
+              <Clock className="mr-2 h-4 w-4" />
+              Expire Deal
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />

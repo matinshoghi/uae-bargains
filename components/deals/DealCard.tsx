@@ -303,8 +303,15 @@ export function DealCard({ deal, userVote = null, isLoggedIn = false, isHero = f
             />
 
             {expired && (
-              <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
-                Expired
+              <Badge
+                variant={deal.expired_reason === "out_of_stock" ? "outline" : "destructive"}
+                className={
+                  deal.expired_reason === "out_of_stock"
+                    ? "border-amber-500 px-1.5 py-0 text-[10px] text-amber-600"
+                    : "px-1.5 py-0 text-[10px]"
+                }
+              >
+                {deal.expired_reason === "out_of_stock" ? "Out of Stock" : "Expired"}
               </Badge>
             )}
           </div>

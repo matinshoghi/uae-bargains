@@ -89,6 +89,8 @@ export interface Database {
           is_featured: boolean;
           slug: string;
           status: "active" | "expired" | "removed";
+          expired_reason: string | null;
+          expire_report_count: number;
           removed_by: string | null;
           removal_reason: string | null;
           created_at: string;
@@ -110,6 +112,8 @@ export interface Database {
           expires_at?: string | null;
           is_featured?: boolean;
           status?: "active" | "expired" | "removed";
+          expired_reason?: string | null;
+          expire_report_count?: number;
           removed_by?: string | null;
           removal_reason?: string | null;
         };
@@ -128,6 +132,8 @@ export interface Database {
           expires_at?: string | null;
           is_featured?: boolean;
           status?: "active" | "expired" | "removed";
+          expired_reason?: string | null;
+          expire_report_count?: number;
           removed_by?: string | null;
           removal_reason?: string | null;
           updated_at?: string;
@@ -145,6 +151,37 @@ export interface Database {
             columns: ["category_id"];
             isOneToOne: false;
             referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      deal_expire_reports: {
+        Row: {
+          id: string;
+          deal_id: string;
+          user_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          deal_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [
+          {
+            foreignKeyName: "deal_expire_reports_deal_id_fkey";
+            columns: ["deal_id"];
+            isOneToOne: false;
+            referencedRelation: "deals";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "deal_expire_reports_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
         ];
@@ -566,6 +603,10 @@ export interface Database {
       increment_coupon_click: {
         Args: { coupon_id: string };
         Returns: undefined;
+      };
+      increment_expire_report: {
+        Args: { p_deal_id: string; p_user_id: string };
+        Returns: number;
       };
     };
     Enums: Record<string, never>;

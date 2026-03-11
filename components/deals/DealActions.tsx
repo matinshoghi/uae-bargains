@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, Clock, PackageX, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -20,18 +21,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { deleteDeal } from "@/lib/actions/deals";
+import { deleteDeal, markDealExpired, reactivateDeal } from "@/lib/actions/deals";
 import { toast } from "sonner";
 
 interface DealActionsProps {
   dealId: string;
   dealSlug: string;
+  dealStatus: "active" | "expired" | "removed";
 }
 
-export function DealActions({ dealId, dealSlug }: DealActionsProps) {
+export function DealActions({ dealId, dealSlug, dealStatus }: DealActionsProps) {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   async function handleDelete() {
     setIsDeleting(true);
@@ -44,6 +47,28 @@ export function DealActions({ dealId, dealSlug }: DealActionsProps) {
     // On success, deleteDeal redirects to homepage
   }
 
+  function handleMarkExpired(reason: "manual" | "out_of_stock") {
+    startTransition(async () => {
+      const result = await markDealExpired(dealId, reason);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success(reason === "out_of_stock" ? "Marked as out of stock" : "Marked as expired");
+      }
+    });
+  }
+
+  function handleReactivate() {
+    startTransition(async () => {
+      const result = await reactivateDeal(dealId);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Deal reactivated");
+      }
+    });
+  }
+
   return (
     <>
       <DropdownMenu>
@@ -54,10 +79,37 @@ export function DealActions({ dealId, dealSlug }: DealActionsProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => router.push(`/deals/${dealSlug}/edit`)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
-          </DropdownMenuItem>
+          {dealStatus === "active" && (
+            <>
+              <DropdownMenuItem onClick={() => router.push(`/deals/${dealSlug}/edit`)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleMarkExpired("manual")} disabled={isPending}>
+                <Clock className="mr-2 h-4 w-4" />
+                Mark as Expired
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleMarkExpired("out_of_stock")} disabled={isPending}>
+                <PackageX className="mr-2 h-4 w-4" />
+                Mark as Out of Stock
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
+          {dealStatus === "expired" && (
+            <>
+              <DropdownMenuItem onClick={() => router.push(`/deals/${dealSlug}/edit`)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleReactivate} disabled={isPending}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                Reactivate Deal
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+            </>
+          )}
           <DropdownMenuItem
             onClick={() => setShowDeleteDialog(true)}
             className="text-red-600 focus:text-red-600"

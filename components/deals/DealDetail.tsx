@@ -68,14 +68,21 @@ export function DealDetail({ deal, currentUserId, isAdmin = false }: DealDetailP
             Staff Pick
           </Badge>
         )}
-        {expired && <Badge variant="destructive">Expired</Badge>}
+        {expired && (
+          <Badge
+            variant={deal.expired_reason === "out_of_stock" ? "outline" : "destructive"}
+            className={deal.expired_reason === "out_of_stock" ? "border-amber-500 text-amber-600" : ""}
+          >
+            {deal.expired_reason === "out_of_stock" ? "Out of Stock" : "Expired"}
+          </Badge>
+        )}
         {isRemoved && <Badge variant="destructive">Removed</Badge>}
         <div className="ml-auto flex items-center gap-1">
           {isAdmin && (
-            <AdminDealActions dealId={deal.id} isRemoved={isRemoved} isEdited={edited} />
+            <AdminDealActions dealId={deal.id} dealStatus={deal.status} isRemoved={isRemoved} isEdited={edited} />
           )}
           {isAuthor && !isRemoved && (
-            <DealActions dealId={deal.id} dealSlug={deal.slug} />
+            <DealActions dealId={deal.id} dealSlug={deal.slug} dealStatus={deal.status} />
           )}
         </div>
       </div>

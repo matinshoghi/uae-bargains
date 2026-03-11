@@ -327,7 +327,11 @@ export async function updateDeal(
       image_url,
       expires_at: expiresAtValue,
       updated_at: new Date().toISOString(),
-      ...(shouldReactivate && { status: "active" as const }),
+      ...(shouldReactivate && {
+        status: "active" as const,
+        expired_reason: null,
+        expire_report_count: 0,
+      }),
     })
     .eq("id", dealId);
 
@@ -389,6 +393,151 @@ function extractStoragePath(publicUrl: string): string | null {
   const idx = publicUrl.indexOf(marker);
   if (idx === -1) return null;
   return publicUrl.slice(idx + marker.length);
+}
+
+export async function markDealExpired(
+  dealId: string,
+  reason: "manual" | "out_of_stock"
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "You must be signed in." };
+
+  const { data: deal } = await supabase
+    .from("deals")
+    .select("user_id, slug, status")
+    .eq("id", dealId)
+    .single();
+
+  if (!deal || deal.user_id !== user.id) {
+    return { error: "You can only update your own deals." };
+  }
+
+  if (deal.status !== "active") {
+    return { error: "This deal is not active." };
+  }
+
+  const { error } = await supabase
+    .from("deals")
+    .update({
+      status: "expired" as const,
+      expired_reason: reason,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", dealId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/");
+  revalidatePath(`/deals/${deal.slug}`);
+  return {};
+}
+
+export async function reactivateDeal(
+  dealId: string
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "You must be signed in." };
+
+  const { data: deal } = await supabase
+    .from("deals")
+    .select("user_id, slug, status, expires_at")
+    .eq("id", dealId)
+    .single();
+
+  if (!deal || deal.user_id !== user.id) {
+    return { error: "You can only update your own deals." };
+  }
+
+  if (deal.status !== "expired") {
+    return { error: "This deal is not expired." };
+  }
+
+  // Don't allow reactivation if the expiry date is still in the past
+  if (deal.expires_at && new Date(deal.expires_at) < new Date()) {
+    return { error: "Update the expiry date first — it's still in the past." };
+  }
+
+  const admin = createAdminClient();
+
+  // Clear reports and reactivate
+  await admin.from("deal_expire_reports").delete().eq("deal_id", dealId);
+
+  const { error } = await supabase
+    .from("deals")
+    .update({
+      status: "active" as const,
+      expired_reason: null,
+      expire_report_count: 0,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", dealId);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/");
+  revalidatePath(`/deals/${deal.slug}`);
+  return {};
+}
+
+export async function reportDealExpired(
+  dealId: string
+): Promise<{ error?: string; alreadyReported?: boolean }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "You must be signed in to report." };
+
+  // Verify deal is active and user is not the author
+  const { data: deal } = await supabase
+    .from("deals")
+    .select("user_id, slug, status")
+    .eq("id", dealId)
+    .single();
+
+  if (!deal) return { error: "Deal not found." };
+  if (deal.status !== "active") return { error: "This deal is not active." };
+  if (deal.user_id === user.id) return { error: "You can't report your own deal." };
+
+  // Atomic insert + increment via RPC
+  const admin = createAdminClient();
+  const { data: newCount, error } = await admin.rpc("increment_expire_report", {
+    p_deal_id: dealId,
+    p_user_id: user.id,
+  });
+
+  if (error) {
+    // Unique constraint violation = already reported
+    if (error.code === "23505") {
+      return { alreadyReported: true };
+    }
+    return { error: error.message };
+  }
+
+  // Check threshold
+  const { EXPIRE_REPORT_THRESHOLD } = await import("@/lib/constants");
+  if (typeof newCount === "number" && newCount >= EXPIRE_REPORT_THRESHOLD) {
+    await admin
+      .from("deals")
+      .update({
+        status: "expired" as const,
+        expired_reason: "community",
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", dealId);
+  }
+
+  revalidatePath(`/deals/${deal.slug}`);
+  return {};
 }
 
 export async function fetchMoreDeals({
