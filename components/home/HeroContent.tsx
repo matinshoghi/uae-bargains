@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 
 interface HeroContentProps {
@@ -12,8 +15,69 @@ interface HeroContentProps {
   isLoggedIn: boolean;
 }
 
+const GLOW_SHADOW_OFF = "0 0 12px transparent";
+const GLOW_SHADOW_ON =
+  "0 0 20px rgba(200, 245, 71, 0.9), 0 0 52px rgba(200, 245, 71, 0.75)";
+
 export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
   const { openAuthModal } = useAuthModal();
+  const headlineWrapRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const wrap = headlineWrapRef.current;
+      if (!wrap) return;
+      const headline = wrap.querySelector<HTMLElement>(".hero-headline");
+      const accent = wrap.querySelector<HTMLElement>(".hero-accent");
+      if (!headline || !accent) return;
+
+      const reduceMotion =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reduceMotion) {
+        gsap.fromTo(
+          headline,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.4, delay: 0.15 }
+        );
+        return;
+      }
+
+      gsap.fromTo(
+        headline,
+        {
+          opacity: 0,
+          y: 24,
+          scale: 0.97,
+          letterSpacing: "0.02em",
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          letterSpacing: "-0.03em",
+          duration: 0.8,
+          delay: 0.15,
+          ease: "power2.out",
+        }
+      );
+
+      gsap.fromTo(
+        accent,
+        { textShadow: GLOW_SHADOW_OFF },
+        {
+          textShadow: GLOW_SHADOW_ON,
+          duration: 1.5,
+          delay: 1.2,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true,
+        }
+      );
+    },
+    { scope: headlineWrapRef, dependencies: [] }
+  );
 
   return (
     <section className="border-b-[3px] border-primary bg-foreground text-background">
@@ -53,19 +117,13 @@ export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
         </div>
 
         {/* Headline */}
-        <h1
-          className="mx-auto mb-2 font-heading text-[22px] font-black leading-[1.1] text-background sm:text-[26px] md:text-4xl opacity-0"
-          style={{
-            animation:
-              "hero-entrance 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards",
-          }}
-        >
-          Don&apos;t overpay.{" "}
-          <span className="hero-accent" data-text="Your neighbours">
-            Your neighbours
-          </span>{" "}
-          found it cheaper.
-        </h1>
+        <div ref={headlineWrapRef}>
+          <h1 className="hero-headline mx-auto mb-2 font-heading text-[22px] font-black leading-[1.1] text-background sm:text-[26px] md:text-4xl">
+            Don&apos;t overpay.{" "}
+            <span className="hero-accent">Your neighbours</span> found it
+            cheaper.
+          </h1>
+        </div>
 
         {/* Subtext */}
         <p

@@ -1,52 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { CommentForm } from "./CommentForm";
+import { MessageSquare } from "lucide-react";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 
 export function ReplyButton({
-  dealId,
-  parentId,
   isLoggedIn,
+  isOpen,
+  onToggle,
 }: {
   dealId: string;
   parentId: string;
   isLoggedIn: boolean;
+  renderFormOutside?: boolean;
+  isOpen?: boolean;
+  onToggle?: () => void;
 }) {
-  const [showForm, setShowForm] = useState(false);
   const { openAuthModal } = useAuthModal();
 
-  if (!isLoggedIn) {
-    return (
-      <button
-        onClick={() => openAuthModal({ message: "Sign in to reply" })}
-        className="font-display text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        Reply
-      </button>
-    );
+  function handleClick() {
+    if (!isLoggedIn) {
+      openAuthModal({ message: "Sign in to reply" });
+      return;
+    }
+    onToggle?.();
   }
 
   return (
-    <>
-      <button
-        onClick={() => setShowForm(!showForm)}
-        className="font-display text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-      >
-        Reply
-      </button>
-
-      {showForm && (
-        <div className="mt-2 w-full min-w-0">
-          <CommentForm
-            dealId={dealId}
-            parentId={parentId}
-            isLoggedIn={isLoggedIn}
-            onCancel={() => setShowForm(false)}
-            autoFocus
-          />
-        </div>
-      )}
-    </>
+    <button
+      onClick={handleClick}
+      className="inline-flex items-center gap-1 p-1 font-mono-display text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+    >
+      <MessageSquare className="h-3 w-3" />
+      {isOpen ? "Cancel" : "Reply"}
+    </button>
   );
 }

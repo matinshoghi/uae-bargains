@@ -18,8 +18,10 @@ export function CommentList({
 }) {
   if (comments.length === 0) return null;
 
+  const isTopLevel = comments[0]?.depth === 0;
+
   return (
-    <div className="space-y-3">
+    <div className={isTopLevel ? "divide-y divide-[#e4e3dd]" : ""}>
       {comments.map((comment) => (
         <CommentItem
           key={comment.id}

@@ -19,7 +19,7 @@ interface VoteButtonProps {
   userVote: 1 | -1 | null;
   isLoggedIn: boolean;
   disabled?: boolean;
-  variant?: "horizontal" | "vertical";
+  variant?: "horizontal" | "vertical" | "inline";
 }
 
 interface VoteState {
@@ -144,6 +144,51 @@ export function VoteButton({
 
   const netScore = optimistic.upvoteCount - optimistic.downvoteCount;
 
+  if (variant === "inline") {
+    return (
+      <div className="flex items-center gap-1">
+        <button
+          onClick={(e) => handleVote(e, 1)}
+          disabled={disabled || isPending}
+          aria-label="Upvote"
+          className={cn(
+            "p-1 font-mono-display text-xs transition-colors",
+            disabled && "cursor-not-allowed opacity-50",
+            optimistic.userVote === 1
+              ? "font-bold text-[#7ab800]"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          ▲
+        </button>
+        <span
+          className={cn(
+            "min-w-[1.5ch] text-center font-mono-display text-xs font-medium tabular-nums",
+            netScore > 0 && "text-[#7ab800]",
+            netScore < 0 && "text-destructive",
+            netScore === 0 && "text-muted-foreground"
+          )}
+        >
+          {netScore}
+        </span>
+        <button
+          onClick={(e) => handleVote(e, -1)}
+          disabled={disabled || isPending}
+          aria-label="Downvote"
+          className={cn(
+            "p-1 font-mono-display text-xs transition-colors",
+            disabled && "cursor-not-allowed opacity-50",
+            optimistic.userVote === -1
+              ? "font-bold text-destructive"
+              : "text-muted-foreground hover:text-foreground"
+          )}
+        >
+          ▼
+        </button>
+      </div>
+    );
+  }
+
   if (variant === "vertical") {
     return (
       <div className="flex flex-col items-center gap-px">
@@ -190,7 +235,7 @@ export function VoteButton({
   }
 
   return (
-    <div className="flex items-center gap-1 rounded-sm border border-foreground">
+    <div className="inline-flex items-center gap-1 rounded-sm border border-foreground">
       <button
         onClick={(e) => handleVote(e, 1)}
         disabled={disabled || isPending}

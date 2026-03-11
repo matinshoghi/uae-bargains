@@ -1,11 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound, redirect } from "next/navigation";
 import { DealDetail } from "@/components/deals/DealDetail";
+import { DealAwarenessBar } from "@/components/deals/DealAwarenessBar";
+import { DealDetailSidebar } from "@/components/deals/DealDetailSidebar";
+import { DealNewHereSection } from "@/components/deals/DealNewHereSection";
 import { CommentSection } from "@/components/comments/CommentSection";
 import type { Metadata } from "next";
 import type { DealWithRelations } from "@/lib/types";
 import { DealJsonLd } from "@/components/seo/DealJsonLd";
 import { buildDealMetaDescription } from "@/lib/seo";
+import { getPlatformStats } from "@/lib/queries/platform-stats";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -132,6 +136,8 @@ export default async function DealPage({ params }: Props) {
     );
   }
 
+  const platformStats = await getPlatformStats();
+
   let userVote: 1 | -1 | null = null;
   if (user) {
     const { data: vote } = await supabase
@@ -151,13 +157,55 @@ export default async function DealPage({ params }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <DealJsonLd deal={deal} />
-      <DealDetail deal={deal} userVote={userVote} isLoggedIn={!!user} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
+    <>
+      {!user && <DealAwarenessBar stats={platformStats} />}
 
-      <div className="mt-10 border-t-2 border-foreground pt-8">
-        <CommentSection dealId={deal.id} currentUserId={user?.id ?? null} isAdmin={isAdmin} />
+      <div className="mx-auto max-w-[1100px] px-4 py-8">
+        <DealJsonLd deal={deal} />
+
+        <div className="flex gap-8">
+          {/* Main content */}
+          <div className="min-w-0 flex-1">
+            <DealDetail
+              deal={deal}
+              currentUserId={user?.id ?? null}
+              isAdmin={isAdmin}
+            />
+
+            {/* Mobile sidebar — shown below content on small screens */}
+            <div className="mt-6 lg:hidden">
+              <DealDetailSidebar
+                deal={deal}
+                userVote={userVote}
+                isLoggedIn={!!user}
+                platformStats={platformStats}
+              />
+            </div>
+
+            {!user && <DealNewHereSection />}
+
+            <div className="mt-10 border-t border-[#e4e3dd] pt-8">
+              <CommentSection
+                dealId={deal.id}
+                currentUserId={user?.id ?? null}
+                isAdmin={isAdmin}
+              />
+            </div>
+          </div>
+
+          {/* Desktop sidebar */}
+          <aside className="hidden w-[320px] shrink-0 lg:block">
+            <div className="sticky top-[68px]">
+              <DealDetailSidebar
+                deal={deal}
+                userVote={userVote}
+                isLoggedIn={!!user}
+                platformStats={platformStats}
+              />
+            </div>
+          </aside>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

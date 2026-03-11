@@ -1,15 +1,12 @@
 import Image from "next/image";
+import Link from "next/link";
 import { formatDistanceToNow, format } from "date-fns";
-import { ExternalLink, MapPin, Calendar, Award } from "lucide-react";
+import { Award } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { VoteButton } from "@/components/shared/VoteButton";
-import { ShareButtons } from "@/components/shared/ShareButtons";
 import { DealActions } from "@/components/deals/DealActions";
 import { AdminDealActions } from "@/components/deals/AdminDealActions";
 import { MarkdownRenderer } from "@/components/deals/MarkdownRenderer";
-import { PromoCodeBadge } from "@/components/deals/PromoCodeBadge";
-import { formatPrice } from "@/lib/utils";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import type { DealWithRelations } from "@/lib/types";
 
 function isExpired(deal: DealWithRelations) {
@@ -27,20 +24,18 @@ function wasEdited(deal: DealWithRelations) {
 
 interface DealDetailProps {
   deal: DealWithRelations;
-  userVote?: 1 | -1 | null;
-  isLoggedIn?: boolean;
   currentUserId?: string | null;
   isAdmin?: boolean;
 }
 
-export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentUserId, isAdmin = false }: DealDetailProps) {
+export function DealDetail({ deal, currentUserId, isAdmin = false }: DealDetailProps) {
   const expired = isExpired(deal);
   const isAuthor = !!deal.user_id && currentUserId === deal.user_id;
   const edited = wasEdited(deal);
   const isRemoved = deal.status === "removed";
 
   return (
-    <article className="space-y-6 overflow-hidden">
+    <article className="space-y-5 overflow-hidden">
       {/* Admin removal banner */}
       {isRemoved && isAdmin && (
         <div className="rounded-sm border-2 border-dashed border-red-500/30 bg-red-50 p-4 dark:bg-red-950/20">
@@ -53,13 +48,22 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         </div>
       )}
 
-      {/* Category + Badges + Author Actions */}
-      <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+      {/* Breadcrumb + badges + actions */}
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        <Link href="/" className="font-mono-display text-xs text-muted-foreground hover:text-foreground transition-colors">
+          Home
+        </Link>
         {deal.categories && (
-          <Badge variant="outline">{deal.categories.label}</Badge>
+          <>
+            <span className="text-muted-foreground/40">→</span>
+            <Badge variant="outline">{deal.categories.label}</Badge>
+          </>
         )}
         {deal.is_featured && (
-          <Badge className="inline-flex items-center gap-1">
+          <Badge
+            className="inline-flex items-center gap-1"
+            title="Hand-picked by the HalaSaves team."
+          >
             <Award className="h-3 w-3" />
             Staff Pick
           </Badge>
@@ -77,136 +81,26 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
       </div>
 
       {/* Title */}
-      <h1 className="font-heading text-2xl font-black tracking-tight md:text-4xl">{deal.title}</h1>
+      <h1 className="font-heading text-2xl font-black tracking-tight md:text-4xl">
+        {deal.title}
+      </h1>
 
-      {/* Image */}
-      {deal.image_url && (
-        deal.url ? (
-          <a
-            href={deal.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Open ${deal.title} deal link in a new tab`}
-            className="group block"
-          >
-            <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-[#e4e3dd] bg-background transition-opacity group-hover:opacity-95">
-              <Image
-                src={deal.image_url}
-                alt={deal.title}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 100vw, 768px"
-                priority
-              />
-            </div>
-          </a>
-        ) : (
-          <div className="grain-overlay relative aspect-video w-full overflow-hidden rounded-sm border-[1.5px] border-[#e4e3dd] bg-background">
-            <Image
-              src={deal.image_url}
-              alt={deal.title}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 768px"
-              priority
-            />
-          </div>
-        )
-      )}
-
-      {/* Price block */}
-      {(deal.price != null || deal.original_price != null) && (
-        <div className="flex items-baseline gap-3">
-          {deal.price != null && deal.price === 0 ? (
-            <Badge className="text-lg">Free</Badge>
-          ) : deal.price != null ? (
-            <span className="font-display text-2xl font-bold">
-              <span className="inline-flex items-center rounded-sm bg-primary px-2 py-0.5 text-primary-foreground">
-                {formatPrice(deal.price)}
-              </span>
-            </span>
-          ) : null}
-
-          {deal.original_price != null && (
-            <span className="text-lg text-muted-foreground line-through">
-              {formatPrice(deal.original_price)}
-            </span>
-          )}
-
-          {deal.discount_percentage != null && deal.discount_percentage > 0 && (
-            <Badge variant="outline">-{deal.discount_percentage}%</Badge>
-          )}
-        </div>
-      )}
-
-      {/* Promo code */}
-      {deal.promo_code && (
-        <PromoCodeBadge code={deal.promo_code} />
-      )}
-
-      {/* Description */}
-      <MarkdownRenderer content={deal.description} />
-
-      {/* Metadata row */}
-      <div className="flex flex-wrap items-center gap-3">
-        {deal.url && (
-          expired ? (
-            <Button disabled>
-              This deal has expired
-            </Button>
-          ) : (
-            <Button asChild>
-              <a href={deal.url} target="_blank" rel="noopener noreferrer" aria-label={`Go to deal: ${deal.title}`}>
-                Go to Deal <ExternalLink className="ml-2 h-4 w-4" />
-              </a>
-            </Button>
-          )
-        )}
-
-        {deal.location && (
-          <div className="flex items-center gap-1.5 font-mono-display text-xs text-muted-foreground">
-            <MapPin className="h-4 w-4" />
-            <span>{deal.location}</span>
-          </div>
-        )}
-
-        {deal.expires_at && (
-          <div className="flex items-center gap-1.5 font-mono-display text-xs text-muted-foreground">
-            <Calendar className="h-4 w-4" />
-            <span>
-              {expired
-                ? `Expired ${format(new Date(deal.expires_at.split("T")[0] + "T12:00:00"), "MMM d, yyyy")}`
-                : `Expires ${format(new Date(deal.expires_at.split("T")[0] + "T12:00:00"), "MMM d, yyyy")}`}
-            </span>
-          </div>
-        )}
-      </div>
-
-      {/* Vote + Share */}
-      <div className="border-t-2 border-foreground pt-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <VoteButton
-            entityType="deal"
-            entityId={deal.id}
-            upvoteCount={deal.upvote_count}
-            downvoteCount={deal.downvote_count}
-            userVote={userVote}
-            isLoggedIn={isLoggedIn}
-            disabled={expired}
+      {/* Author + Time */}
+      <div className="flex items-center gap-2.5">
+        {deal.profiles && (
+          <UserAvatar
+            src={deal.profiles.avatar_url}
+            name={deal.profiles.username}
+            size="sm"
           />
-          <ShareButtons url={`/deals/${deal.slug}`} title={deal.title} />
-        </div>
-
-        {/* Posted by + Time */}
-        <div className="flex items-center gap-2 font-mono-display text-xs text-muted-foreground">
+        )}
+        <div className="flex items-center gap-1.5 font-mono-display text-xs text-muted-foreground">
           {deal.profiles ? (
-            <span className="font-medium text-foreground">
-              {deal.profiles.username}
-            </span>
+            <span className="font-medium text-foreground">{deal.profiles.username}</span>
           ) : (
             <span className="font-medium">[deleted]</span>
           )}
-          <span>&middot;</span>
+          <span className="text-foreground/20">&middot;</span>
           <time dateTime={deal.created_at}>
             {formatDistanceToNow(new Date(deal.created_at), { addSuffix: true })}
           </time>
@@ -221,6 +115,43 @@ export function DealDetail({ deal, userVote = null, isLoggedIn = false, currentU
         </div>
       </div>
 
+      {/* Image */}
+      {deal.image_url && (
+        deal.url ? (
+          <a
+            href={deal.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Open ${deal.title} deal link in a new tab`}
+            className="block"
+          >
+            <div className="grain-overlay relative aspect-video w-full overflow-hidden border-[1.5px] border-[#e4e3dd] bg-background">
+              <Image
+                src={deal.image_url}
+                alt={deal.title}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 680px"
+                priority
+              />
+            </div>
+          </a>
+        ) : (
+          <div className="grain-overlay relative aspect-video w-full overflow-hidden border-[1.5px] border-[#e4e3dd] bg-background">
+            <Image
+              src={deal.image_url}
+              alt={deal.title}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 100vw, 680px"
+              priority
+            />
+          </div>
+        )
+      )}
+
+      {/* Description */}
+      <MarkdownRenderer content={deal.description} />
     </article>
   );
 }
