@@ -8,6 +8,7 @@ import { optimizeImage } from "@/lib/images";
 import { notifyDealChange } from "@/lib/indexnow";
 import { notifyDealPosted } from "@/lib/notifications";
 import { slugify } from "@/lib/slugify";
+import type { DealWithRelations } from "@/lib/types";
 import { after } from "next/server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
@@ -403,4 +404,29 @@ export async function fetchMoreDeals({
 }) {
   const { fetchDeals } = await import("@/lib/queries/deals");
   return fetchDeals({ sort, offset, categorySlug, hideExpired });
+}
+
+export async function fetchMoreInterleavedDeals({
+  sort,
+  activeOffset,
+  expiredOffset,
+  categorySlug,
+}: {
+  sort: string;
+  activeOffset: number;
+  expiredOffset: number;
+  categorySlug?: string;
+}): Promise<{ deals: DealWithRelations[]; activeUsed: number; expiredUsed: number }> {
+  const { fetchActiveDeals, fetchExpiredDeals } = await import("@/lib/queries/deals");
+  const { interleaveDeals } = await import("@/lib/utils");
+  const { DEALS_PER_PAGE, EXPIRED_DEAL_INTERVAL } = await import("@/lib/constants");
+
+  const expiredNeeded = Math.ceil(DEALS_PER_PAGE / EXPIRED_DEAL_INTERVAL) + 1;
+
+  const [active, expired] = await Promise.all([
+    fetchActiveDeals({ sort, limit: DEALS_PER_PAGE, offset: activeOffset, categorySlug }),
+    fetchExpiredDeals({ limit: expiredNeeded, offset: expiredOffset, categorySlug }),
+  ]);
+
+  return interleaveDeals(active, expired, DEALS_PER_PAGE);
 }

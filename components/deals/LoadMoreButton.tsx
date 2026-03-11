@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { fetchMoreDeals } from "@/lib/actions/deals";
+import { fetchMoreDeals, fetchMoreInterleavedDeals } from "@/lib/actions/deals";
 import { DealCard } from "./DealCard";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -15,6 +15,8 @@ interface LoadMoreButtonProps {
   initialOffset: number;
   isLoggedIn?: boolean;
   hideExpired?: boolean;
+  initialActiveOffset?: number;
+  initialExpiredOffset?: number;
 }
 
 export function LoadMoreButton({
@@ -23,16 +25,35 @@ export function LoadMoreButton({
   initialOffset,
   isLoggedIn = false,
   hideExpired = false,
+  initialActiveOffset,
+  initialExpiredOffset,
 }: LoadMoreButtonProps) {
   const [deals, setDeals] = useState<DealWithRelations[]>([]);
   const [userVotes, setUserVotes] = useState<Record<string, number>>({});
   const [offset, setOffset] = useState(initialOffset);
+  const [activeOffset, setActiveOffset] = useState(initialActiveOffset ?? initialOffset);
+  const [expiredOffset, setExpiredOffset] = useState(initialExpiredOffset ?? 0);
   const [hasMore, setHasMore] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   function loadMore() {
     startTransition(async () => {
-      const newDeals = await fetchMoreDeals({ sort, offset, categorySlug, hideExpired });
+      let newDeals: DealWithRelations[];
+
+      if (hideExpired) {
+        newDeals = await fetchMoreDeals({ sort, offset, categorySlug, hideExpired });
+        setOffset((prev) => prev + newDeals.length);
+      } else {
+        const result = await fetchMoreInterleavedDeals({
+          sort,
+          activeOffset,
+          expiredOffset,
+          categorySlug,
+        });
+        newDeals = result.deals;
+        setActiveOffset((prev) => prev + result.activeUsed);
+        setExpiredOffset((prev) => prev + result.expiredUsed);
+      }
 
       // Fetch user votes for the new deals
       if (isLoggedIn && newDeals.length > 0) {
@@ -53,7 +74,6 @@ export function LoadMoreButton({
       }
 
       setDeals((prev) => [...prev, ...newDeals]);
-      setOffset((prev) => prev + newDeals.length);
       if (newDeals.length < DEALS_PER_PAGE) setHasMore(false);
     });
   }

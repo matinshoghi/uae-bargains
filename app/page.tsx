@@ -4,9 +4,10 @@ import { DealFeed } from "@/components/deals/DealFeed";
 import { HeroSection } from "@/components/home/HeroSection";
 import { HowItWorks } from "@/components/home/HowItWorks";
 import { ActivityTicker } from "@/components/home/ActivityTicker";
-import { fetchDeals, getUserDealVotes } from "@/lib/queries/deals";
+import { fetchActiveDeals, fetchExpiredDeals, getUserDealVotes } from "@/lib/queries/deals";
 import { getAnonymousVotes } from "@/lib/actions/votes";
-import { DEALS_PER_PAGE } from "@/lib/constants";
+import { DEALS_PER_PAGE, EXPIRED_DEAL_INTERVAL } from "@/lib/constants";
+import { interleaveDeals } from "@/lib/utils";
 import { HomeJsonLd } from "@/components/seo/HomeJsonLd";
 
 export default async function HomePage({
@@ -18,15 +19,29 @@ export default async function HomePage({
   const hideExpired = hide_expired === "1";
   const pageNum = Math.max(1, parseInt(page ?? "1", 10) || 1);
   // For crawlers: if ?page=N, load N pages worth of deals so all are in the HTML
-  const limit = pageNum * DEALS_PER_PAGE + 1;
+  const totalNeeded = pageNum * DEALS_PER_PAGE + 1;
 
-  const [deals, { userVotes, isLoggedIn }] = await Promise.all([
-    fetchDeals({ sort, limit, offset: 0, hideExpired, categorySlug: category }),
+  // Fetch active + expired streams in parallel, then interleave
+  const activeLimit = totalNeeded; // over-fetch is fine, interleave caps output
+  const expiredLimit = Math.ceil(totalNeeded / EXPIRED_DEAL_INTERVAL) + 1;
+
+  const [activeDeals, expiredDeals, { userVotes, isLoggedIn }] = await Promise.all([
+    fetchActiveDeals({ sort, limit: activeLimit, offset: 0, categorySlug: category }),
+    hideExpired ? Promise.resolve([]) : fetchExpiredDeals({ limit: expiredLimit, offset: 0, categorySlug: category }),
     getUserDealVotes(),
   ]);
 
+  const { deals, activeUsed, expiredUsed } = hideExpired
+    ? { deals: activeDeals.slice(0, totalNeeded), activeUsed: Math.min(activeDeals.length, totalNeeded), expiredUsed: 0 }
+    : interleaveDeals(activeDeals, expiredDeals, totalNeeded);
+
   // For anonymous users, fetch their anonymous votes from cookie
   const effectiveVotes = isLoggedIn ? userVotes : await getAnonymousVotes();
+
+  // Compute active/expired offsets for the visible portion (excluding the +1 hasMore probe)
+  const totalVisible = Math.min(pageNum * DEALS_PER_PAGE, deals.length);
+  const visibleExpiredCount = deals.slice(0, totalVisible).filter((d) => d.status === "expired").length;
+  const visibleActiveCount = totalVisible - visibleExpiredCount;
 
   return (
     <div>
@@ -63,6 +78,8 @@ export default async function HomePage({
               userVotes={effectiveVotes}
               isLoggedIn={isLoggedIn}
               hideExpired={hideExpired}
+              initialActiveOffset={visibleActiveCount}
+              initialExpiredOffset={visibleExpiredCount}
             />
           </div>
         </div>

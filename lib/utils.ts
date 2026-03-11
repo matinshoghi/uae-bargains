@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { EXPIRED_DEAL_INTERVAL } from "@/lib/constants";
+import type { DealWithRelations } from "@/lib/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -66,6 +68,37 @@ export function shortTimeAgo(dateString: string): string {
   const months = Math.floor(days / 30);
   if (months < 12) return `${months}mo`;
   return `${Math.floor(days / 365)}y`;
+}
+
+/**
+ * Interleave active and expired deals so every Nth position is an expired deal.
+ * Falls back to the other stream when one runs out.
+ */
+export function interleaveDeals(
+  active: DealWithRelations[],
+  expired: DealWithRelations[],
+  count: number,
+): { deals: DealWithRelations[]; activeUsed: number; expiredUsed: number } {
+  const deals: DealWithRelations[] = [];
+  let ai = 0;
+  let ei = 0;
+  const interval = EXPIRED_DEAL_INTERVAL;
+
+  for (let pos = 0; pos < count; pos++) {
+    const isExpiredSlot = (pos + 1) % interval === 0;
+
+    if (isExpiredSlot && ei < expired.length) {
+      deals.push(expired[ei++]);
+    } else if (ai < active.length) {
+      deals.push(active[ai++]);
+    } else if (ei < expired.length) {
+      deals.push(expired[ei++]);
+    } else {
+      break;
+    }
+  }
+
+  return { deals, activeUsed: ai, expiredUsed: ei };
 }
 
 /** Strip markdown syntax for plain-text previews (e.g. feed cards). */
