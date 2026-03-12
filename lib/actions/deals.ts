@@ -425,7 +425,6 @@ export async function markDealExpired(
     .update({
       status: "expired" as const,
       expired_reason: reason,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", dealId);
 
@@ -476,7 +475,6 @@ export async function reactivateDeal(
       status: "active" as const,
       expired_reason: null,
       expire_report_count: 0,
-      updated_at: new Date().toISOString(),
     })
     .eq("id", dealId);
 

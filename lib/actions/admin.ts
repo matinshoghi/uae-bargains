@@ -146,6 +146,54 @@ export async function adminExpireDeal(
   }
 }
 
+export async function adminReactivateDeal(
+  dealId: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    const { data: deal, error: fetchError } = await admin
+      .from("deals")
+      .select("slug, status, expires_at")
+      .eq("id", dealId)
+      .single();
+
+    if (fetchError || !deal) {
+      return { error: fetchError?.message ?? "Deal not found." };
+    }
+
+    if (deal.status !== "expired") {
+      return { error: "This deal is not expired." };
+    }
+
+    // Keep the same guard as author reactivation.
+    if (deal.expires_at && new Date(deal.expires_at) < new Date()) {
+      return { error: "Update the expiry date first — it's still in the past." };
+    }
+
+    await admin.from("deal_expire_reports").delete().eq("deal_id", dealId);
+
+    const { error } = await admin
+      .from("deals")
+      .update({
+        status: "active" as const,
+        expired_reason: null,
+        expire_report_count: 0,
+      })
+      .eq("id", dealId);
+
+    if (error) return { error: error.message };
+
+    revalidatePath("/");
+    revalidatePath("/admin/moderation");
+    revalidatePath(`/deals/${deal.slug}`);
+    return {};
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
 export async function adminEditDeal(
   dealId: string,
   fields: {

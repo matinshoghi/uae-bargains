@@ -29,7 +29,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { removeDeal, restoreDeal, resetEditedFlag, adminExpireDeal } from "@/lib/actions/admin";
+import {
+  removeDeal,
+  restoreDeal,
+  resetEditedFlag,
+  adminExpireDeal,
+  adminReactivateDeal,
+} from "@/lib/actions/admin";
 import { toast } from "sonner";
 
 interface AdminDealActionsProps {
@@ -91,6 +97,17 @@ export function AdminDealActions({ dealId, dealStatus, isRemoved, isEdited }: Ad
     });
   }
 
+  function handleReactivate() {
+    startTransition(async () => {
+      const result = await adminReactivateDeal(dealId);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Deal reactivated");
+      }
+    });
+  }
+
   function handleResetEdited() {
     startTransition(async () => {
       const result = await resetEditedFlag(dealId);
@@ -141,6 +158,12 @@ export function AdminDealActions({ dealId, dealStatus, isRemoved, isEdited }: Ad
                 Mark as Out of Stock
               </DropdownMenuItem>
             </>
+          )}
+          {dealStatus === "expired" && (
+            <DropdownMenuItem onClick={handleReactivate} disabled={isPending}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reactivate Deal
+            </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
           {isRemoved ? (

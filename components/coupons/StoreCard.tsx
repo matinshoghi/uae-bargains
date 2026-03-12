@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { StoreWithCouponCount } from "@/lib/types";
+import { getOptimizedImageUrl } from "@/lib/image-loader";
 
 export function StoreCard({ store }: { store: StoreWithCouponCount }) {
   return (
@@ -10,7 +11,7 @@ export function StoreCard({ store }: { store: StoreWithCouponCount }) {
       {store.logo_url ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
-          src={store.logo_url}
+          src={getOptimizedImageUrl(store.logo_url, { width: 96, quality: 80 })}
           alt={store.name}
           className="h-12 w-12 rounded-sm object-contain"
         />
