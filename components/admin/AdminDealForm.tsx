@@ -51,7 +51,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
     deal.price === 0 && deal.original_price === null
   );
   const [price, setPrice] = useState(
-    deal.price != null && deal.price !== 0 ? String(deal.price) : ""
+    deal.price != null ? String(deal.price) : ""
   );
   const [originalPrice, setOriginalPrice] = useState(
     deal.original_price != null ? String(deal.original_price) : ""

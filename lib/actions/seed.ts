@@ -12,6 +12,8 @@ const MAX_UPLOAD_SIZE = 10 * 1024 * 1024; // 10MB
 export type SeedFormState = {
   error?: string;
   success?: boolean;
+  added?: number;
+  removed?: number;
 } | null;
 
 function extractUUID(input: string): string {
@@ -378,6 +380,91 @@ export async function voteAsSeedUsers(
   }
 }
 
+export async function syncDealVotesAsSeedUsers(
+  dealId: string,
+  userIds: string[]
+): Promise<SeedFormState> {
+  try {
+    await requireAdmin();
+    const admin = createAdminClient();
+
+    if (!dealId) return { error: "Deal ID is required" };
+
+    const desiredUserIds = Array.from(new Set(userIds));
+
+    // Fetch all seed users once and validate requested IDs.
+    const { data: seedAccounts, error: seedError } = await admin
+      .from("seed_accounts")
+      .select("user_id");
+
+    if (seedError) return { error: seedError.message };
+
+    const seedUserIds = seedAccounts?.map((s) => s.user_id) ?? [];
+    const seedUserIdSet = new Set(seedUserIds);
+
+    if (desiredUserIds.some((id) => !seedUserIdSet.has(id))) {
+      return { error: "One or more users are not seed accounts" };
+    }
+
+    // Verify deal exists and fetch slug for revalidation.
+    const { data: deal } = await admin
+      .from("deals")
+      .select("id, slug")
+      .eq("id", dealId)
+      .single();
+
+    if (!deal) return { error: "Deal not found" };
+
+    // Sync deal upvotes for seed accounts: add newly selected and remove deselected.
+    let existingSeedVotes: { user_id: string }[] = [];
+    if (seedUserIds.length > 0) {
+      const { data: existingVotes, error: existingVotesError } = await admin
+        .from("votes")
+        .select("user_id")
+        .eq("deal_id", dealId)
+        .in("user_id", seedUserIds);
+
+      if (existingVotesError) return { error: existingVotesError.message };
+      existingSeedVotes = existingVotes ?? [];
+    }
+
+    const existingUserIdSet = new Set(existingSeedVotes.map((v) => v.user_id));
+    const desiredUserIdSet = new Set(desiredUserIds);
+
+    const usersToAdd = desiredUserIds.filter((id) => !existingUserIdSet.has(id));
+    const usersToRemove = Array.from(existingUserIdSet).filter(
+      (id) => !desiredUserIdSet.has(id)
+    );
+
+    if (usersToAdd.length > 0) {
+      const votesToInsert = usersToAdd.map((id) => ({
+        user_id: id,
+        deal_id: dealId,
+        vote_type: 1,
+      }));
+
+      const { error: insertError } = await admin.from("votes").insert(votesToInsert);
+      if (insertError) return { error: insertError.message };
+    }
+
+    if (usersToRemove.length > 0) {
+      const { error: deleteError } = await admin
+        .from("votes")
+        .delete()
+        .eq("deal_id", dealId)
+        .in("user_id", usersToRemove);
+      if (deleteError) return { error: deleteError.message };
+    }
+
+    revalidatePath("/");
+    revalidatePath(`/deals/${deal.slug}`);
+    revalidatePath(`/admin/deals/${dealId}/comments`);
+    return { success: true, added: usersToAdd.length, removed: usersToRemove.length };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
+}
+
 export async function commentAsSeedUser(
   _prev: SeedFormState,
   formData: FormData
@@ -461,15 +548,20 @@ export async function voteCommentAsSeedUsers(
     const admin = createAdminClient();
 
     if (!commentId) return { error: "Comment ID is required" };
-    if (!userIds.length) return { error: "Select at least one seed user" };
 
-    // Verify all users are seed accounts
-    const { data: seedAccounts } = await admin
+    const desiredUserIds = Array.from(new Set(userIds));
+
+    // Fetch all seed users once and validate requested IDs.
+    const { data: seedAccounts, error: seedError } = await admin
       .from("seed_accounts")
-      .select("user_id")
-      .in("user_id", userIds);
+      .select("user_id");
 
-    if (!seedAccounts || seedAccounts.length !== userIds.length) {
+    if (seedError) return { error: seedError.message };
+
+    const seedUserIds = seedAccounts?.map((s) => s.user_id) ?? [];
+    const seedUserIdSet = new Set(seedUserIds);
+
+    if (desiredUserIds.some((id) => !seedUserIdSet.has(id))) {
       return { error: "One or more users are not seed accounts" };
     }
 
@@ -482,28 +574,50 @@ export async function voteCommentAsSeedUsers(
 
     if (!comment) return { error: "Comment not found" };
 
-    // Check for existing votes and only insert new ones
-    const { data: existingVotes } = await admin
-      .from("votes")
-      .select("user_id")
-      .eq("comment_id", commentId)
-      .in("user_id", userIds);
+    // Sync comment upvotes for seed accounts: add newly selected and remove deselected.
+    let existingSeedVotes: { user_id: string }[] = [];
+    if (seedUserIds.length > 0) {
+      const { data: existingVotes, error: existingVotesError } = await admin
+        .from("votes")
+        .select("user_id")
+        .eq("comment_id", commentId)
+        .in("user_id", seedUserIds);
 
-    const existingUserIds = new Set(existingVotes?.map((v) => v.user_id) ?? []);
-    const newVotes = userIds
-      .filter((id) => !existingUserIds.has(id))
-      .map((id) => ({ user_id: id, comment_id: commentId, vote_type: 1 }));
-
-    if (newVotes.length === 0) {
-      return { error: "All selected users have already voted on this comment" };
+      if (existingVotesError) return { error: existingVotesError.message };
+      existingSeedVotes = existingVotes ?? [];
     }
 
-    const { error } = await admin.from("votes").insert(newVotes);
-    if (error) return { error: error.message };
+    const existingUserIdSet = new Set(existingSeedVotes.map((v) => v.user_id));
+    const desiredUserIdSet = new Set(desiredUserIds);
+
+    const usersToAdd = desiredUserIds.filter((id) => !existingUserIdSet.has(id));
+    const usersToRemove = Array.from(existingUserIdSet).filter(
+      (id) => !desiredUserIdSet.has(id)
+    );
+
+    if (usersToAdd.length > 0) {
+      const votesToInsert = usersToAdd.map((id) => ({
+        user_id: id,
+        comment_id: commentId,
+        vote_type: 1,
+      }));
+
+      const { error: insertError } = await admin.from("votes").insert(votesToInsert);
+      if (insertError) return { error: insertError.message };
+    }
+
+    if (usersToRemove.length > 0) {
+      const { error: deleteError } = await admin
+        .from("votes")
+        .delete()
+        .eq("comment_id", commentId)
+        .in("user_id", usersToRemove);
+      if (deleteError) return { error: deleteError.message };
+    }
 
     revalidatePath(`/deals/${comment.deal_id}`);
     revalidatePath(`/admin/deals/${comment.deal_id}/comments`);
-    return { success: true };
+    return { success: true, added: usersToAdd.length, removed: usersToRemove.length };
   } catch (e) {
     return { error: (e as Error).message };
   }

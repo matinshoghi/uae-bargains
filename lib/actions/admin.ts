@@ -118,7 +118,8 @@ export async function restoreDeal(
 }
 
 export async function adminExpireDeal(
-  dealId: string
+  dealId: string,
+  reason: "admin" | "out_of_stock" = "admin"
 ): Promise<{ error?: string }> {
   try {
     await requireAdmin();
@@ -130,7 +131,7 @@ export async function adminExpireDeal(
       .from("deals")
       .update({
         status: "expired" as const,
-        expired_reason: "admin",
+        expired_reason: reason,
       })
       .eq("id", dealId);
 

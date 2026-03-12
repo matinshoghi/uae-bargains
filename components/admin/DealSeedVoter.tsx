@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { voteAsSeedUsers } from "@/lib/actions/seed";
+import { syncDealVotesAsSeedUsers } from "@/lib/actions/seed";
 import type { SeedUserWithProfile } from "@/lib/queries/seed";
 
 type Props = {
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export function DealSeedVoter({ dealId, seedUsers, alreadyVotedIds }: Props) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(
@@ -23,18 +25,26 @@ export function DealSeedVoter({ dealId, seedUsers, alreadyVotedIds }: Props) {
   const alreadyVoted = new Set(alreadyVotedIds);
 
   function handleSubmit() {
-    const newVoters = Array.from(selected).filter((id) => !alreadyVoted.has(id));
-    if (newVoters.length === 0) {
-      toast.error("No new voters selected");
-      return;
-    }
     startTransition(async () => {
-      const result = await voteAsSeedUsers(dealId, newVoters);
+      const result = await syncDealVotesAsSeedUsers(dealId, Array.from(selected));
       if (result?.error) {
         toast.error(result.error);
       } else {
-        toast.success(`${newVoters.length} upvote(s) added`);
+        const added = result?.added ?? 0;
+        const removed = result?.removed ?? 0;
+        if (added === 0 && removed === 0) {
+          toast.success("No vote changes");
+        } else {
+          const changes = [
+            added > 0 ? `${added} added` : null,
+            removed > 0 ? `${removed} removed` : null,
+          ]
+            .filter(Boolean)
+            .join(", ");
+          toast.success(`Seed upvotes updated (${changes})`);
+        }
         setOpen(false);
+        router.refresh();
       }
     });
   }
@@ -115,8 +125,8 @@ export function DealSeedVoter({ dealId, seedUsers, alreadyVotedIds }: Props) {
         <p className="text-sm text-muted-foreground">No seed users created yet.</p>
       )}
       <div className="flex gap-2">
-        <Button size="sm" onClick={handleSubmit} disabled={isPending || selected.size === 0}>
-          {isPending ? "Adding..." : "Add Upvotes"}
+        <Button size="sm" onClick={handleSubmit} disabled={isPending}>
+          {isPending ? "Saving..." : "Save Upvotes"}
         </Button>
         <Button size="sm" variant="outline" onClick={() => setOpen(false)} disabled={isPending}>
           Cancel

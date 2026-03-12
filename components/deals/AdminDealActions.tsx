@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Pencil, Trash2, RotateCcw, Shield, PenOff, MessageSquare, Clock } from "lucide-react";
+import { Pencil, Trash2, RotateCcw, Shield, PenOff, MessageSquare, Clock, PackageX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -80,6 +80,17 @@ export function AdminDealActions({ dealId, dealStatus, isRemoved, isEdited }: Ad
     });
   }
 
+  function handleMarkOutOfStock() {
+    startTransition(async () => {
+      const result = await adminExpireDeal(dealId, "out_of_stock");
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Marked as out of stock");
+      }
+    });
+  }
+
   function handleResetEdited() {
     startTransition(async () => {
       const result = await resetEditedFlag(dealId);
@@ -120,10 +131,16 @@ export function AdminDealActions({ dealId, dealStatus, isRemoved, isEdited }: Ad
             </DropdownMenuItem>
           )}
           {dealStatus === "active" && (
-            <DropdownMenuItem onClick={handleExpire} disabled={isPending}>
-              <Clock className="mr-2 h-4 w-4" />
-              Expire Deal
-            </DropdownMenuItem>
+            <>
+              <DropdownMenuItem onClick={handleExpire} disabled={isPending}>
+                <Clock className="mr-2 h-4 w-4" />
+                Expire Deal
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleMarkOutOfStock} disabled={isPending}>
+                <PackageX className="mr-2 h-4 w-4" />
+                Mark as Out of Stock
+              </DropdownMenuItem>
+            </>
           )}
           <DropdownMenuSeparator />
           {isRemoved ? (

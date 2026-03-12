@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { format, formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
 import {
@@ -12,7 +13,6 @@ import {
   ThumbsUp,
   ChevronUp,
   Plus,
-  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -58,6 +58,7 @@ export function DealCommentManager({
   seedUsers,
   seedVotedMap,
 }: Props) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
@@ -215,26 +216,33 @@ export function DealCommentManager({
     });
   }
 
-  function handleAddVotes() {
+  function handleSaveVotes() {
     if (!votingId) return;
     const commentId = votingId;
-    const alreadyVoted = new Set(seedVotedMap[commentId] ?? []);
-    const newVoters = Array.from(selectedVoterIds).filter(
-      (id) => !alreadyVoted.has(id)
-    );
-
-    if (newVoters.length === 0) {
-      toast.error("No new voters selected");
-      return;
-    }
 
     startTransition(async () => {
-      const result = await voteCommentAsSeedUsers(commentId, newVoters);
+      const result = await voteCommentAsSeedUsers(
+        commentId,
+        Array.from(selectedVoterIds)
+      );
       if (result?.error) {
         toast.error(result.error);
       } else {
-        toast.success(`${newVoters.length} upvote(s) added`);
+        const added = result?.added ?? 0;
+        const removed = result?.removed ?? 0;
+        if (added === 0 && removed === 0) {
+          toast.success("No vote changes");
+        } else {
+          const changes = [
+            added > 0 ? `${added} added` : null,
+            removed > 0 ? `${removed} removed` : null,
+          ]
+            .filter(Boolean)
+            .join(", ");
+          toast.success(`Seed upvotes updated (${changes})`);
+        }
         setVotingId(null);
+        router.refresh();
       }
     });
   }
@@ -307,7 +315,7 @@ export function DealCommentManager({
                 onClick={() => openVote(node.id)}
                 disabled={isPending}
                 className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
-                title="Add upvotes"
+                title="Manage upvotes"
               >
                 <ThumbsUp className="h-3.5 w-3.5" />
               </button>
@@ -456,7 +464,7 @@ export function DealCommentManager({
             <div className="mt-2 space-y-3 rounded-md border border-border bg-muted/30 p-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-medium text-muted-foreground">
-                  Add upvotes from seed users
+                  Update upvotes from seed users
                 </p>
                 <div className="flex gap-2 text-xs">
                   <button
@@ -524,10 +532,10 @@ export function DealCommentManager({
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  onClick={handleAddVotes}
-                  disabled={isPending || selectedVoterIds.size === 0}
+                  onClick={handleSaveVotes}
+                  disabled={isPending}
                 >
-                  {isPending ? "Adding..." : "Add Upvotes"}
+                  {isPending ? "Saving..." : "Save Upvotes"}
                 </Button>
                 <Button
                   size="sm"
