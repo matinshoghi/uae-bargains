@@ -18,14 +18,14 @@ export async function signInWithGoogle() {
     },
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   if (data.url) redirect(data.url);
 }
 
 export async function signInWithEmail(email: string, password: string) {
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   redirect("/");
 }
 
@@ -39,7 +39,7 @@ export async function signUp(email: string, password: string) {
     options: { emailRedirectTo: `${origin}/auth/callback` },
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
 
   const newUser = data.user;
   const isNewUser = (newUser?.identities?.length ?? 0) > 0;
@@ -69,7 +69,7 @@ export async function signInWithMagicLink(email: string, redirectPath?: string) 
     },
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
 }
 
 export async function resetPassword(email: string) {
@@ -80,7 +80,7 @@ export async function resetPassword(email: string) {
     redirectTo: `${origin}/auth/callback`,
   });
 
-  if (error) throw error;
+  if (error) throw new Error(error.message);
 }
 
 export async function signOut() {
