@@ -152,7 +152,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
       }
 
       toast.success("Deal updated");
-      router.push("/admin/moderation");
+      router.refresh();
     });
   }
 
