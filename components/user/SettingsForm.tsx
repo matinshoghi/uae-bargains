@@ -6,6 +6,7 @@ import { updateProfile, type ProfileFormState } from "@/lib/actions/profile";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { toast } from "sonner";
 import { ImagePlus, Trash2 } from "lucide-react";
@@ -15,13 +16,19 @@ interface SettingsFormProps {
     username: string;
     avatar_url: string | null;
   };
+  authInfo: {
+    signUpMethod: "email" | "google";
+    email: string | null;
+    isEmailVerified: boolean;
+  };
 }
 
-export function SettingsForm({ profile }: SettingsFormProps) {
+export function SettingsForm({ profile, authInfo }: SettingsFormProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [removeAvatar, setRemoveAvatar] = useState(false);
+  const usesGoogleSignUp = authInfo.signUpMethod === "google";
 
   const [state, formAction, isPending] = useActionState(
     async (prevState: ProfileFormState, formData: FormData) => {
@@ -57,6 +64,40 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
   return (
     <form action={formAction} className="space-y-6">
+      <div className="rounded-sm border-2 border-foreground/15 bg-card p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="section-label">Sign-up method</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {usesGoogleSignUp
+                ? "This account was created with Google Sign-In."
+                : "This account was created with email and password."}
+            </p>
+          </div>
+          <Badge variant={usesGoogleSignUp ? "outline" : "secondary"}>
+            {usesGoogleSignUp ? "Google" : "Email"}
+          </Badge>
+        </div>
+
+        {authInfo.email && (
+          <div className="mt-3 border-t border-border/70 pt-3 text-sm">
+            <span className="text-muted-foreground">
+              {usesGoogleSignUp ? "Google account" : "Login email"}
+            </span>
+            <p className="font-medium break-all">{authInfo.email}</p>
+          </div>
+        )}
+
+        {authInfo.signUpMethod === "email" && (
+          <div className="mt-3 border-t border-border/70 pt-3 text-sm">
+            <span className="text-muted-foreground">Email status</span>
+            <p className="font-medium">
+              {authInfo.isEmailVerified ? "Verified" : "Pending verification"}
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Avatar */}
       <div className="space-y-2">
         <Label className="section-label">Avatar</Label>
