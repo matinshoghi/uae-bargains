@@ -6,7 +6,7 @@ import { createDealSchema, updateDealSchema } from "@/lib/validations/deal";
 import { captureImageForDeal } from "@/lib/og";
 import { optimizeImage } from "@/lib/images";
 import { notifyDealChange } from "@/lib/indexnow";
-import { notifyDealPosted } from "@/lib/notifications";
+import { notifyDealPosted, notifyFormSubmitted } from "@/lib/notifications";
 import { slugify } from "@/lib/slugify";
 import type { DealWithRelations } from "@/lib/types";
 import { after } from "next/server";
@@ -187,6 +187,16 @@ export async function createDeal(
   // Notify IndexNow and Telegram about the new deal
   after(() => notifyDealChange(deal.slug));
   after(() => notifyDealPosted(user.id, title));
+  after(() =>
+    notifyFormSubmitted(
+      "Post Deal",
+      {
+        ...parsed.data,
+        image_uploaded: Boolean(imageFile && imageFile.size > 0),
+      },
+      user.id
+    )
+  );
 
   redirect(`/deals/${deal.slug}`);
 }
@@ -341,6 +351,17 @@ export async function updateDeal(
 
   // Notify IndexNow about the updated deal
   after(() => notifyDealChange(existingDeal.slug));
+  after(() =>
+    notifyFormSubmitted(
+      "Edit Deal",
+      {
+        ...parsed.data,
+        image_uploaded: Boolean(imageFile && imageFile.size > 0),
+        remove_image: removeImage,
+      },
+      user.id
+    )
+  );
 
   revalidatePath(`/deals/${existingDeal.slug}`);
   redirect(`/deals/${existingDeal.slug}`);

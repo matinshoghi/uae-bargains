@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { z } from "zod";
-import { notifyCommentPosted } from "@/lib/notifications";
+import { notifyCommentPosted, notifyFormSubmitted } from "@/lib/notifications";
 
 const commentSchema = z.object({
   content: z.string().trim().min(1, "Comment cannot be empty").max(2000),
@@ -56,6 +56,17 @@ export async function createComment(formData: FormData) {
   }
 
   after(() => notifyCommentPosted(user.id, deal_id, content));
+  after(() =>
+    notifyFormSubmitted(
+      "Comment",
+      {
+        deal_id,
+        parent_id: parent_id ?? null,
+        content,
+      },
+      user.id
+    )
+  );
 
   revalidatePath(`/deals/${deal_id}`);
 }

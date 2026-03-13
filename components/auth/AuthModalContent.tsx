@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { signInWithMagicLink, resetPassword } from "@/lib/actions/auth";
+import {
+  signInWithMagicLink,
+  resetPassword,
+  signUp as signUpWithEmail,
+} from "@/lib/actions/auth";
 import { OAuthButton } from "./OAuthButton";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -49,12 +53,7 @@ export function AuthModalContent() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-        });
-        if (error) throw error;
+        await signUpWithEmail(email, password);
         setMagicLinkSent(true);
       } else {
         const { error } = await supabase.auth.signInWithPassword({

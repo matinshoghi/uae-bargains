@@ -2,8 +2,10 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyUserSignedUp } from "@/lib/notifications";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
+import { after } from "next/server";
 
 export async function signInWithGoogle() {
   const supabase = await createClient();
@@ -31,13 +33,25 @@ export async function signUp(email: string, password: string) {
   const supabase = await createClient();
   const origin = (await headers()).get("origin");
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: { emailRedirectTo: `${origin}/auth/callback` },
   });
 
   if (error) throw error;
+
+  const newUser = data.user;
+  const isNewUser = (newUser?.identities?.length ?? 0) > 0;
+  if (newUser && isNewUser) {
+    after(() =>
+      notifyUserSignedUp({
+        userId: newUser.id,
+        provider: "email",
+        email: newUser.email,
+      })
+    );
+  }
 }
 
 export async function signInWithMagicLink(email: string, redirectPath?: string) {

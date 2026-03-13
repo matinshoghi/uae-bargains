@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import { createStoreSchema, createCouponSchema, submitCouponSchema } from "@/lib/validations/coupon";
 import { cookies, headers } from "next/headers";
-import { notifyCouponSubmitted } from "@/lib/notifications";
+import { notifyCouponSubmitted, notifyFormSubmitted } from "@/lib/notifications";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -391,6 +391,7 @@ export async function submitCoupon(
     if (error) return { error: error.message };
 
     after(() => notifyCouponSubmitted(user.id, parsed.data.title));
+    after(() => notifyFormSubmitted("Coupon Submission", parsed.data, user.id));
 
     revalidatePath("/coupons");
     revalidatePath("/admin/coupon-submissions");

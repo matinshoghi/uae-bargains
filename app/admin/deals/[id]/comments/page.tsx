@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-import { ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fetchSeedUsers } from "@/lib/queries/seed";
 import { buildCommentTree } from "@/lib/queries/comments";
 import { DealCommentManager } from "@/components/admin/DealCommentManager";
 import { DealSeedVoter } from "@/components/admin/DealSeedVoter";
+import { DealModerationActions } from "@/components/admin/DealModerationActions";
 import type { CommentWithProfile } from "@/lib/types";
 
 export default async function AdminDealCommentsPage({
@@ -55,7 +54,7 @@ export default async function AdminDealCommentsPage({
 
   // Fetch vote counts per comment (how many votes each comment has from seed users)
   const commentIds = comments.map((c) => c.id);
-  let votedMap: Record<string, string[]> = {};
+  const votedMap: Record<string, string[]> = {};
 
   if (commentIds.length > 0) {
     if (seedUserIds.length > 0) {
@@ -80,17 +79,13 @@ export default async function AdminDealCommentsPage({
 
   return (
     <div>
-      <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold">Manage Comments</h1>
-        <Link
-          href={`/deals/${deal.slug}`}
-          className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          title="View deal"
-        >
-          <ExternalLink className="h-3.5 w-3.5" />
-          View deal
-        </Link>
-      </div>
+      <DealModerationActions
+        dealId={dealId}
+        dealSlug={deal.slug}
+        activeView="comments"
+      />
+
+      <h1 className="text-2xl font-bold">Manage Comments</h1>
       <p className="mt-1 text-muted-foreground">
         {deal.title}
       </p>

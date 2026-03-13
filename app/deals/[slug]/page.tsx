@@ -4,12 +4,14 @@ import { DealDetail } from "@/components/deals/DealDetail";
 import { DealAwarenessBar } from "@/components/deals/DealAwarenessBar";
 import { DealDetailSidebar } from "@/components/deals/DealDetailSidebar";
 import { DealNewHereSection } from "@/components/deals/DealNewHereSection";
+import { TrendingDealsSection } from "@/components/deals/TrendingDealsSection";
 import { CommentSection } from "@/components/comments/CommentSection";
 import type { Metadata } from "next";
 import type { DealWithRelations } from "@/lib/types";
 import { DealJsonLd } from "@/components/seo/DealJsonLd";
 import { buildDealMetaDescription } from "@/lib/seo";
 import { getPlatformStats } from "@/lib/queries/platform-stats";
+import { fetchActiveDeals } from "@/lib/queries/deals";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -43,6 +45,11 @@ async function getDealById(id: string) {
     .single();
 
   return data as { slug: string } | null;
+}
+
+async function getTrendingDeals(currentDealId: string) {
+  const homeHotDeals = await fetchActiveDeals({ sort: "hot", limit: 12 });
+  return homeHotDeals.filter((candidate) => candidate.id !== currentDealId).slice(0, 2);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -136,7 +143,10 @@ export default async function DealPage({ params }: Props) {
     );
   }
 
-  const platformStats = await getPlatformStats();
+  const [platformStats, trendingDeals] = await Promise.all([
+    getPlatformStats(),
+    getTrendingDeals(deal.id),
+  ]);
 
   let userVote: 1 | -1 | null = null;
   if (user) {
@@ -206,11 +216,16 @@ export default async function DealPage({ params }: Props) {
                 isAdmin={isAdmin}
               />
             </div>
+
+            {/* Mobile trending module — shown after detail + comments flow */}
+            <div className="mt-8 lg:hidden">
+              <TrendingDealsSection deals={trendingDeals} />
+            </div>
           </div>
 
           {/* Desktop sidebar */}
           <aside className="hidden w-[320px] shrink-0 lg:block">
-            <div className="sticky top-[68px]">
+            <div className="sticky top-[68px] space-y-6">
               <DealDetailSidebar
                 deal={deal}
                 userVote={userVote}
@@ -219,6 +234,8 @@ export default async function DealPage({ params }: Props) {
                 currentUserId={user?.id ?? null}
                 hasReportedExpired={hasReportedExpired}
               />
+
+              <TrendingDealsSection deals={trendingDeals} variant="sidebar" />
             </div>
           </aside>
         </div>

@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { notFound } from "next/navigation";
 import { AdminDealForm } from "@/components/admin/AdminDealForm";
 import { DeleteDealButton } from "@/components/admin/DeleteDealButton";
-import Link from "next/link";
+import { DealModerationActions } from "@/components/admin/DealModerationActions";
 import type { Database } from "@/lib/supabase/types";
 
 type DealRow = Database["public"]["Tables"]["deals"]["Row"];
@@ -49,14 +49,11 @@ export default async function AdminEditDealPage({ params }: Props) {
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-3">
-        <Link
-          href="/admin/moderation"
-          className="text-sm text-muted-foreground hover:text-foreground"
-        >
-          ← Moderation
-        </Link>
-      </div>
+      <DealModerationActions
+        dealId={typedDeal.id}
+        dealSlug={typedDeal.slug}
+        activeView="edit"
+      />
 
       <h1 className="text-2xl font-bold">Edit Deal</h1>
       <p className="mt-2 text-muted-foreground">

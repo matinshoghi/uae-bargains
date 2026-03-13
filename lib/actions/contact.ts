@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { contactSchema } from "@/lib/validations/contact";
+import { notifyFormSubmitted } from "@/lib/notifications";
+import { after } from "next/server";
 
 export type ContactFormState = {
   errors?: Record<string, string[]>;
@@ -35,6 +37,8 @@ export async function submitContact(
   if (error) {
     return { errors: { form: ["Failed to send message. Please try again."] } };
   }
+
+  after(() => notifyFormSubmitted("Contact Form", parsed.data));
 
   return { success: true };
 }

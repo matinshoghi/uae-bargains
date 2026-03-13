@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { signUp as signUpWithEmail } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,12 +27,7 @@ export function LoginForm() {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
-        });
-        if (error) throw error;
+        await signUpWithEmail(email, password);
         setMessage("Check your email for a confirmation link.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({

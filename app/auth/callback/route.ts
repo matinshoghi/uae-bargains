@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { notifyUserSignedUp } from "@/lib/notifications";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { sendTelegramMessage } from "@/lib/telegram";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -28,30 +29,39 @@ export async function GET(request: Request) {
     const { error: exchangeError } =
       await supabase.auth.exchangeCodeForSession(code);
     if (!exchangeError) {
-      // Detect new signups (created_at within the last 30 seconds)
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (user) {
-        const isNewUser =
-          Date.now() - new Date(user.created_at).getTime() < 30_000;
+        const provider = user.app_metadata?.provider ?? "email";
+        const isOAuthProvider = provider !== "email";
+        const isLikelyNewOAuthUser =
+          Date.now() - new Date(user.created_at).getTime() < 5 * 60_000;
+        const alreadyNotified = user.app_metadata?.signup_notified === true;
 
-        if (isNewUser) {
-          const notifyGroupId = process.env.TELEGRAM_NOTIFY_GROUP_ID;
-          if (notifyGroupId) {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("username")
-              .eq("id", user.id)
-              .single();
+        if (isOAuthProvider && isLikelyNewOAuthUser && !alreadyNotified) {
+          await notifyUserSignedUp({
+            userId: user.id,
+            provider,
+            email: user.email,
+          });
 
-            const provider = user.app_metadata?.provider ?? "email";
-            const username = profile?.username ?? user.email ?? "unknown";
+          const admin = createAdminClient();
+          const { error: metadataError } = await admin.auth.admin.updateUserById(
+            user.id,
+            {
+              app_metadata: {
+                ...(user.app_metadata ?? {}),
+                signup_notified: true,
+              },
+            }
+          );
 
-            await sendTelegramMessage(
-              notifyGroupId,
-              `👋 <b>New signup on HalaSaves!</b>\n\n👤 ${username}\n🔗 via ${provider}`
+          if (metadataError) {
+            console.error(
+              "[auth/callback] Failed to mark signup as notified:",
+              metadataError.message
             );
           }
         }

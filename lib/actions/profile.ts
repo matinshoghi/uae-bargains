@@ -1,7 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { notifyFormSubmitted } from "@/lib/notifications";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 
 const updateProfileSchema = z.object({
@@ -74,6 +76,18 @@ export async function updateProfile(
     }
     return { errors: { form: [error.message] } };
   }
+
+  after(() =>
+    notifyFormSubmitted(
+      "Profile Settings",
+      {
+        username: parsed.data.username,
+        avatar_uploaded: Boolean(avatarFile && avatarFile.size > 0),
+        avatar_removed: shouldRemoveAvatar,
+      },
+      user.id
+    )
+  );
 
   revalidatePath("/settings");
   revalidatePath(`/user/${parsed.data.username}`);
