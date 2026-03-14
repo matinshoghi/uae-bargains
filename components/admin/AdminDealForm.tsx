@@ -47,6 +47,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
   const [title, setTitle] = useState(deal.title);
   const [description, setDescription] = useState(deal.description);
   const [categoryId, setCategoryId] = useState(deal.category_id);
+  const [isFeatured, setIsFeatured] = useState(deal.is_featured);
   const [isFree, setIsFree] = useState(
     deal.price === 0 && deal.original_price === null
   );
@@ -118,6 +119,7 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
         title,
         description,
         category_id: categoryId,
+        is_featured: isFeatured,
         price: isFree ? 0 : (price ? Number(price) : null),
         original_price: isFree ? null : (originalPrice ? Number(originalPrice) : null),
         url: url || null,
@@ -199,6 +201,20 @@ export function AdminDealForm({ deal, categories, profiles }: AdminDealFormProps
           onChange={(e) => setTitle(e.target.value)}
           required
         />
+      </div>
+
+      {/* Featured / staff pick */}
+      <div className="flex items-center gap-2 rounded-sm border border-border px-3 py-2">
+        <input
+          type="checkbox"
+          id="admin-featured"
+          checked={isFeatured}
+          onChange={(e) => setIsFeatured(e.target.checked)}
+          className="h-4 w-4 rounded-sm border-2 border-foreground/20 accent-primary"
+        />
+        <Label htmlFor="admin-featured" className="cursor-pointer font-normal">
+          Mark as Featured / Staff Pick
+        </Label>
       </div>
 
       {/* Description */}

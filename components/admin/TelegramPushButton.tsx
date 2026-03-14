@@ -9,12 +9,14 @@ interface TelegramPushButtonProps {
   dealId: string;
   dealTitle: string;
   lastPushedAt?: string | null;
+  compact?: boolean;
 }
 
 export function TelegramPushButton({
   dealId,
   dealTitle,
   lastPushedAt,
+  compact = false,
 }: TelegramPushButtonProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -37,17 +39,21 @@ export function TelegramPushButton({
   }
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className={compact ? "flex items-center justify-center" : "flex flex-col items-center gap-1"}>
       <button
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className="rounded-md p-2 text-sky-500 transition-colors hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-sky-950 disabled:opacity-50"
+        className={
+          compact
+            ? "rounded-md p-1.5 text-sky-500 transition-colors hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-sky-950 disabled:opacity-50"
+            : "rounded-md p-2 text-sky-500 transition-colors hover:bg-sky-50 hover:text-sky-600 dark:hover:bg-sky-950 disabled:opacity-50"
+        }
         title={lastPushedLabel ?? `Push "${dealTitle}" to Telegram`}
       >
         <TelegramIcon className="h-4 w-4" />
       </button>
-      {lastPushedLabel && (
+      {lastPushedLabel && !compact && (
         <p className="hidden whitespace-nowrap text-[10px] text-muted-foreground sm:block">
           {lastPushedLabel}
         </p>
@@ -75,4 +81,3 @@ function TelegramIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-

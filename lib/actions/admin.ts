@@ -200,6 +200,7 @@ export async function adminEditDeal(
     title?: string;
     description?: string;
     category_id?: string;
+    is_featured?: boolean;
     price?: number | null;
     original_price?: number | null;
     url?: string | null;
@@ -250,6 +251,7 @@ export async function adminEditDeal(
     if (error) return { error: error.message };
 
     revalidatePath("/");
+    revalidatePath("/admin/featured");
     revalidatePath("/admin/moderation");
     revalidatePath(`/deals/${slug}`);
     return {};

@@ -1,42 +1,30 @@
 "use client";
 
-import { useState, useTransition, useMemo } from "react";
+import { useTransition } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { Search, Pencil, Trash2, RotateCcw, ExternalLink, MessageSquare } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import {
+  RotateCcw,
+  ExternalLink,
+  Pencil,
+  MessageSquare,
+  MoreHorizontal,
+  Send,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { REMOVAL_REASONS } from "@/lib/constants";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { removeDeal, restoreDeal } from "@/lib/actions/admin";
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { restoreDeal } from "@/lib/actions/admin";
+import { pushDealToTelegram } from "@/lib/actions/telegram";
 import type { DealWithRelations } from "@/lib/types";
-import { TelegramPushButton } from "@/components/admin/TelegramPushButton";
 
-type StatusFilter = "all" | "active" | "expired" | "removed";
-
-const STATUS_FILTERS: { label: string; value: StatusFilter }[] = [
-  { label: "All", value: "all" },
-  { label: "Active", value: "active" },
-  { label: "Expired", value: "expired" },
-  { label: "Removed", value: "removed" },
-];
+type EffectiveStatus = "active" | "expired" | "removed";
 
 function isExpired(deal: DealWithRelations) {
   if (deal.status === "expired") return true;
@@ -44,7 +32,7 @@ function isExpired(deal: DealWithRelations) {
   return false;
 }
 
-function getEffectiveStatus(deal: DealWithRelations): StatusFilter {
+function getEffectiveStatus(deal: DealWithRelations): EffectiveStatus {
   if (deal.status === "removed") return "removed";
   if (isExpired(deal)) return "expired";
   return "active";
@@ -56,38 +44,7 @@ interface ModerationDealListProps {
 }
 
 export function ModerationDealList({ deals, pushMap }: ModerationDealListProps) {
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [search, setSearch] = useState("");
-  const [removeTarget, setRemoveTarget] = useState<string | null>(null);
-  const [removeReason, setRemoveReason] = useState("");
   const [isPending, startTransition] = useTransition();
-
-  const filtered = useMemo(() => {
-    return deals.filter((deal) => {
-      if (statusFilter !== "all" && getEffectiveStatus(deal) !== statusFilter) {
-        return false;
-      }
-      if (search && !deal.title.toLowerCase().includes(search.toLowerCase())) {
-        return false;
-      }
-      return true;
-    });
-  }, [deals, statusFilter, search]);
-
-  function handleRemove() {
-    if (!removeTarget) return;
-    const dealId = removeTarget;
-    startTransition(async () => {
-      const result = await removeDeal(dealId, removeReason);
-      if (result.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("Deal removed");
-      }
-      setRemoveTarget(null);
-      setRemoveReason("");
-    });
-  }
 
   function handleRestore(dealId: string) {
     startTransition(async () => {
@@ -100,186 +57,178 @@ export function ModerationDealList({ deals, pushMap }: ModerationDealListProps) 
     });
   }
 
+  function handleTelegramPush(dealId: string) {
+    startTransition(async () => {
+      const result = await pushDealToTelegram(dealId);
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Sent to Telegram");
+      }
+    });
+  }
+
   return (
     <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="flex gap-1">
-          {STATUS_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setStatusFilter(f.value)}
-              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-colors ${
-                statusFilter === f.value
-                  ? "bg-primary text-primary-foreground"
-                  : "border border-border bg-background hover:bg-accent"
-              }`}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by title…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-      </div>
-
-      {/* Results count */}
-      <p className="text-sm text-muted-foreground">
-        {filtered.length} deal{filtered.length !== 1 ? "s" : ""}
-      </p>
-
-      {/* Deal list */}
-      {filtered.length === 0 ? (
+      {deals.length === 0 ? (
         <p className="py-8 text-center text-sm text-muted-foreground">
           No deals match your filters.
         </p>
       ) : (
-        <ul className="divide-y divide-border rounded-xl border border-border">
-          {filtered.map((deal) => {
-            const status = getEffectiveStatus(deal);
-            const lastPushedAt = pushMap?.[deal.id] ?? null;
-            return (
-              <li key={deal.id} className="flex items-center gap-3 px-4 py-3">
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium">{deal.title}</p>
-                    <StatusBadge status={status} />
-                    {deal.removed_by === "admin" && (
-                      <Badge variant="outline" className="text-[10px]">
-                        By Admin
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {deal.profiles?.username ?? "[deleted]"} &middot;{" "}
-                    {deal.categories?.label ?? "—"} &middot;{" "}
-                    {formatDistanceToNow(new Date(deal.created_at), {
+        <div className="overflow-x-auto rounded-xl border border-border">
+          <table className="w-full table-fixed border-collapse text-sm">
+            <colgroup>
+              <col className="w-[48%]" />
+              <col className="w-[9%]" />
+              <col className="w-[9%]" />
+              <col className="w-[10%]" />
+              <col className="w-[10%]" />
+              <col className="w-[14%]" />
+            </colgroup>
+            <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold">Deal</th>
+                <th className="px-4 py-3 text-left font-semibold">Author</th>
+                <th className="px-4 py-3 text-left font-semibold">Category</th>
+                <th className="px-4 py-3 text-left font-semibold">Created</th>
+                <th className="px-4 py-3 text-left font-semibold">Signals</th>
+                <th className="px-4 py-3 text-right font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {deals.map((deal) => {
+                const status = getEffectiveStatus(deal);
+                const lastPushedAt = pushMap?.[deal.id] ?? null;
+                const telegramLabel = lastPushedAt
+                  ? `Send to Telegram (last ${formatDistanceToNow(new Date(lastPushedAt), {
                       addSuffix: true,
-                    })}{" "}
-                    &middot; ▲{deal.upvote_count} ▼{deal.downvote_count}{" "}
-                    &middot; {deal.comment_count} comment{deal.comment_count !== 1 ? "s" : ""}
-                  </p>
-                  {deal.removal_reason && (
-                    <p className="mt-0.5 text-xs text-red-500">
-                      Reason: {deal.removal_reason}
-                    </p>
-                  )}
-                </div>
+                    })})`
+                  : "Send to Telegram";
 
-                <div className="flex shrink-0 items-center gap-1">
-                  <Link
-                    href={`/deals/${deal.slug}`}
-                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    title="View deal"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={`/admin/deals/${deal.id}/comments`}
-                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    title="Manage comments"
-                  >
-                    <MessageSquare className="h-4 w-4" />
-                  </Link>
-                  <Link
-                    href={`/admin/moderation/${deal.id}/edit`}
-                    className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    title="Edit deal"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Link>
-                  {status === "removed" ? (
-                    <button
-                      onClick={() => handleRestore(deal.id)}
-                      disabled={isPending}
-                      className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-50"
-                      title="Restore deal"
-                    >
-                      <RotateCcw className="h-4 w-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setRemoveTarget(deal.id)}
-                      disabled={isPending}
-                      className="rounded-md p-2 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-50"
-                      title="Remove deal"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  )}
-                  {status === "active" && (
-                    <TelegramPushButton
-                      dealId={deal.id}
-                      dealTitle={deal.title}
-                      lastPushedAt={lastPushedAt}
-                    />
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+                return (
+                  <tr key={deal.id} className="align-top">
+                    <td className="px-4 py-3">
+                      <div className="min-w-0 space-y-1">
+                        <Link
+                          href={`/deals/${deal.slug}`}
+                          className="block truncate font-medium hover:underline"
+                          title={deal.title}
+                        >
+                          {deal.title}
+                        </Link>
+                        <div className="flex flex-wrap items-center gap-1">
+                          <StatusBadge status={status} />
+                          {deal.removed_by === "admin" && (
+                            <Badge variant="outline" className="text-[10px]">
+                              By Admin
+                            </Badge>
+                          )}
+                        </div>
+                        {deal.removal_reason && (
+                          <p className="text-xs text-red-500">
+                            Reason: {deal.removal_reason}
+                          </p>
+                        )}
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3 text-xs text-muted-foreground">
+                      <span className="block truncate" title={deal.profiles?.username ?? "[deleted]"}>
+                        {deal.profiles?.username ?? "[deleted]"}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 text-xs text-muted-foreground">
+                      <span className="block truncate" title={deal.categories?.label ?? "—"}>
+                        {deal.categories?.label ?? "—"}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
+                      {formatDistanceToNow(new Date(deal.created_at), {
+                        addSuffix: true,
+                      })}
+                    </td>
+
+                    <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
+                      ▲{deal.upvote_count} ▼{deal.downvote_count} · {deal.comment_count}c
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1 whitespace-nowrap">
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon-xs"
+                          className="text-muted-foreground"
+                          title="View deal"
+                        >
+                          <Link href={`/deals/${deal.slug}`}>
+                            <ExternalLink className="h-4 w-4" />
+                          </Link>
+                        </Button>
+
+                        <Button
+                          asChild
+                          variant="ghost"
+                          size="icon-xs"
+                          className="text-muted-foreground"
+                          title="Edit deal"
+                        >
+                          <Link href={`/admin/moderation/${deal.id}/edit`}>
+                            <Pencil className="h-4 w-4" />
+                          </Link>
+                        </Button>
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon-xs"
+                              className="text-muted-foreground"
+                              title="More actions"
+                              disabled={isPending}
+                            >
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/deals/${deal.id}/comments`}>
+                                <MessageSquare className="h-4 w-4" />
+                                Manage comments
+                              </Link>
+                            </DropdownMenuItem>
+                            {status === "active" && (
+                              <DropdownMenuItem
+                                onSelect={() => handleTelegramPush(deal.id)}
+                              >
+                                <Send className="h-4 w-4" />
+                                {telegramLabel}
+                              </DropdownMenuItem>
+                            )}
+                            {status === "removed" ? (
+                              <DropdownMenuItem onSelect={() => handleRestore(deal.id)}>
+                                <RotateCcw className="h-4 w-4" />
+                                Restore deal
+                              </DropdownMenuItem>
+                            ) : null}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
-
-      {/* Remove confirmation dialog */}
-      <AlertDialog
-        open={!!removeTarget}
-        onOpenChange={(open) => {
-          if (!open) {
-            setRemoveTarget(null);
-            setRemoveReason("");
-          }
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Remove this deal?</AlertDialogTitle>
-            <AlertDialogDescription>
-              The deal will be hidden from the public feed. You can restore it
-              later.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="py-2">
-            <label className="text-sm font-medium">
-              Reason
-            </label>
-            <Select value={removeReason} onValueChange={setRemoveReason}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select a reason…" />
-              </SelectTrigger>
-              <SelectContent>
-                {REMOVAL_REASONS.map((reason) => (
-                  <SelectItem key={reason} value={reason}>
-                    {reason}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleRemove}
-              disabled={isPending}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-            >
-              {isPending ? "Removing…" : "Remove"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
 
-function StatusBadge({ status }: { status: StatusFilter }) {
+function StatusBadge({ status }: { status: EffectiveStatus }) {
   switch (status) {
     case "active":
       return (
