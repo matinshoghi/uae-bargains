@@ -22,7 +22,7 @@ export async function GET(
   await admin.rpc("increment_coupon_click", { coupon_id: couponId });
 
   const redirectUrl = coupon.affiliate_url || coupon.url;
-  if (!redirectUrl) {
+  if (!redirectUrl || !/^https?:\/\//i.test(redirectUrl)) {
     return NextResponse.redirect(new URL("/coupons", _request.url));
   }
 

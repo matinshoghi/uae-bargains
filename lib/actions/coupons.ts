@@ -42,9 +42,9 @@ async function uploadLogo(
 ): Promise<string> {
   if (file.size > 5 * 1024 * 1024) throw new Error("Logo must be under 5MB");
 
-  const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
   if (!allowedTypes.includes(file.type)) {
-    throw new Error("Only JPEG, PNG, WebP, and SVG logos are accepted");
+    throw new Error("Only JPEG, PNG, and WebP logos are accepted");
   }
 
   // Delete old logo if exists
@@ -55,17 +55,6 @@ async function uploadLogo(
       const oldPath = oldLogoUrl.slice(idx + marker.length);
       await admin.storage.from("store-logos").remove([oldPath]);
     }
-  }
-
-  // SVGs don't need optimization
-  if (file.type === "image/svg+xml") {
-    const buffer = Buffer.from(await file.arrayBuffer());
-    const filePath = `${crypto.randomUUID()}.svg`;
-    const { error } = await admin.storage
-      .from("store-logos")
-      .upload(filePath, buffer, { contentType: "image/svg+xml" });
-    if (error) throw new Error("Failed to upload logo");
-    return admin.storage.from("store-logos").getPublicUrl(filePath).data.publicUrl;
   }
 
   const optimized = await optimizeImage(await file.arrayBuffer());
@@ -366,6 +355,21 @@ export async function submitCoupon(
     } = await supabase.auth.getUser();
 
     if (!user) return { error: "You must be logged in to submit a coupon" };
+
+    // Rate limit: max 3 coupon submissions per hour
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: hourlyCount } = await supabase
+      .from("coupons")
+      .select("*", { count: "exact", head: true })
+      .eq("submitted_by", user.id)
+      .gte("created_at", oneHourAgo);
+
+    if (hourlyCount && hourlyCount >= 3) {
+      return {
+        error:
+          "You've reached the maximum of 3 coupon submissions per hour. Please try again later.",
+      };
+    }
 
     const raw = Object.fromEntries(formData.entries());
     const parsed = submitCouponSchema.safeParse(raw);

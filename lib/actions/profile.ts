@@ -43,6 +43,18 @@ export async function updateProfile(
   const shouldRemoveAvatar = formData.get("remove_avatar") === "1";
 
   if (avatarFile && avatarFile.size > 0) {
+    const MAX_AVATAR_SIZE = 5 * 1024 * 1024; // 5MB
+    if (avatarFile.size > MAX_AVATAR_SIZE) {
+      return { errors: { avatar: ["Avatar must be under 5MB"] } };
+    }
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowedTypes.includes(avatarFile.type)) {
+      return {
+        errors: { avatar: ["Only JPEG, PNG, and WebP images are accepted"] },
+      };
+    }
+
     const fileExt = avatarFile.name.split(".").pop();
     const filePath = `avatars/${user.id}.${fileExt}`;
 

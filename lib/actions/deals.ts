@@ -67,6 +67,45 @@ export async function createDeal(
     return { message: "You must be signed in to post a deal.", values };
   }
 
+  // Skip rate limiting for admin users
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
+    // Rate limit: max 2 deals per 5 minutes, 5 deals per hour
+    const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const { count: recentCount } = await supabase
+      .from("deals")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", fiveMinAgo);
+
+    if (recentCount && recentCount >= 2) {
+      return {
+        message: "Please wait a few minutes before posting another deal.",
+        values,
+      };
+    }
+
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: hourlyCount } = await supabase
+      .from("deals")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", oneHourAgo);
+
+    if (hourlyCount && hourlyCount >= 5) {
+      return {
+        message:
+          "You've reached the maximum of 5 deals per hour. Please try again later.",
+        values,
+      };
+    }
+  }
+
   // Parse form fields (exclude image — handled separately)
   const raw = {
     title: formData.get("title"),

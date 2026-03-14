@@ -27,6 +27,22 @@ export async function submitContact(
     return { errors: parsed.error.flatten().fieldErrors };
   }
 
+  // Rate limit: max 3 contact submissions per day per email
+  const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { count: dailyCount } = await supabase
+    .from("contact_submissions")
+    .select("*", { count: "exact", head: true })
+    .eq("email", parsed.data.email)
+    .gte("created_at", oneDayAgo);
+
+  if (dailyCount && dailyCount >= 3) {
+    return {
+      errors: {
+        form: ["Too many submissions. Please try again tomorrow."],
+      },
+    };
+  }
+
   const { error } = await supabase.from("contact_submissions").insert({
     name: parsed.data.name,
     email: parsed.data.email,
