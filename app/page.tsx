@@ -32,7 +32,7 @@ export default async function HomePage({
   ]);
 
   const { deals } = hideExpired
-    ? { deals: activeDeals.slice(0, totalNeeded), activeUsed: Math.min(activeDeals.length, totalNeeded), expiredUsed: 0 }
+    ? { deals: activeDeals.slice(0, totalNeeded) }
     : interleaveDeals(activeDeals, expiredDeals, totalNeeded);
 
   // For anonymous users, fetch their anonymous votes from cookie
