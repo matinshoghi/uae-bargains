@@ -22,6 +22,21 @@ const GLOW_SHADOW_ON =
 export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
   const { openAuthModal } = useAuthModal();
   const headlineWrapRef = useRef<HTMLDivElement>(null);
+  const dealsFeedRef = useRef<HTMLElement | null>(null);
+
+  const scrollToDealsFeed = () => {
+    if (!dealsFeedRef.current) {
+      dealsFeedRef.current = document.getElementById("deals-feed");
+    }
+
+    if (!dealsFeedRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    dealsFeedRef.current.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  };
 
   useGSAP(
     () => {
@@ -50,13 +65,11 @@ export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
           opacity: 0,
           y: 24,
           scale: 0.97,
-          letterSpacing: "0.02em",
         },
         {
           opacity: 1,
           y: 0,
           scale: 1,
-          letterSpacing: "-0.03em",
           duration: 0.8,
           delay: 0.15,
           ease: "power2.out",
@@ -81,44 +94,28 @@ export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
 
   return (
     <section className="border-b-[3px] border-primary bg-foreground text-background">
-      <div className="mx-auto max-w-[1100px] px-6 py-7 text-center md:py-8">
-        {/* Badge */}
+      <div className="mx-auto max-w-[1100px] px-6 pb-11 pt-10 text-center md:pb-14 md:pt-12">
+        {/* Built in UAE pill */}
         <div
-          className="mb-3.5 inline-flex items-center gap-1 rounded-sm border border-primary/25 bg-primary/[0.12] px-4 py-1.5 font-mono-display text-xs tracking-wider text-primary opacity-0"
+          className="mb-4 inline-flex items-center gap-2.5 rounded-sm border border-gray-700 bg-gray-800/50 px-4 py-1.5 font-mono-display text-xs tracking-wide text-gray-300 opacity-0 backdrop-blur-sm"
           style={{ animation: "hero-fade-up 0.4s ease 0.05s forwards" }}
         >
-          Made with{" "}
           <span
-            className="inline-flex items-center"
-            style={{ animation: "heartbeat 1.8s ease-in-out infinite" }}
+            aria-hidden="true"
+            className="uae-flag-wave relative h-4 w-6 overflow-hidden rounded-[2px] shadow-[0_0_8px_rgba(255,255,255,0.14)]"
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              style={{ filter: "drop-shadow(0 0 4px rgba(255, 51, 85, 0.5))" }}
-            >
-              <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                fill="#ff3355"
-              />
-            </svg>
-          </span>{" "}
-          from the{" "}
-          <span
-            className="inline-block text-base"
-            style={{
-              animation: "flag-pop 3s ease-in-out infinite",
-              transformOrigin: "center bottom",
-            }}
-          >
-            🇦🇪
+            <span className="absolute inset-y-0 left-0 w-1/4 bg-[#FF0000]" />
+            <span className="absolute right-0 top-0 h-1/3 w-3/4 bg-[#00732F]" />
+            <span className="absolute right-0 top-1/3 h-[34%] w-3/4 bg-[#FFFFFF]" />
+            <span className="absolute bottom-0 right-0 h-1/3 w-3/4 bg-[#000000]" />
+            <span className="uae-flag-shading absolute inset-0 bg-gradient-to-r from-black/25 via-white/40 to-black/25 mix-blend-overlay" />
           </span>
+          <span>Proudly Built in the UAE</span>
         </div>
 
         {/* Headline */}
         <div ref={headlineWrapRef}>
-          <h1 className="hero-headline mx-auto mb-2 font-heading text-[22px] font-black leading-[1.1] text-background sm:text-[26px] md:text-4xl">
+          <h1 className="hero-headline mx-auto mb-2 font-heading text-[29px] font-black leading-[1.1] text-background sm:text-[35px] md:text-[47px]">
             Don&apos;t overpay.{" "}
             <span className="hero-accent">Your neighbours</span> found it
             cheaper.
@@ -127,11 +124,14 @@ export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
 
         {/* Subtext */}
         <p
-          className="mx-auto mb-5 max-w-[520px] text-[15px] leading-relaxed text-background/55 opacity-0"
+          className="mx-auto mb-5 max-w-[520px] text-sm leading-[1.8] text-background/55 opacity-0"
           style={{ animation: "hero-fade-up 0.5s ease 0.7s forwards" }}
         >
           Post deals, vote on the best ones, and never pay full price in the UAE
-          again. Built by locals, for locals.
+          again.
+          <strong className="mt-1 block font-bold text-background/80">
+            Built by locals, for locals. Supporting our community.
+          </strong>
         </p>
 
         {/* CTA */}
@@ -139,49 +139,58 @@ export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
           className="mb-5 opacity-0"
           style={{ animation: "hero-fade-up 0.5s ease 0.85s forwards" }}
         >
-          {isLoggedIn ? (
-            <Link
-              href="/deals/new"
-              className="inline-block border-2 border-primary bg-primary px-7 py-2.5 font-display text-[15px] font-bold text-primary-foreground transition-all duration-150 hover:border-[#d8ff6a] hover:bg-[#d8ff6a]"
-            >
-              Post a Deal →
-            </Link>
-          ) : (
+          <div className="flex flex-col items-stretch justify-center gap-2.5 sm:flex-row sm:items-center">
+            {isLoggedIn ? (
+              <Link
+                href="/deals/new"
+                className="inline-block w-full border-2 border-primary bg-primary px-7 py-2 text-center font-display text-[15px] font-bold text-primary-foreground transition-all duration-150 hover:border-[#d8ff6a] hover:bg-[#d8ff6a] sm:w-auto"
+              >
+                Share a Deal →
+              </Link>
+            ) : (
+              <button
+                onClick={() => openAuthModal()}
+                className="w-full border-2 border-primary bg-primary px-7 py-2 font-display text-[15px] font-bold text-primary-foreground transition-all duration-150 hover:border-[#d8ff6a] hover:bg-[#d8ff6a] sm:w-auto"
+              >
+                Share a Deal →
+              </button>
+            )}
             <button
-              onClick={() => openAuthModal()}
-              className="border-2 border-primary bg-primary px-7 py-2.5 font-display text-[15px] font-bold text-primary-foreground transition-all duration-150 hover:border-[#d8ff6a] hover:bg-[#d8ff6a]"
+              type="button"
+              onClick={scrollToDealsFeed}
+              className="w-full border border-gray-700 bg-gray-800 px-7 py-2 font-display text-[15px] font-semibold text-white transition-colors duration-150 hover:border-gray-600 hover:bg-gray-700 sm:w-auto"
             >
-              Join the Community →
+              Browse Deals
             </button>
-          )}
+          </div>
         </div>
 
         {/* Stats */}
         <div
-          className="mx-auto flex max-w-md justify-center gap-8 border-t border-background/[0.08] pt-4 opacity-0 md:gap-8"
+          className="mx-auto flex max-w-md justify-center gap-8 border-t border-gray-800 pt-8 opacity-0 md:gap-8"
           style={{ animation: "hero-fade-up 0.5s ease 0.95s forwards" }}
         >
           <div className="text-center">
-            <div className="font-mono-display text-xl font-medium text-primary">
+            <div className="font-mono-display text-2xl font-bold text-[#c3ff4d]">
               {stats.dealsCount}
             </div>
-            <div className="font-mono-display text-[11px] tracking-wider text-background/35">
+            <div className="mt-1 text-xs uppercase tracking-wider text-gray-500">
               deals shared
             </div>
           </div>
           <div className="text-center">
-            <div className="font-mono-display text-xl font-medium text-primary">
+            <div className="font-mono-display text-2xl font-bold text-[#c3ff4d]">
               {stats.votesCount}
             </div>
-            <div className="font-mono-display text-[11px] tracking-wider text-background/35">
+            <div className="mt-1 text-xs uppercase tracking-wider text-gray-500">
               votes cast
             </div>
           </div>
           <div className="text-center">
-            <div className="font-mono-display text-xl font-medium text-primary">
+            <div className="font-mono-display text-2xl font-bold text-[#c3ff4d]">
               {stats.commentsCount}
             </div>
-            <div className="font-mono-display text-[11px] tracking-wider text-background/35">
+            <div className="mt-1 text-xs uppercase tracking-wider text-gray-500">
               comments
             </div>
           </div>

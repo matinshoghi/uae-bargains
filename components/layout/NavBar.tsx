@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { PostDealButton } from "@/components/layout/PostDealButton";
 
@@ -15,6 +16,20 @@ type ServerProfile = {
 const SCROLL_THRESHOLD_RATIO = 0.8;
 const TRANSITION_MS = 800;
 const EASING = "cubic-bezier(0.28, 0.11, 0.32, 1)";
+
+function UaeTopRibbon() {
+  return (
+    <div className="relative h-1.5 w-full overflow-hidden" aria-hidden="true">
+      <div className="flex h-full w-full">
+        <span className="h-full w-1/4 bg-[#FF0000]" />
+        <span className="h-full w-1/4 bg-[#00732F]" />
+        <span className="h-full w-1/4 bg-[#FFFFFF]" />
+        <span className="h-full w-1/4 bg-[#000000]" />
+      </div>
+      <span className="uae-ribbon-shimmer pointer-events-none absolute inset-y-0 left-[-45%] w-1/2 bg-gradient-to-r from-transparent via-white/45 to-transparent" />
+    </div>
+  );
+}
 
 function CompactNav({ visible, serverProfile, isLoggedIn }: { visible: boolean; serverProfile: ServerProfile | null; isLoggedIn: boolean }) {
   return (
@@ -54,15 +69,13 @@ function CompactNav({ visible, serverProfile, isLoggedIn }: { visible: boolean; 
 }
 
 export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null }) {
-  const [mounted, setMounted] = useState(false);
   const [compactReady, setCompactReady] = useState(false);
   const [compactVisible, setCompactVisible] = useState(false);
+  const canUseDOM = typeof window !== "undefined";
+  const pathname = usePathname();
+  const hideTopPostDealOnMobile = pathname === "/";
 
   const compactVisibleRef = useRef(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleScroll = useCallback(() => {
     const threshold = window.innerHeight * SCROLL_THRESHOLD_RATIO;
@@ -86,33 +99,38 @@ export function NavBar({ serverProfile }: { serverProfile: ServerProfile | null 
 
   return (
     <>
-      <header className="relative z-40 border-b-2 border-foreground bg-background">
-        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/logo.svg"
-              alt="HalaSaves"
-              width={120}
-              height={40}
-              priority
-              className="h-6 w-auto md:h-7"
-            />
-          </Link>
-
-          <div className="flex items-center gap-3 md:gap-6">
-            <Link
-              href="/coupons"
-              className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:block"
-            >
-              Coupons
+      <header className="relative z-40 bg-background">
+        <UaeTopRibbon />
+        <div className="border-b-2 border-foreground">
+          <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.svg"
+                alt="HalaSaves"
+                width={120}
+                height={40}
+                priority
+                className="h-6 w-auto md:h-7"
+              />
             </Link>
-            <PostDealButton isLoggedIn={serverProfile !== null} />
-            <AuthButton variant="link" initialProfile={serverProfile} />
+
+            <div className="flex items-center gap-3 md:gap-6">
+              <Link
+                href="/coupons"
+                className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:block"
+              >
+                Coupons
+              </Link>
+              <div className={hideTopPostDealOnMobile ? "hidden sm:block" : undefined}>
+                <PostDealButton isLoggedIn={serverProfile !== null} />
+              </div>
+              <AuthButton variant="link" initialProfile={serverProfile} />
+            </div>
           </div>
         </div>
       </header>
 
-      {mounted &&
+      {canUseDOM &&
         compactReady &&
         createPortal(
           <CompactNav visible={compactVisible} serverProfile={serverProfile} isLoggedIn={serverProfile !== null} />,

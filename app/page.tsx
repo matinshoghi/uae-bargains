@@ -31,7 +31,7 @@ export default async function HomePage({
     getUserDealVotes(),
   ]);
 
-  const { deals, activeUsed, expiredUsed } = hideExpired
+  const { deals } = hideExpired
     ? { deals: activeDeals.slice(0, totalNeeded), activeUsed: Math.min(activeDeals.length, totalNeeded), expiredUsed: 0 }
     : interleaveDeals(activeDeals, expiredDeals, totalNeeded);
 
@@ -68,7 +68,7 @@ export default async function HomePage({
           </aside>
 
           {/* Deal feed */}
-          <div className="min-w-0 flex-1 px-4 py-5 sm:px-6">
+          <div id="deals-feed" className="min-w-0 flex-1 scroll-mt-28 px-4 py-5 sm:px-6">
             <FeedHeader sort={sort} category={category} />
             <DealFeed
               initialDeals={deals}

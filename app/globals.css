@@ -275,25 +275,39 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes heartbeat {
-  0% { transform: scale(1); }
-  14% { transform: scale(1.3); }
-  28% { transform: scale(1); }
-  42% { transform: scale(1.2); }
-  56% { transform: scale(1); }
-  100% { transform: scale(1); }
+@keyframes ribbon-shimmer {
+  0% { transform: translateX(-140%) skewX(-20deg); }
+  100% { transform: translateX(220%) skewX(-20deg); }
 }
 
-@keyframes flag-pop {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  25% { transform: scale(1.2) rotate(3deg); }
-  50% { transform: scale(1) rotate(0deg); }
-  75% { transform: scale(1.15) rotate(-2deg); }
+@keyframes flag-wave {
+  0%, 100% { transform: rotate(0deg) skewY(0deg); }
+  50% { transform: rotate(2deg) skewY(-3deg); }
+}
+
+@keyframes flag-shading {
+  0%, 100% { background-position: -16px 0; opacity: 0.35; }
+  50% { background-position: 16px 0; opacity: 0.95; }
 }
 
 @keyframes pulse-dot {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
+}
+
+.uae-ribbon-shimmer {
+  animation: ribbon-shimmer 3s linear infinite;
+}
+
+.uae-flag-wave {
+  animation: flag-wave 3s ease-in-out infinite;
+  transform-origin: left bottom;
+  will-change: transform;
+}
+
+.uae-flag-shading {
+  animation: flag-shading 3s ease-in-out infinite;
+  background-size: 180% 100%;
 }
 
 /* Hero headline — initial state for GSAP entrance */
@@ -308,6 +322,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .uae-ribbon-shimmer,
+  .uae-flag-wave,
+  .uae-flag-shading {
+    animation: none;
+  }
+
   .hero-accent {
     text-shadow: none;
   }
