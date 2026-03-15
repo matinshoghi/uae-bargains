@@ -17,7 +17,7 @@ export default function AboutPage() {
         <p>
           HalaSaves is not just a website — it <strong>is</strong> you, the
           community of savvy shoppers across the UAE. Every deal you see was
-          posted by a real person who wanted to share a great find with their
+          shared by a real person who wanted to share a great find with their
           neighbours.
         </p>
         <p className="mt-4">
@@ -39,7 +39,7 @@ export default function AboutPage() {
             {
               step: "2",
               title: "Submit Deals",
-              body: "Found a great deal? Post it. Include the price, store, and a short description.",
+              body: "Found a great deal? Share it. Include the price, store, and a short description.",
             },
             {
               step: "3",
@@ -68,8 +68,8 @@ export default function AboutPage() {
           Community Guidelines
         </h2>
         <ul className="mt-4 list-disc space-y-2 pl-5 text-muted-foreground">
-          <li>Post genuine, verifiable deals — misleading titles will be removed.</li>
-          <li>Do not post referral links or spam.</li>
+          <li>Share genuine, verifiable deals — misleading titles will be removed.</li>
+          <li>Do not share referral links or spam.</li>
           <li>Respect other members in comments.</li>
           <li>Update or flag deals that have expired.</li>
           <li>No affiliate marketing without disclosure.</li>
@@ -81,7 +81,7 @@ export default function AboutPage() {
           For Merchants
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Merchants are welcome to post deals on HalaSaves under the same
+          Merchants are welcome to share deals on HalaSaves under the same
           rules as everyone else. There are no listing fees. However, deals are
           judged by the community — if your deal isn&apos;t genuine, it will be
           downvoted.

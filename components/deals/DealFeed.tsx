@@ -71,13 +71,13 @@ export function DealFeed({
             Know a great deal? Share it with the community!
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Help others save by posting deals you&apos;ve found.
+            Help others save by sharing deals you&apos;ve found.
           </p>
           <Link
             href="/deals/new"
             className="font-display mt-4 inline-block rounded-sm border-2 border-foreground px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-colors hover:bg-foreground hover:text-background"
           >
-            Post a Deal
+            Share a Deal
           </Link>
         </div>
       )}

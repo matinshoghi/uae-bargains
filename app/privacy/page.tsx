@@ -17,7 +17,7 @@ export default function PrivacyPage() {
         <p className="mt-2 text-muted-foreground">
           When you register, we collect your email address and, if you use
           Google sign-in, your public Google profile data (name and profile
-          photo). Content you post — deals, comments, and votes — is stored and
+          photo). Content you share — deals, comments, and votes — is stored and
           associated with your account. We also collect IP addresses for spam
           prevention and vote auditing purposes.
         </p>
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           2. Data Visibility
         </h2>
         <p className="mt-2 text-muted-foreground">
-          Your username and posted content (deals, comments) are
+          Your username and shared content (deals, comments) are
           publicly visible.
           cast are aggregated and not attributed to you individually.
         </p>

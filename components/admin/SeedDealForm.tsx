@@ -66,7 +66,7 @@ export function SeedDealForm({
     <form ref={formRef} action={action} className="space-y-4">
       <div>
         <label htmlFor="deal_user_id" className="block text-sm font-medium">
-          Post as <span className="text-red-500">*</span>
+          Share as <span className="text-red-500">*</span>
         </label>
         <select
           id="deal_user_id"
@@ -269,7 +269,7 @@ export function SeedDealForm({
       )}
 
       {state?.success && (
-        <p className="text-sm text-green-600">Deal posted successfully.</p>
+        <p className="text-sm text-green-600">Deal shared successfully.</p>
       )}
 
       <button
@@ -277,7 +277,7 @@ export function SeedDealForm({
         disabled={isPending}
         className="rounded-lg bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-opacity hover:opacity-90 disabled:opacity-50"
       >
-        {isPending ? "Posting..." : "Post Deal"}
+        {isPending ? "Sharing..." : "Share Deal"}
       </button>
     </form>
   );

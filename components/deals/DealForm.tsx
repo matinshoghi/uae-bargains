@@ -362,7 +362,7 @@ export function DealForm({ categories, initialData }: DealFormProps) {
             className="mt-0.5 h-4 w-4 shrink-0 rounded-sm border-2 border-foreground/20 accent-primary"
           />
           <Label htmlFor="rules_accepted" className="cursor-pointer font-normal leading-snug">
-            I have read the posting rules and confirm this deal follows them.
+            I have read the sharing rules and confirm this deal follows them.
           </Label>
         </div>
       )}
@@ -372,10 +372,10 @@ export function DealForm({ categories, initialData }: DealFormProps) {
         {isPending
           ? isEditing
             ? "Saving..."
-            : "Posting..."
+            : "Sharing..."
           : isEditing
             ? "Save Changes"
-            : "Post Deal"}
+            : "Share a Deal"}
       </Button>
     </form>
   );

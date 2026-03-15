@@ -16,7 +16,7 @@ export default function TermsPage() {
         </h2>
         <p className="mt-2 text-muted-foreground">
           By accessing or using HalaSaves (&ldquo;the Service&rdquo;), you
-          agree to be bound by these Terms of Use, our Deal Posting Guidelines,
+          agree to be bound by these Terms of Use, our Deal Sharing Guidelines,
           Commenting Guidelines, and{" "}
           <Link
             href="/privacy"
@@ -47,12 +47,12 @@ export default function TermsPage() {
         </h2>
         <p className="mt-2 text-muted-foreground">You agree not to:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
-          <li>Post unlawful, defamatory, harassing, or fraudulent content</li>
-          <li>Post misleading deals or manipulate votes</li>
+          <li>Share unlawful, defamatory, harassing, or fraudulent content</li>
+          <li>Share misleading deals or manipulate votes</li>
           <li>Infringe on intellectual property rights</li>
           <li>Hold multiple accounts without express authorisation</li>
           <li>Obstruct other users&apos; access to the Service</li>
-          <li>Post spam, unsolicited promotions, or undisclosed affiliate links</li>
+          <li>Share spam, unsolicited promotions, or undisclosed affiliate links</li>
         </ul>
         <p className="mt-3 text-muted-foreground">
           Content that violates UAE law — including the UAE Cybercrime Law
@@ -66,9 +66,9 @@ export default function TermsPage() {
           4. Content Ownership
         </h2>
         <p className="mt-2 text-muted-foreground">
-          You retain ownership of content you post. By posting, you grant UAE
+          You retain ownership of content you share. By sharing, you grant UAE
           Bargains a non-exclusive, royalty-free licence to display and
-          distribute that content on the platform. You must not post content that
+          distribute that content on the platform. You must not share content that
           infringes third-party intellectual property.
         </p>
       </section>
@@ -106,7 +106,7 @@ export default function TermsPage() {
         </h2>
         <p className="mt-2 text-muted-foreground">
           HalaSaves is provided on an &ldquo;as is&rdquo; basis. We make no
-          warranties regarding the accuracy of deals posted by community
+          warranties regarding the accuracy of deals shared by community
           members. HalaSaves is not affiliated with any merchants listed on
           this website. Users indemnify HalaSaves against all third-party
           claims, legal costs, and damages arising from use of the platform.

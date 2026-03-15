@@ -63,7 +63,7 @@ export function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
           </span>
         </Link>
 
-        {/* Post Deal button (auth-gated) */}
+        {/* Share Deal button (auth-gated) */}
         <PostDealButton isLoggedIn={isLoggedIn} variant="mobile" />
 
         {/* Settings link */}

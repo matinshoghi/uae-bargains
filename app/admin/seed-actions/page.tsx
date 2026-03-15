@@ -23,7 +23,7 @@ export default async function SeedActionsPage() {
     <div>
       <h1 className="text-2xl font-bold">Seed Actions</h1>
       <p className="mt-2 text-muted-foreground">
-        Post deals, upvote, and comment as seed users.
+        Share deals, upvote, and comment as seed users.
       </p>
 
       {users.length === 0 && (
@@ -41,7 +41,7 @@ export default async function SeedActionsPage() {
       <section className="mt-8">
         <details open className="group">
           <summary className="cursor-pointer text-lg font-semibold select-none">
-            <span className="ml-1">Post Deal</span>
+            <span className="ml-1">Share Deal</span>
           </summary>
           <div className="mt-4 rounded-xl border border-border p-6">
             <SeedDealForm users={users} categories={categories} />

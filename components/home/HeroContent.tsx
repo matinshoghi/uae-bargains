@@ -127,7 +127,7 @@ export function HeroContent({ stats, isLoggedIn }: HeroContentProps) {
           className="mx-auto mb-5 max-w-[520px] text-sm leading-[1.8] text-background/55 opacity-0"
           style={{ animation: "hero-fade-up 0.5s ease 0.7s forwards" }}
         >
-          Post deals, vote on the best ones, and never pay full price in the UAE
+          Share deals, vote on the best ones, and never pay full price in the UAE
           again.
           <strong className="mt-1 block font-bold text-background/80">
             Built by locals, for locals. Supporting our community.

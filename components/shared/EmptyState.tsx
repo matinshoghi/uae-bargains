@@ -10,7 +10,7 @@ export function EmptyState() {
         href="/deals/new"
         className="font-display text-sm font-semibold text-foreground underline underline-offset-4 hover:text-muted-foreground"
       >
-        Be the first to post a deal
+        Be the first to share a deal
       </Link>
     </div>
   );

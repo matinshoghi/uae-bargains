@@ -64,7 +64,7 @@ export async function createDeal(
   const values = extractValues(formData);
 
   if (!user) {
-    return { message: "You must be signed in to post a deal.", values };
+    return { message: "You must be signed in to share a deal.", values };
   }
 
   // Skip rate limiting for admin users
@@ -85,7 +85,7 @@ export async function createDeal(
 
     if (recentCount && recentCount >= 2) {
       return {
-        message: "Please wait a few minutes before posting another deal.",
+        message: "Please wait a few minutes before sharing another deal.",
         values,
       };
     }
@@ -228,7 +228,7 @@ export async function createDeal(
   after(() => notifyDealPosted(user.id, title));
   after(() =>
     notifyFormSubmitted(
-      "Post Deal",
+      "Share Deal",
       {
         ...parsed.data,
         image_uploaded: Boolean(imageFile && imageFile.size > 0),

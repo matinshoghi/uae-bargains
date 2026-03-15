@@ -4,7 +4,7 @@ import { DealForm } from "@/components/deals/DealForm";
 import { PostingRulesSidebar } from "@/components/deals/PostingRulesSidebar";
 
 export const metadata = {
-  title: "Post a Deal — HalaSaves",
+  title: "Share a Deal — HalaSaves",
   description: "Share a deal you've found with the HalaSaves community.",
 };
 
@@ -34,7 +34,7 @@ export default async function NewDealPage() {
       <div className="flex gap-8">
         {/* Form column */}
         <div className="min-w-0 flex-1">
-          <h1 className="mb-6 font-heading text-[22px] font-black tracking-tight sm:text-2xl">Post a Deal</h1>
+          <h1 className="mb-6 font-heading text-[22px] font-black tracking-tight sm:text-2xl">Share a Deal</h1>
           <DealForm categories={categories ?? []} />
         </div>
 

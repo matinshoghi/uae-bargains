@@ -204,7 +204,7 @@ export default async function AdminDashboard() {
             <h3 className="font-semibold">Seed Actions</h3>
           </div>
           <p className="mt-2 text-sm text-muted-foreground">
-            Post deals, upvote, and comment as seed users.
+            Share deals, upvote, and comment as seed users.
           </p>
         </Link>
 

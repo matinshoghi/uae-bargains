@@ -36,7 +36,7 @@ export function DealDetailSidebar({
 }: DealDetailSidebarProps) {
   const expired = isExpired(deal);
   const primaryCtaHref = isLoggedIn ? "/deals/new" : "/login";
-  const primaryCtaLabel = isLoggedIn ? "Post a Deal →" : "Join the community →";
+  const primaryCtaLabel = isLoggedIn ? "Share a Deal →" : "Join the community →";
 
   return (
     <div className="space-y-4">

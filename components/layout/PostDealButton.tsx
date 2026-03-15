@@ -16,7 +16,7 @@ export function PostDealButton({ isLoggedIn, variant = "default" }: PostDealButt
 
   function handleClick() {
     if (!isLoggedIn) {
-      openAuthModal({ message: "Sign in to post a deal" });
+      openAuthModal({ message: "Sign in to share a deal" });
       return;
     }
     router.push("/deals/new");
@@ -31,8 +31,8 @@ export function PostDealButton({ isLoggedIn, variant = "default" }: PostDealButt
         <div className="flex h-8 w-8 items-center justify-center rounded-sm transition-colors">
           <Plus className="h-4 w-4" />
         </div>
-        <span className="font-display text-[9px] font-semibold uppercase tracking-wider">
-          Post
+        <span className="font-display text-[9px] font-semibold uppercase tracking-wider whitespace-nowrap">
+          Share a Deal
         </span>
       </button>
     );
@@ -51,11 +51,11 @@ export function PostDealButton({ isLoggedIn, variant = "default" }: PostDealButt
       <Plus className={cn("mr-1", variant === "compact" ? "h-3 w-3 md:h-3.5 md:w-3.5" : "mr-1.5 h-4 w-4")} />
       {variant === "compact" ? (
         <>
-          <span className="hidden sm:inline">Post Deal</span>
-          <span className="sm:hidden">Post</span>
+          <span className="hidden sm:inline">Share a Deal</span>
+          <span className="sm:hidden">Share</span>
         </>
       ) : (
-        "Post Deal"
+        "Share a Deal"
       )}
     </button>
   );
